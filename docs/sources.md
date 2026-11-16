@@ -31,6 +31,7 @@ The review uses relevant supplied decks and transcripts rather than claiming ins
 | **S12** | [Streamlit Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state), [state concepts](https://docs.streamlit.io/develop/concepts/architecture/session-state), [deployment](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy) | Rerun state, independent/resettable sessions and branch-based deployment, not durable/shared booking storage. |
 | **S15** | [Streamlit AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest) and [pip-audit usage](https://github.com/pypa/pip-audit#usage) | L1's simulated UI/state checks and hash-locked dependency audit options; not human/browser validation. |
 | **S16** | [checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1), [setup-python v7.1.0](https://github.com/actions/setup-python/releases/tag/v7.1.0), [upload-artifact v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2) | Official Action versions inspected for L1 and resolved to immutable commit SHAs in the workflow. |
+| **S17** | [Python datetime comparisons](https://docs.python.org/3.12/library/datetime.html#datetime-objects) | Repeated local times and fold semantics; supports the L1 correction to compare validated aware instants in UTC. This does not add a time-zone selector to the application. |
 
 ## Requirements versus selected design
 

@@ -73,7 +73,7 @@ Historical outcome: the author accepted L0 revision 3 on 16 November 2026, later
 - Outputs: runnable skeleton, real tests, locked dependencies and Actions.
 - Exit: functions actually built have collected passing checks, setup/CI work and the human accepts the loop.
 
-Current L1 scope is the runnable shell, immutable row models, mutable per-session state factories, structural data checks, derived cutoff, 36 foundation test cases, hash-locked dependencies and four CI jobs. It excludes actor selection/permissions, creation/booking/cancellation operations and all waitlist behaviour. The [L1 record](reviews/L1-human-review.md) provides the actual evidence and pending human checklist. Stop here until ACCEPT_LOOP; L2 has not started.
+Current L1 scope is the runnable shell, immutable row models, mutable per-session state factories, structural data checks, derived cutoff, 40 foundation test cases, hash-locked dependencies and four CI jobs. It excludes actor selection/permissions, creation/booking/cancellation operations and all waitlist behaviour. The [L1 record](reviews/L1-human-review.md) provides the actual evidence and pending human checklist. Stop here until ACCEPT_LOOP; L2 has not started.
 
 ### L2 Demo actors and ownership
 

@@ -3,6 +3,7 @@
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pytest
 from streamlit.testing.v1 import AppTest
@@ -124,6 +125,36 @@ def test_data_model_can_represent_historical_workshops(workshop: Workshop) -> No
         ends_at=datetime(2020, 1, 1, 12, tzinfo=WORKSHOP_TIMEZONE),
     )
     assert historical.registration_cutoff == datetime(2019, 12, 31, 9, tzinfo=WORKSHOP_TIMEZONE)
+
+
+@pytest.mark.parametrize("reverse", [False, True], ids=["chronological", "reversed"])
+def test_workshop_orders_repeated_clock_times_by_instant(workshop: Workshop, reverse: bool) -> None:
+    zone = ZoneInfo("America/New_York")
+    first = datetime(2026, 11, 1, 1, 30, tzinfo=zone, fold=0)
+    second = datetime(2026, 11, 1, 1, 15, tzinfo=zone, fold=1)
+    assert second.astimezone(UTC) - first.astimezone(UTC) == timedelta(minutes=45)
+    if reverse:
+        with pytest.raises(ValueError, match="ends_at must be later"):
+            replace(workshop, starts_at=second, ends_at=first)
+    else:
+        result = replace(workshop, starts_at=first, ends_at=second)
+        assert result.ends_at.astimezone(UTC) > result.starts_at.astimezone(UTC)
+
+
+@pytest.mark.parametrize("reverse", [False, True], ids=["chronological", "reversed"])
+def test_registration_orders_repeated_clock_times_by_instant(reverse: bool) -> None:
+    zone = ZoneInfo("America/New_York")
+    first = datetime(2026, 11, 1, 1, 30, tzinfo=zone, fold=0)
+    second = datetime(2026, 11, 1, 1, 15, tzinfo=zone, fold=1)
+    assert second.astimezone(UTC) - first.astimezone(UTC) == timedelta(minutes=45)
+    if reverse:
+        with pytest.raises(ValueError, match="updated_at must not precede"):
+            Registration("r-1", "w-1", "participant-1", RegistrationStatus.CONFIRMED, second, first)
+    else:
+        result = Registration(
+            "r-1", "w-1", "participant-1", RegistrationStatus.CONFIRMED, first, second
+        )
+        assert result.updated_at.astimezone(UTC) > result.created_at.astimezone(UTC)
 
 
 @pytest.mark.parametrize("field_name", ["created_at", "updated_at"])

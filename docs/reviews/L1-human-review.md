@@ -20,7 +20,7 @@ Included: preview navigation, once-per-session state, fictional identity data, d
 |---|---|
 | app.py | English Streamlit preview, three views, Refresh view and session counts; factory called only when demo_state is absent. No global mutable business state. |
 | booking.py | Frozen DemoUser/Workshop/Registration rows, independent mutable DemoState collections/counters, fixed fictional identities, structural field checks and an aware elapsed-24h cutoff. No Streamlit dependency. |
-| test_booking.py | 36 collected foundation cases; actual domain objects and Streamlit AppTest, not empty placeholder tests. |
+| test_booking.py | 40 collected foundation cases; actual domain objects and Streamlit AppTest, including four added timestamp regressions. |
 | requirements.in / requirements.txt | Intentional runtime inputs and 34 resolved version/hash pins. |
 | requirements-dev.in / requirements-dev.txt | Development inputs constrained by the runtime lock and 71 resolved version/hash pins, including packages with extras. |
 | pyproject.toml | Python 3.12 Ruff configuration, pytest discovery and diagnostic booking-module branch coverage. |
@@ -40,12 +40,14 @@ FND IDs identify this loop's test groups, not replacements for the accepted B/W/
 | FND-01 | test_state_factories_do_not_share_lists_or_counters; test_fictional_identity_data_uses_unique_stable_ids_and_both_roles | 2 | QR-04/I09 factory foundation; identity data only, not FR-01 selection or permission enforcement. |
 | FND-02 | test_workshop_represents_valid_capacity_boundaries; test_workshop_rejects_invalid_capacity | 10 | BR-02 structural capacity boundaries 1/30 and invalid types/ranges. B03/B04 operation/counter checks remain later. |
 | FND-03 | test_workshop_rejects_missing_required_text | 8 | Structural required IDs/title/location; partial B05 support. |
-| FND-04 | test_workshop_rejects_naive_or_missing_instants; test_workshop_rejects_non_positive_duration; test_data_model_can_represent_historical_workshops | 7 | BR-03 aware instants, duration and historical representation. No fresh-time creation/cutoff enforcement claimed. |
+| FND-04 | test_workshop_rejects_naive_or_missing_instants; test_workshop_rejects_non_positive_duration; test_data_model_can_represent_historical_workshops; test_workshop_orders_repeated_clock_times_by_instant | 9 | BR-03 aware instants, duration, historical representation and UTC-order regression. No fresh-time creation/cutoff enforcement claimed. |
 | FND-05 | test_cutoff_is_twenty_four_elapsed_hours_before_start | 1 | Known independent S/C example and 24 elapsed hours; partial BR-03 support, not B15/I10 action enforcement. |
-| FND-06 | test_registration_rejects_naive_timestamps; test_registration_rejects_update_before_creation | 3 | Structural registration timestamps; not booking/cancellation behaviour. |
+| FND-06 | test_registration_rejects_naive_timestamps; test_registration_rejects_update_before_creation; test_registration_orders_repeated_clock_times_by_instant | 5 | Structural timestamp chronology including repeated-clock UTC-order regression; not booking/cancellation behaviour. |
 | FND-07 | test_app_views_start_without_exception; test_app_refresh_and_navigation_preserve_session_state; test_independent_app_sessions_do_not_share_state | 5 | Actual AppTest UI execution; automated supporting parts of I06/I08/I09. Manual browser lifecycle, role wiring and user validation remain pending. |
 
-**Total: 36 cases; no failures or skips in the local run.** Test fixtures isolate one rejection cause. Expected capacity limits and the dated S/C example come from the accepted specification. Factory/session tests insert a sentinel workshop and advance a counter to detect loss/aliasing; empty screens alone would not establish that property.
+**Final local total: 40 cases; no failures or skips.** Test fixtures isolate one rejection cause. Expected capacity limits and the dated S/C example come from the accepted specification. Factory/session tests insert a sentinel workshop and advance a counter to detect loss/aliasing; empty screens alone would not establish that property.
+
+The initial 36 cases passed, including full current booking-module line/branch coverage. Further review reproduced a missed input category: 01:30 in the first occurrence followed by 01:15 in the second occurrence of a repeated local hour. The UTC instants are 45 minutes apart in chronological order. The old constructors rejected that valid order and accepted the reverse. Four new workshop/registration regression cases failed before correction. Comparing UTC instants fixed both errors; the full 40-case suite then passed. This is a real observed data-model defect, not an invented booking failure. Test input representation uses a repeated-hour zone; the application still displays Asia/Singapore and gains no new time-zone UI.
 
 ## Actual local verification
 
@@ -54,7 +56,7 @@ Executor: AI using the project virtual environment, Windows, Python 3.12.14. The
 | Check | Actual observed result | Evidence/scope |
 |---|---|---|
 | Hash-locked install | Completed | Runtime/development locks; local environment is excluded from Git. |
-| pytest | 36 collected, 36 passed, 0 failed, 0 skipped | reports/junit.xml; includes five AppTest cases. |
+| pytest | Final run: 40 collected, 40 passed, 0 failed, 0 skipped | reports/junit.xml; includes five AppTest and four new timestamp regression cases. |
 | booking.py branch coverage | 66/66 statements and 12/12 branch destinations covered, 100% | reports/coverage.xml; foundation module only. No full-requirement or production-quality claim. |
 | Ruff lint and format | Passed | Three Python files; initial formatting was corrected before the clean check. |
 | pip check | No broken requirements | Installed dependency consistency. |
@@ -66,7 +68,7 @@ Executor: AI using the project virtual environment, Windows, Python 3.12.14. The
 
 Local reports are generated under ignored reports/; they are not helper tools or fabricated GitHub results. Hosted artifacts retain code identity, installed versions and selected reports. Advisory results are time-limited observations, not proof of absent vulnerabilities.
 
-Hosted CI status at initial preparation: PENDING. Record the actual branch, tested commit and run after publication. A local pass is not a hosted CI pass. No PR is opened before the author's personal pre-PR review; push-triggered CI can verify this bounded branch first.
+Initial hosted evidence: [run 43867810566](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43867810566) passed static-quality, security-review, tests and quality-gate on commit 30918d42acd7ead5d75e9577fe7b0d878f54ae92 with the initial 36 cases. It predates the timestamp correction and does not verify that later change. The final correction requires its own current-head run. No PR is opened before the author's personal pre-PR review; push-triggered CI verifies the bounded branch first.
 
 ## GitHub Actions and review boundary
 
@@ -90,12 +92,13 @@ AI generated the three core files, tests, dependency inputs/locks, tool configur
 | Item | Assessment / disposition | Human review needed |
 |---|---|---|
 | Initial formatting | Ruff reformatted all three generated Python files; subsequent checks pass. This was a formatting finding, not an observed business defect. | Inspect the final diff; no invented runtime defect is claimed. |
+| Timestamp ordering | Further code review reproduced incorrect ordering of repeated local times. Four added cases failed before the two comparisons were changed to UTC; all 40 now pass locally. The initial 100% line/branch figure did not detect this missing input category. | Explain the intended instant-order property and review the regression evidence; keep the Singapore display policy. |
 | Audit package coverage | The initial successful audits reported 33 runtime/67 development packages, while complete locks contain 34/71. Changed to documented --disable-pip with --require-hashes; final reports cover all 34/71 packages. Added required CI name/version reconciliation. Hash verification remains enforced during install. | Assess the complete-set evidence rather than relying on exit code alone. |
 | Empty foundation preview | Intentional L1 scope. Business controls remain in later loops; no placeholder Book button returns fake success. | Confirm the bounded increment is appropriate. |
 | Structural versus creation rules | Historical dataclasses are permitted; service-level lead/role checks remain L3 obligations. | Explain why constructing a row is not an authorised create operation. |
 | Identity/session limits | Fictional data and independently resettable sessions retained. No real login, shared concurrency or durability claim. | Confirm the stated prototype limits. |
 | AppTest versus user evidence | Test harness insertion exercises state preservation; it is not a real booking task or user validation. | Assess assertions, perform own checks and leave R-08 pending. |
-| Dependency/platform scope | Locks generated on Python 3.12.14/Windows. Hosted Ubuntu installation must be verified before treating CI as complete. | Review the real run and any findings. |
+| Dependency/platform scope | Locks generated on Python 3.12.14/Windows. The initial hosted Ubuntu run installed them and passed all four jobs; the later timestamp correction needs a fresh run. | Review the final code identity and any findings. |
 
 No substantive human rejection/edit, external review or finding disposition is invented. Record such actions below when they actually occur. All future permission, capacity-allocation, atomic-operation and cutoff-action controls remain required by the accepted design.
 

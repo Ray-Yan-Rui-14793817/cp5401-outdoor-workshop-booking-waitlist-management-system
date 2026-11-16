@@ -57,7 +57,7 @@ class Workshop:
             raise ValueError("capacity must be an integer from 1 to 30.")
         _require_aware(self.starts_at, "starts_at")
         _require_aware(self.ends_at, "ends_at")
-        if self.ends_at <= self.starts_at:
+        if self.ends_at.astimezone(UTC) <= self.starts_at.astimezone(UTC):
             raise ValueError("ends_at must be later than starts_at.")
 
     @property
@@ -78,7 +78,7 @@ class Registration:
     def __post_init__(self) -> None:
         _require_aware(self.created_at, "created_at")
         _require_aware(self.updated_at, "updated_at")
-        if self.updated_at < self.created_at:
+        if self.updated_at.astimezone(UTC) < self.created_at.astimezone(UTC):
             raise ValueError("updated_at must not precede created_at.")
 
 

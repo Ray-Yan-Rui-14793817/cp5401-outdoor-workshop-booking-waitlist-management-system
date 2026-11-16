@@ -46,7 +46,7 @@ The pinned v1.0 contains no waitlist. Implement CR-01 only after this project's 
 |---|---|---|
 | app.py main | Adapted the Demo's Streamlit/separate-booking-module/initialise-once session pattern. Added a preview navigation shell and session counts. No free-name booking input, source cards or source booking actions are adopted yet. | FND-07 AppTest smoke, rerun and isolation checks. |
 | booking.py models/create_demo_state | Adapted frozen dataclasses and list-based memory to Workshop, Registration, DemoUser and independent DemoState collections. Added aware instants, structural validation and the derived C value. Source add/cancel/overlap algorithms are not adopted in L1. | FND-01-FND-06. |
-| test_booking.py | Used the three-file pytest approach. Foundation cases were written for this design; the Demo's five tests were not represented as this project's executed tests. | 36 collected local foundation cases; see the L1 record. |
+| test_booking.py | Used the three-file pytest approach. Foundation cases were written for this design; the Demo's five tests were not represented as this project's executed tests. | 40 collected local foundation cases, including four timestamp-order regression cases; see the L1 record. |
 | quality-checks.yml | Adapted checkout/setup/install/pytest structure. Added SHA pins, hash installation, static/security/dependency checks, reports and the aggregate gate. | Local tool results and actual hosted runs are distinguished in the L1 record. |
 
 AI drafted and verified this adaptation under the author's L1 task. Human L1 review remains pending. The [L1 record](reviews/L1-human-review.md) identifies actual evidence and code identity; source provenance remains pinned to the commit above.
