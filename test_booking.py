@@ -111,10 +111,31 @@ def test_workshop_rejects_non_positive_duration(workshop: Workshop, offset: time
         replace(workshop, ends_at=workshop.starts_at + offset)
 
 
-def test_cutoff_is_twenty_four_elapsed_hours_before_start(workshop: Workshop) -> None:
-    assert workshop.registration_cutoff == datetime(2026, 12, 9, 9, tzinfo=WORKSHOP_TIMEZONE)
-    assert workshop.registration_cutoff.tzinfo == WORKSHOP_TIMEZONE
-    assert workshop.starts_at.astimezone(UTC) - workshop.registration_cutoff.astimezone(UTC) == (
+@pytest.mark.parametrize(
+    ("starts_at", "expected_cutoff"),
+    [
+        (
+            datetime(2026, 12, 10, 9, tzinfo=WORKSHOP_TIMEZONE),
+            datetime(2026, 12, 9, 9, tzinfo=WORKSHOP_TIMEZONE),
+        ),
+        (
+            datetime(2026, 11, 1, 9, tzinfo=ZoneInfo("America/New_York")),
+            datetime(2026, 10, 31, 22, tzinfo=WORKSHOP_TIMEZONE),
+        ),
+        (
+            datetime(2026, 3, 8, 9, tzinfo=ZoneInfo("America/New_York")),
+            datetime(2026, 3, 7, 21, tzinfo=WORKSHOP_TIMEZONE),
+        ),
+    ],
+    ids=["singapore", "fall-back", "spring-forward"],
+)
+def test_cutoff_is_twenty_four_elapsed_hours_before_start(
+    workshop: Workshop, starts_at: datetime, expected_cutoff: datetime
+) -> None:
+    subject = replace(workshop, starts_at=starts_at, ends_at=starts_at + timedelta(hours=3))
+    assert subject.registration_cutoff == expected_cutoff
+    assert subject.registration_cutoff.tzinfo == WORKSHOP_TIMEZONE
+    assert subject.starts_at.astimezone(UTC) - subject.registration_cutoff.astimezone(UTC) == (
         timedelta(hours=24)
     )
 

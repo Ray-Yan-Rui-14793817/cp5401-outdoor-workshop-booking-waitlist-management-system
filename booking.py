@@ -25,7 +25,7 @@ class RegistrationStatus(StrEnum):
     CANCELLED = "CANCELLED"
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class DemoUser:
     user_id: str
     display_name: str
@@ -37,7 +37,7 @@ def _require_aware(value: datetime, field_name: str) -> None:
         raise ValueError(f"{field_name} must be a timezone-aware datetime.")
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Workshop:
     workshop_id: str
     owner_id: str
@@ -66,7 +66,7 @@ class Workshop:
         return (self.starts_at.astimezone(UTC) - REGISTRATION_LEAD).astimezone(WORKSHOP_TIMEZONE)
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Registration:
     registration_id: str
     workshop_id: str
@@ -82,7 +82,7 @@ class Registration:
             raise ValueError("updated_at must not precede created_at.")
 
 
-@dataclass(slots=True)
+@dataclass
 class DemoState:
     users: list[DemoUser] = field(default_factory=list)
     workshops: list[Workshop] = field(default_factory=list)

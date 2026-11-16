@@ -1,228 +1,127 @@
-# L1 Foundation Work and Human Review
+# L1 Work and Human Review
 
-**Loop: L1. Implementation and local verification complete. Human decision: PENDING. L2: NOT_STARTED.**
+**L1 simplified edition, deep review. Human decision: PENDING. L2: NOT_STARTED.**
 
-Date: 16 November 2026. Design: accepted L0 revision 3. AI executor: Codex assistant. Human reviewer: project author, review not yet recorded. The author's earlier ACCEPT_LOOP applies to L0 only.
+## Review intake and scope
 
-## Intake and bounded task
+Author task: review the simplified L1 against accepted L0 revision 3, Assessment 3/HD criteria, supplied lecture transcripts and slides; check architecture, simplification, tests, Actions, workflow and AI records; fix findings and wait at L1. Executor/review tool: Codex. This record is AI-assisted technical analysis, not the author's personal acceptance.
 
-Repository: [Outdoor Workshop project](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system).
-
-Accepted parent: [822710b238bb14b8eba17cf2ab9a76ab2753bdb2](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/822710b238bb14b8eba17cf2ab9a76ab2753bdb2). This contains the author's completed seven-item L0 checklist and written rationale, preserved unchanged. The L0 record's NOT_STARTED status is historical to that decision.
-
-The author requested a runnable three-file foundation, meaningful tests, GitHub Actions, English deliverables, AI disclosure and a personal acceptance gate. Preserve all accepted FR/BR/QR policies and the single-session/non-authenticated scope. Bilingual explanation belongs in chat.
-
-Included: preview navigation, once-per-session state, fictional identity data, data models, structural validation, derived cutoff, foundation tests, dependency locks and CI. Excluded from this loop: actor selection/permissions, workshop creation, booking/cancellation, history operations, live deployment and all waitlist behaviour. These follow the existing L2-L9 plan.
-
-### Risk triage and reviewer routing
-
-These are AI recommendations for the author's review, not recorded human risk acceptance.
-
-| Scope | Proposed classification and rationale | Routing / decision status |
-|---|---|---|
-| Entire L1 foundation | HIGH review sensitivity: introduces third-party dependencies and input/time validation, matching the sensitive areas in Module 6's risk-triage guidance. Operational exposure is bounded by fictional, local, non-authenticated preview data; no booking allocation or durable storage exists yet. | Project author owns scope, code understanding and the individual-assessment self-review decision. Human confirmation PENDING. Seek suitable advice if the author cannot resolve a material dependency/validation question. |
-| This L1 deep-review correction | MEDIUM: changes test oracles and CI failure/runtime checks, which affect confidence in the gate. app.py, booking.py, dependency versions and business policies remain unchanged. | Author reviews the focused diff and challenge evidence before ACCEPT_LOOP or a PR. Human confirmation PENDING. |
-
-Relevant risks are R-04 state loss, R-05 time assumptions, R-06 unreviewed AI output and R-07 weak checks/regression. R-08 remains pending actual user validation. There is no risk waiver, specialist approval or human verification inferred from AI execution. The assessment permits the author's documented decision unless teaching staff require an external reviewer; reviewer competence and unresolved policy questions still determine escalation.
-
-## Deliverables and implementation choices
-
-| Deliverable | Actual content |
+| Boundary | Treatment |
 |---|---|
-| app.py | English Streamlit preview, three views, Refresh view and session counts; factory called only when demo_state is absent. No global mutable business state. |
-| booking.py | Frozen DemoUser/Workshop/Registration rows, independent mutable DemoState collections/counters, fixed fictional identities, structural field checks and an aware elapsed-24h cutoff. No Streamlit dependency. |
-| test_booking.py | 40 collected foundation cases; actual domain objects and Streamlit AppTest, including four added timestamp regressions. |
-| requirements.in / requirements.txt | Intentional runtime inputs and 34 resolved version/hash pins. |
-| requirements-dev.in / requirements-dev.txt | Development inputs constrained by the runtime lock and 71 resolved version/hash pins, including packages with extras. |
-| pyproject.toml | Python 3.12 Ruff configuration, pytest discovery and diagnostic booking-module branch coverage. |
-| .github/workflows/quality-checks.yml | Four jobs, Python 3.12.14, read-only token, SHA-pinned Actions, hash installation and retained failure evidence. |
-| Existing documents and this record | Current status, partial foundation mappings, actual reuse/AI contributions and pending human checklist. No auxiliary L0 document-checking tool reintroduced. |
+| Preserved | Accepted FR-01-FR-11, BR-01-BR-16, QR-01-QR-04 and R-01-R-08; all original 40 test cases; app.py/booking.py; four dependency files; original working copy and L0_develop. |
+| Current changes | Add two cutoff-boundary parameters in test_booking.py; clarify loop-level partial coverage in README; update this review, AI-use and the test count in Demo reuse. Five existing files change; the package still has 18 files/seven Markdown documents. |
+| Earlier simplification | 23 to 18 files, 12 to seven Markdown documents and four CI jobs to one. Rules/risks moved to requirements.md, mappings to test-plan.md, workflow to README and references to demo-reuse.md. Only four optional slots=True settings were removed from the model. |
+| Deferred work | Actor operations, creation, booking/cancellation, waitlisting, deployed releases, real-user validation and the assessed CR-01 remain later work. No PR, merge, release or L2 acceptance is recorded. |
 
-Workshop construction validates structural data, not authority or current-time creation eligibility. Historical rows must remain representable. The L3 creation operation must separately enforce owner/role, fresh trusted time and S-t>24h. No UI exposes direct row construction in L1.
+## Assumptions and risk triage
 
-The factory starts with four fictional identities and no workshops/registrations. It creates a new set of mutable collections each time. No seed dates are regenerated on rerun; relatively dated workshop seeding remains L3 work. Fixed December examples here are frozen test fixtures.
+| Assumption / ownership | Assessment |
+|---|---|
+| User-selected session architecture | One browser session, serial state and fictional identities remain the accepted scope. No database, service framework, secure login or shared-concurrency claim is added. |
+| Already-declared aware-instant contract | The model accepts aware instants and derives 24 elapsed hours. New York dates challenge that existing contract; they do not add a timezone-selection feature. Display remains Asia/Singapore. |
+| Unchanged policy | Creation needs more than 24h; at C close Book/confirmed cancellation/Join/promotion; permit owned waiting withdrawal until S. New tests calculate C only; enforcement remains later work. |
+| Reviewer routing | The author owns the current self-review and must explain the code/oracles before a PR. Do not imply independent approval. Escalate unresolved policy or material security/competence questions as appropriate. |
+
+AI proposes MEDIUM review depth: generated test oracles and CI organisation can create false confidence. Validators, actor boundaries and dependency versions are unchanged in this review; authentication/storage/dependency changes would require fresh risk triage. The author must record the actual risk judgement and decision below. R-08 remains VALIDATION_PENDING.
+
+## Findings and dispositions
+
+| ID / significance | Affected work and assessment | Evidence and disposition |
+|---|---|---|
+| SR-01 / Medium | test_booking.py: Singapore-only cutoff assertions could miss subtraction in local wall time across DST. Existing coverage did not expose this oracle gap. | CORRECTED: preserve the original case and add fall-back/spring-forward cases with fixed expected instants. A private faulty copy passed the old cutoff test but failed both new cases; the real unchanged booking.py passes all 42. This is a test weakness, not a newly discovered production defect. |
+| SR-02 / Medium | quality-checks.yml and prior review: the consolidated job had only local syntax/control checks; historical four-job success was insufficient evidence for the new configuration. | HOSTED_PENDING: run the actual single-job workflow on codex/l1-simplified-review and inspect its steps/logs/artifacts before closing this finding. No CI code change is justified by inspection alone. |
+| SR-03 / Low | README L2 exit referenced B10/B12/B13 although actual read/create/cancel operations arrive in L3-L5. This could encourage overstating permission-helper coverage. | CORRECTED: L2 exits on actor resolution and permission-foundation tests. Full B10/B12/B13 remain required through real operations before V1.0. No scenario definition, release target or L0 file changes. |
+| SR-04 / Low | Current evidence needed an explicit course comparison and separation of AI technical verification from the author's review. | CORRECTED IN DOCUMENTATION: this record links scope, assumptions, oracles, findings and course expectations. Actual human observations/decision remain PENDING, so governance is not claimed complete. |
+
+Earlier corrected L1 findings remain safeguards: UTC instant ordering, complete lock-audit reconciliation, explicit Bash/pipefail and full-state/mixed-status assertions. Historical detail: [prior L1 review](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/8ab483885f92a4861042486e40d152b63f4fa115/docs/reviews/L1-human-review.md). Earlier four-job runs do not identify this reviewed export.
+
+## Independent test review
+
+| Input / independent oracle | What the test establishes and its limit |
+|---|---|
+| Capacity 1/30 accepted; 0/-1/31/fraction/bool/string/None rejected | Structural model constraints from BR-02; not last-seat booking correctness. |
+| S = 10 Dec 2026 09:00 Singapore | C = 9 Dec 09:00 Singapore. The original case remains. |
+| S = 1 Nov 2026 09:00 New York = 14:00 UTC | C = 31 Oct 14:00 UTC = 22:00 Singapore. A local-calendar subtraction gives 25 elapsed hours and must fail. |
+| S = 8 Mar 2026 09:00 New York = 13:00 UTC | C = 7 Mar 13:00 UTC = 21:00 Singapore. A local-calendar subtraction gives 23 elapsed hours and must fail. |
+| Repeated local clock values | UTC instants determine valid workshop/update order. These existing regressions retain the earlier actual correction. |
+| One CONFIRMED and one CANCELLED row plus non-default counters | Refresh/navigation preserve the complete state; confirmed count is one. AppTest does not establish secure ownership, business actions, a real browser lifecycle or intended-user suitability. |
+
+The DST oracle was derived from fixed UTC offsets on the stated dates, before evaluating the implementation. Its private challenge changes only a copied booking.py: subtract in local time instead of UTC. Original cutoff subset: 1 passed. Strengthened subset on the same fault: 2 failed, 1 passed. Faulty copies and helper scripts are outside the delivery package; the application was not replaced by a fault.
 
 ## Foundation test mapping
 
-FND IDs identify this loop's test groups, not replacements for the accepted B/W/I plan. Parameter cases are counted separately from functions.
-
-| Group | Functions in test_booking.py | Cases | Supporting contract and scope |
-|---|---|---|---|
-| FND-01 | test_state_factories_do_not_share_lists_or_counters; test_fictional_identity_data_uses_unique_stable_ids_and_both_roles | 2 | QR-04/I09 factory foundation; identity data only, not FR-01 selection or permission enforcement. |
-| FND-02 | test_workshop_represents_valid_capacity_boundaries; test_workshop_rejects_invalid_capacity | 10 | BR-02 structural capacity boundaries 1/30 and invalid types/ranges. B03/B04 operation/counter checks remain later. |
-| FND-03 | test_workshop_rejects_missing_required_text | 8 | Structural required IDs/title/location; partial B05 support. |
-| FND-04 | test_workshop_rejects_naive_or_missing_instants; test_workshop_rejects_non_positive_duration; test_data_model_can_represent_historical_workshops; test_workshop_orders_repeated_clock_times_by_instant | 9 | BR-03 aware instants, duration, historical representation and UTC-order regression. No fresh-time creation/cutoff enforcement claimed. |
-| FND-05 | test_cutoff_is_twenty_four_elapsed_hours_before_start | 1 | Known independent S/C example and 24 elapsed hours; partial BR-03 support, not B15/I10 action enforcement. |
-| FND-06 | test_registration_rejects_naive_timestamps; test_registration_rejects_update_before_creation; test_registration_orders_repeated_clock_times_by_instant | 5 | Structural timestamp chronology including repeated-clock UTC-order regression; not booking/cancellation behaviour. |
-| FND-07 | test_app_views_start_without_exception; test_app_refresh_and_navigation_preserve_session_state; test_independent_app_sessions_do_not_share_state | 5 | Actual AppTest execution, mixed CONFIRMED/CANCELLED count and complete state/counter preservation; supports BR-04 and automated parts of I06/I08/I09. Manual lifecycle, role wiring and user validation remain pending. |
-
-**Final local total: 40 cases; no failures or skips.** Test fixtures isolate one rejection cause. Expected capacity limits and the dated S/C example come from the accepted specification. The strengthened session test uses a workshop, one confirmed and one cancelled record, both counters and a complete state snapshot. It expects two retained records but only one confirmed count; refresh/navigation must preserve the entire snapshot. Empty screens alone would not establish those properties.
-
-The initial 36 cases passed, including full current booking-module line/branch coverage. Further review reproduced a missed input category: 01:30 in the first occurrence followed by 01:15 in the second occurrence of a repeated local hour. The UTC instants are 45 minutes apart in chronological order. The old constructors rejected that valid order and accepted the reverse. Four new workshop/registration regression cases failed before correction. Comparing UTC instants fixed both errors; the full 40-case suite then passed. This is a real observed data-model defect, not an invented booking failure. Test input representation uses a repeated-hour zone; the application still displays Asia/Singapore and gains no new time-zone UI.
-
-## Actual local verification
-
-Executor: AI using the project virtual environment, Windows, Python 3.12.14. These are tool executions, not personal checks by the author.
-
-| Check | Actual observed result | Evidence/scope |
+| Group | Cases | Supporting property |
 |---|---|---|
-| Hash-locked install | Completed | Runtime/development locks; local environment is excluded from Git. |
-| pytest | Final run: 40 collected, 40 passed, 0 failed, 0 skipped | reports/junit.xml; includes five AppTest and four new timestamp regression cases. |
-| booking.py branch coverage | 66/66 statements and 12/12 branch destinations covered, 100% | reports/coverage.xml; foundation module only. No full-requirement or production-quality claim. |
-| Ruff lint and format | Passed | Three Python files; initial formatting was corrected before the clean check. |
-| pip check | No broken requirements | Installed dependency consistency. |
-| Bandit | Passed, zero findings | app.py and booking.py only; reports/bandit.json. |
-| pip-audit runtime | All 34 pinned packages audited; zero known vulnerabilities and zero skips | Strict/hash mode with --disable-pip; reports/pip-audit-runtime.json; names/versions reconciled with the lock. |
-| pip-audit development | All 71 pinned packages audited; zero known vulnerabilities and zero skips | Strict/hash mode with --disable-pip; reports/pip-audit-development.json; names/versions reconciled with the lock. |
-| Workflow YAML | Parsed; expected four jobs/events/read-only permission verified | Syntax/configuration check, not a hosted run. |
-| Local preview startup | Streamlit started on loopback port 8507 | Startup/health check only; no deployment or personal browser acceptance claimed. |
-| Isolated runtime installation | Fresh environment installed requirements.txt with hashes; pip check and app/booking/Streamlit imports passed; pytest absent | Windows local check without the development environment. CI now repeats the runtime import check in a fresh Linux virtual environment. |
-| Test-oracle fault challenges | Three copied faulty apps passed the old selected test and failed the strengthened test | Independently challenged registration-list loss, registration-counter reset and counting cancelled records. Faults existed only in private analysis copies, never in the real app or GitHub branch. |
-| CI failure-path checks | Failed left-hand pipeline command now returns nonzero; successful gate control passed and nine failure/skipped/cancelled predecessor cases were rejected | Local Bash checks of workflow semantics. They are diagnostics, not additional pytest cases or deliberately failed hosted runs. |
+| FND-01 | 2 | Independent collections/counters and stable fictional IDs/roles; QR-04/I09 foundation. |
+| FND-02 | 10 | Structural capacity; partial BR-02/B04 support. |
+| FND-03 | 8 | Required structural text; partial B05 support. |
+| FND-04 | 9 | Aware dates, positive duration, history and UTC instant ordering; partial BR-03 support. |
+| FND-05 | 3 | 24-elapsed-hour cutoff including both DST directions; not action-time enforcement. |
+| FND-06 | 5 | Registration timestamp structure and UTC ordering. |
+| FND-07 | 5 | AppTest views, state/counter preservation, confirmed counts and separate sessions; partial I06/I08/I09 and BR-04 support. |
 
-Local reports are generated under ignored reports/; they are not helper tools or fabricated GitHub results. Hosted artifacts retain code identity, installed versions and selected reports. Advisory results are time-limited observations, not proof of absent vulnerabilities.
+Total: 42 parameter cases in the same 16 test functions. Full B/W/I scenarios and VAL-01/02/03 remain planned in the [test plan](../test-plan.md). No baseline booking, role enforcement, real user validation or R-08 closure is claimed by these counts.
 
-Initial hosted evidence: [run 43867810566](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43867810566) passed all four jobs on commit 30918d42acd7ead5d75e9577fe7b0d878f54ae92 with the initial 36 cases. It predates the timestamp correction and does not verify that later change.
+## Course and HD alignment
 
-### Verified hosted evidence after correction
+References S01-S17 are retained in [Demo reuse](../demo-reuse.md#references). The original PDFs and Week1-9 archive were re-read; cached extracts match the supplied originals. The 09:40 and 10:45 transcripts are duplicate accounts, not independent corroboration. No original audio file was supplied; automatic transcript wording remains transcription evidence.
 
-| Field | Actual evidence |
+| Assessment / classroom expectation | Current L1 position and remaining evidence |
 |---|---|
-| Branch | [codex/l1-foundation](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/tree/codex/l1-foundation) |
-| Tested implementation commit | [aaf324cccd995b831a7f09347cc329a71b41bcd6](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/aaf324cccd995b831a7f09347cc329a71b41bcd6) |
-| Completed run | [43868519549](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43868519549), push event, conclusion SUCCESS |
-| Environment | GitHub-hosted ubuntu-24.04, Python 3.12.14; committed hash locks installed successfully |
-| Jobs | static-quality SUCCESS; security-review SUCCESS; tests SUCCESS; quality-gate SUCCESS |
-| Test log inspected | 40 collected, 40 passed; 66/66 statements and 12/12 branch destinations covered in booking.py |
-| Security log inspected | Both audits report no known vulnerabilities; reconciliation confirms all 34 runtime and 71 development pins without omissions |
-| Artifacts confirmed | static-quality-43868519549-1; security-review-43868519549-1; tests-43868519549-1 |
-| Artifact retention | These three artifacts expire 30 November 2026; this committed record retains the selected findings/counts/code identity. Preserve further material reports before expiry if needed for submission. |
-| Assessed by | AI executor inspecting actual GitHub logs/metadata; author review remains PENDING |
-| Main and PR state | Main remains 822710b238bb14b8eba17cf2ab9a76ab2753bdb2. No PR opened, merge, deployment or release. |
+| Requirements/quality planning, 15%; S01 pp.3/10 | Accepted testable FR/BR/QR, risks and complete mappings remain intact. Simplification changes their locations, not their meaning. |
+| Functioning application/deployment, 15%; S01 pp.3/10 | L1 supplies an honest preview and foundation. The required working features, two meaningful operational roles and deployed application remain L2-L6 work. L1 is not V1.0. |
+| V&V/testing, 20%; S01 pp.3/10-11; S13/S14/S06 | This document/code review and 42 automated cases are verification. Strengthened oracles detect a concrete fault. User validation, core-business failure cases and selected security boundaries remain later activities. |
+| Controlled change/releases, 20%; S01 pp.4/12 | Retain working V1.0 before CR-01, impact analysis, changed tests plus regression, PR/findings/human merge decision and V1.1 deployment. This L1 review is not the assessed change. |
+| GitHub/CI evidence, 15%; S01 pp.5/12; S07 | One job is sufficient when it actually runs the relevant checks and retains evidence. The hosted commit/run below is required to close SR-02. Preserve progressive history and selected evidence before 14-day artifact expiry. |
+| Defence/judgement, 15%; S01 pp.6-8/13; S05/S08 | AI-use records significant tasks and substantial generated work. Author understanding, personal observations, risk judgement and acceptance are still required; green CI or AI review cannot supply them. |
+| Lecture use of Demo; S02 p.2; S03 pp.6-7 | Keep app.py -> booking.py with dataclasses/lists and test_booking.py. The extra files are dependency/configuration or primary task/evidence documents. Three core files are a permitted simple pattern, not a ban on required evidence files. |
+| Human oversight; S02 pp.8-10; S03 pp.2-4; S05/S08 | Human ownership starts before the PR. Each loop keeps intent, preserved behaviour, assumptions, evidence, findings and the author's reasoned decision. Review routing depends on actual risk; no external approval is invented. |
 
-Any later evidence-only documentation commit must have its own current branch checks inspected. The implementation run above verifies the exact code commit, not future edits. A human decision must identify the branch/PR head actually reviewed. No PR is opened before the author's personal pre-PR review; push-triggered CI verifies the bounded branch first.
+This supports alignment at the L1 stage. It does not certify a final HD mark or completion of the six assessment criteria.
 
-## GitHub Actions and review boundary
+## Verification results
 
-| Job | Actual configuration |
+Executor: AI using local Python 3.12.14 on Windows; recorded 2026-11-16T23:01:24+08:00. The original parent snapshot is 8ab483885f92a4861042486e40d152b63f4fa115, not the identity of the modified files. Hosted identity is recorded separately once executed.
+
+| Check | Observed result |
 |---|---|
-| static-quality | Ruff lint JSON, format check and pip check. |
-| security-review | Bandit on application code, strict pre-resolved/hash-required audits of both locks, and a required name/version reconciliation step. Artifact hashes are verified during installation. |
-| tests | Fresh runtime-only installation/import check before development dependencies, then pytest, JUnit and booking.py branch coverage; AppTest requires no browser/server. |
-| quality-gate | Runs even when predecessors fail/skip; succeeds only when all three succeed. |
+| Local tests | 42/42 passed; booking.py 66/66 statements and 12/12 branches covered. Coverage describes the model foundation only. |
+| Static/security/dependencies | Ruff zero findings; all three files formatted; pip check clean; Bandit zero findings/errors. Hash locks unchanged; hosted audit results pending. |
+| Preservation | app.py/booking.py and all four dependency files unchanged from the simplified input. Original 40 scenarios retained with two added parameters. L0, original working copy, accepted rule/risk/scenario bodies and file inventory are checked separately before delivery. |
+| Single-job execution | HOSTED_PENDING on codex/l1-simplified-review. Local configuration, explicit Bash/pipefail and continued evidence collection after check failures are retained. |
 
-Events: main/codex branch pushes, PRs to main, and workflow_dispatch when available on the default branch. The workflow does not deploy or merge. The quality-gate job is suitable as a required check, but enforcement through repository rules must be confirmed separately before merging; a YAML job alone does not configure branch protection.
+Local executable identity (SHA-256):
 
-Actions are pinned to the inspected official release commits: checkout v7.0.1, setup-python v7.1.0 and upload-artifact v7.0.2. Hosted jobs install the committed locks with --require-hashes. Audit/network failures are failures; there is no continue-on-error bypass. Reports upload with always() and 14-day retention; retain material evidence for submission before expiry.
-
-Run steps explicitly select Bash, enabling pipefail as well as fail-fast behaviour. This matters for pip-check/report pipelines: a successful tee must not hide the failing check. The isolated runtime reports record dependency consistency, imports and installed versions. These checks support a runnable foundation, not a deployed or functionally complete V1.0.
-
-## L1 deep technical review
-
-Review checkpoint: 3e3b98a37425f62c3f4c736f3452c5699008e301. Requested focus: accepted L0, Assessment 3/HD rubric, lecture requirements, Demo comparison, architecture, test quality, CI and honest AI/human records. Reviewer/executor: Codex AI assistant, also the implementation assistant; this is not an independent human review. The author requested corrections but has not supplied L1 ACCEPT_LOOP.
-
-The review re-read assessment pages 3-5 and 8-13; the 16 November 09:40 transcript pages 1-2 and 8-10; the 10:46 transcript pages 1-7; and relevant original Week 3-9 supplementary slides. The supplied 09:40 and 10:45 transcript PDFs contain identical extracted text and are one account, not independent corroboration. These are automatic transcripts, not independently verified original audio. No source.md was created and the existing sources.md was left unchanged.
-
-### Findings, assessment and disposition
-
-| ID / priority | Affected location | Finding, evidence and correction | Owner / disposition |
-|---|---|---|---|
-| L1-RV01 / P2 | .github/workflows/quality-checks.yml: defaults.run.shell and pip-check pipelines | Unspecified Linux shell uses Bash without pipefail. A failed left-hand command piped to tee returned 0 in the control probe. Explicit shell: bash now makes the same probe return 1. This closes a latent false-green CI path; no actual broken installed dependency is claimed. | AI correction and local verification complete; author assessment PENDING. |
-| L1-RV02 / P2 | test_booking.py: test_app_refresh_and_navigation_preserve_session_state | The old fixture seeded only a workshop, leaving registration state and the confirmed metric unchallenged. Three private app variants individually cleared registrations, reset the registration counter or counted cancelled records. The old selected test passed each; the strengthened snapshot/mixed-state test rejects each. The real 40-case suite passes. | AI test correction verified; author assesses the oracle and scope. |
-| L1-RV03 / P2 | .github/workflows/quality-checks.yml: tests job | Installing only the development lock did not establish runtime-lock independence. Added a fresh runtime-only virtual environment, hashed install, pip check and app/domain/Streamlit imports before development installation. A fresh local environment passes without pytest installed; hosted run 43874953912 also passes the isolated check. This was an evidence gap, not an observed runtime import failure. | AI CI correction verified locally and on GitHub; author assessment PENDING. |
-| L1-RV04 / P2 | This record's intake and AI-use record | Existing intake lacked a named, justified loop risk classification and reviewer route. Added separate foundation/correction risk recommendations, rationale, ownership and escalation conditions. No personal check or acceptance is invented. | Recording gap corrected; human risk judgement and ACCEPT_LOOP remain PENDING. |
-
-Verification after these corrections is separate from the earlier hosted runs above. Updated CI, including runtime isolation, passed on the corrected commit identified below. app.py, booking.py, the accepted rules/risks, dependency locks and the author's L0 record are unchanged by this correction. No new dependency or application feature was introduced.
-
-### Hosted revalidation of deep-review corrections
-
-| Field | Verified evidence |
+| File | SHA-256 |
 |---|---|
-| Corrected implementation/check commit | [b97d8683b4ea6ca9152c4d2455e009c7324afc67](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/b97d8683b4ea6ca9152c4d2455e009c7324afc67) |
-| Hosted run | [43874953912](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43874953912), push event, SUCCESS |
-| Four jobs | static-quality, security-review, tests and quality-gate all SUCCESS |
-| Runtime environment | Fresh runtime-only environment installed successfully; pip check and app/booking/Streamlit imports passed before development dependencies |
-| Test log | 40 collected, 40 passed; strengthened state/count oracle and prior timestamp regressions retained |
-| Shell and audits | Logs confirm bash --noprofile --norc -e -o pipefail; all 34 runtime/71 development pins audited with no known vulnerabilities or omissions |
-| Artifacts | static-quality-43874953912-1, security-review-43874953912-1 and tests-43874953912-1; expire 30 November 2026 |
-| Verification actor | AI assistant inspected actual hosted job logs and artifact metadata. Human observations and risk decisions remain unrecorded. |
-| Main / next loop | Main remains 822710b238bb14b8eba17cf2ab9a76ab2753bdb2; no PR, merge, release or L2 work |
+| app.py | ee2eaf5172376376d62a8eb7b55f4cf6ee5f30bab6000c165e98838fa6625abc |
+| booking.py | 54390b2354627337aea91b8e10dab5ca12a5bbf07bae60a255c98d317615555e |
+| test_booking.py | dfaa30b9c9299cd6a6cf03df43e4a762118e9502ebb2c9908b92d7f97d4d1ef8 |
+| .github/workflows/quality-checks.yml | 72513f8b1ce3ce00541f86e5ff875e9497dd55eb9fb2f328e0a86a1edd589850 |
 
-Later evidence-only documentation commits must also have their current branch checks inspected. This table identifies the exact tested correction rather than claiming to verify later edits.
+Private JUnit/coverage, static-scan reports, source checks and controlled-fault results remain outside L1_develop. No auxiliary checker, new runtime module or source.md is added to the package.
 
-The pipeline probe follows [GitHub's documented shell semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsshell). The three mutation challenges are test-strength evidence from private copies; they are not reported as defects found in the unmodified application. The existing timestamp defect/regression history remains the actual L1 data-model defect example.
 
-### Assessment and teaching alignment
+## Human acceptance checklist
 
-| Assessment criterion / weight | Current L1 evidence | Required later evidence |
-|---|---|---|
-| Requirements/quality planning, 15% | Accepted FR/BR/QR/risk plan retained; foundation mappings, explicit limits and risk triage. | Implement and verify all release requirements; retain actual author decisions. |
-| Functional app/deployment, 15% | Runnable three-file preview with independent data/state. | At least three meaningful working functions, two meaningful roles, reliable business rules and browser-accessible deployment. L1 alone does not satisfy this criterion. |
-| V&V/testing, 20% | Specification review, 40 foundation cases, timestamp regression, stronger state/count oracle and negative CI-control probes. | Full B/W/I coverage, personal browser checks and genuine VAL-01/02/03 evidence. Green CI and AppTest do not establish user suitability. |
-| Change/regression/release, 20% | Genuine focused branch/commits and preserved tests; no premature waitlist code or release claim. | Own working V1.0, then CR-01 impact analysis, branch, regression, focused review, justified PR decision, approved merge and V1.1. L1 fixes do not substitute for that assessed change. |
-| GitHub/CI evidence, 15% | Actual hosted runs/artifacts, four configured jobs, immutable Action pins, complete audit sets and failure controls. | Issues/PRs/releases and current-code decisions as the later work occurs; repository-rule enforcement before merge. |
-| Presentation/judgement, 15% | Precise reuse and AI contribution records plus actual findings to explain. | Author explains material code, independent expected cases, findings, risk and eventual merge rationale in the live defence. No grade or human understanding is certified by this review. |
+All items require actual author observations. Record whether you executed a check or assessed AI/CI evidence. Self-review is not independent external approval.
 
-This follows Module 3's proportionate planning/stage exits, Module 4's evidence-decision traceability, Module 5's requirement-driven test oracles, Module 6's intake/risk triage, Module 7's strong assertions/regression, Module 8's tool-versus-approval distinction and Module 9's pre-PR ownership. The teacher's example overlap and automatic-waitlist outcomes are not this project's requirements.
+- [ ] **H01 Setup:** Personally open the L1 preview and record the environment, three views and a refresh observation; optionally rerun pytest and record its actual result.
+- [ ] **H02 Code:** Explain the three core files, frozen rows/mutable session lists, independent factories and why model construction does not authorise workshop creation.
+- [ ] **H03 Oracles:** Predict capacity and cutoff outcomes before reading results; explain why the two new cases fail the private local-time fault and what they do not test.
+- [ ] **H04 Limits:** Check state/counter snapshots and mixed-status counting; explain fictional identity, session/reset, concurrency and pending business-operation limits.
+- [ ] **H05 CI:** Inspect the current single quality-checks run/commit, runtime-only install, audits, JUnit/coverage and failure controls. Check any old required-check context before a future merge.
+- [ ] **H06 AI and scope:** Compare changes with accepted L0 and this task; confirm retained policies/locks/original tests; record human edits, rejected suggestions and remaining findings.
+- [ ] **H07 Decision:** Record reviewer/date/code identity, risk rationale and ACCEPT_LOOP or CHANGES_REQUIRED. Treat R-08 and final assessment/release evidence separately.
 
-Technical outcome: corrections are locally and remotely verified, READY_FOR_AUTHOR_REVIEW. Human outcome: PENDING. L2: NOT_STARTED. A simple architecture is consistent with the lecture; it does not remove the final functionality, validation, controlled-change or defence requirements.
-
-PR head, base, tested GitHub SHA and actual checked-out SHA are retained in reports. Pull-request runs may test GitHub's merge commit; head/base identity remains distinct. A current-head check is needed after relevant changes.
-
-## AI task, assumptions and findings
-
-AI generated the three core files, tests, dependency inputs/locks, tool configuration, workflow and record updates. AI inspected the pinned Demo's dataclass/session approach, chose foundation examples from the accepted rules, executed local checks and corrected formatting. The author supplied the task/design constraints; no new personal L1 observations or acceptance have been supplied.
-
-| Item | Assessment / disposition | Human review needed |
-|---|---|---|
-| Initial formatting | Ruff reformatted all three generated Python files; subsequent checks pass. This was a formatting finding, not an observed business defect. | Inspect the final diff; no invented runtime defect is claimed. |
-| Timestamp ordering | Further code review reproduced incorrect ordering of repeated local times. Four added cases failed before the two comparisons were changed to UTC; all 40 now pass locally. The initial 100% line/branch figure did not detect this missing input category. | Explain the intended instant-order property and review the regression evidence; keep the Singapore display policy. |
-| Audit package coverage | The initial successful audits reported 33 runtime/67 development packages, while complete locks contain 34/71. Changed to documented --disable-pip with --require-hashes; final reports cover all 34/71 packages. Added required CI name/version reconciliation. Hash verification remains enforced during install. | Assess the complete-set evidence rather than relying on exit code alone. |
-| Empty foundation preview | Intentional L1 scope. Business controls remain in later loops; no placeholder Book button returns fake success. | Confirm the bounded increment is appropriate. |
-| Structural versus creation rules | Historical dataclasses are permitted; service-level lead/role checks remain L3 obligations. | Explain why constructing a row is not an authorised create operation. |
-| Identity/session limits | Fictional data and independently resettable sessions retained. No real login, shared concurrency or durability claim. | Confirm the stated prototype limits. |
-| AppTest versus user evidence | Test harness insertion exercises state preservation; it is not a real booking task or user validation. | Assess assertions, perform own checks and leave R-08 pending. |
-| Dependency/platform scope | Locks generated on Python 3.12.14/Windows. Both initial and corrected hosted Ubuntu runs installed them successfully; corrected run 43868519549 passed all four jobs and 40 tests. | Review the actual branch/head identity and retained artifacts. |
-
-No substantive human rejection/edit, external review or finding disposition is invented. Record such actions below when they actually occur. All future permission, capacity-allocation, atomic-operation and cutoff-action controls remain required by the accepted design.
-
-## Personal acceptance checklist
-
-All boxes remain unchecked until the author performs or reviews the stated work and records observations. Reading AI results is a review activity; running a command personally is execution. Record which occurred.
-
-- [ ] **H01 Setup and preview:** Install from the committed lock or verify the existing environment, run Streamlit, visit all three views and Refresh view, and record errors/observations. Expect a clearly limited preview with no business controls.
-- [ ] **H02 Architecture:** Explain in your own words what app.py, booking.py and test_booking.py own. Confirm no database, password login or shared mutable global business state was added.
-- [ ] **H03 Independent expectations:** Before running selected cases, predict capacity 1/30/0/31/True and the known S/C result. Run or inspect the relevant parametrised tests, explain why unrelated failures are excluded, and record actual results.
-- [ ] **H04 State evidence:** Inspect/run the complete-snapshot/mixed-status rerun and independent-session tests. Explain why the strengthened oracle rejects the three private faulty variants and what remains unproved about reload recovery, real concurrency and booking operations.
-- [ ] **H05 CI and findings:** Inspect all four hosted jobs, runtime-isolation reports, shell/pipeline failure evidence and current code identity. Assess L1-RV01-L1-RV04 and the proposed risk levels. Later PR changes require current head/base checks; confirm repository-rule enforcement separately before merge.
-- [ ] **H06 AI review and scope:** Inspect material code/assumptions, note any human edits or rejected suggestions, verify English/fictional data, and confirm actor operations and all waitlist code remain outside L1. Explain why 100% foundation coverage does not complete the B/W/I plan.
-- [ ] **H07 Decision:** Record actual observations, findings/residual limits, date/code identity and a reasoned ACCEPT_LOOP or CHANGES_REQUIRED. L2 stays stopped until your explicit decision.
-
-Useful commands from the project root on Windows:
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest test_booking.py
-.\.venv\Scripts\python.exe -m ruff check app.py booking.py test_booking.py
-.\.venv\Scripts\python.exe -m ruff format --check app.py booking.py test_booking.py
-.\.venv\Scripts\python.exe -m pip check
-.\.venv\Scripts\python.exe -m bandit app.py booking.py
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
-```
-
-Dependency audit reproduction uses `python -m pip_audit --strict --require-hashes --disable-pip -r requirements.txt` and the same command with requirements-dev.txt, through the project interpreter. These fully resolved files already contain the transitive pins; --disable-pip audits their complete package set without another resolver environment. Installation separately verifies artifact hashes. Advisory-network access is required. Do not regenerate locks merely to rerun tests; dependency changes require reviewed inputs, regenerated hashes and checks.
-
-## Human observations and decision
-
-| Field | Author to complete from actual work |
+| Human record | Actual value |
 |---|---|
-| Reviewer and date | NOT_RECORDED |
-| Reviewed branch or PR/head/base/tested SHA | NOT_RECORDED |
+| Reviewer/date and reviewed code identity | NOT_RECORDED |
 | Personally executed checks and observations | NOT_RECORDED |
 | Results reviewed rather than executed | NOT_RECORDED |
-| Code understanding / independently predicted outcomes | NOT_RECORDED |
-| Findings, human edits, rejected suggestions and reasons | NOT_RECORDED |
-| Residual limits and rationale | NOT_RECORDED |
-| Foundation/correction risk classification and reviewer competence | NOT_RECORDED; AI recommendations above require human judgement |
+| Code understanding and independent expected outcomes | NOT_RECORDED |
+| Finding dispositions, edits or rejected suggestions | NOT_RECORDED |
+| Risk judgement and residual limits | NOT_RECORDED |
 | Decision | PENDING |
 
-Exit requires relevant passing checks, assessed findings and actual human ACCEPT_LOOP. Merge/release decisions remain separate. R-08 validation remains pending. The next permitted implementation loop after acceptance is L2; no L2 work has been performed.
+Actual ACCEPT_LOOP is required before L2. READY_TO_MERGE and ACCEPT_RELEASE remain separate decisions under the [workflow](../../README.md#development-workflow).

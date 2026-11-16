@@ -1,71 +1,54 @@
-# Demo Reuse Record
+# Demo Reuse and References
 
-L0 revision 3 source and reuse decisions retained. Source inspection completed. L1 architecture/state-pattern adaptation is implemented; business-operation adoption remains PLANNED. No application code was imported during L0.
+## Reference version and scope
 
-Source: [Georgegiri/CampusConnect-Demo](https://github.com/Georgegiri/CampusConnect-Demo).
-Pinned v1.0 reference commit: 12e8ea17f068b019e33ee37ed4b82e579d1993b2.
+Teaching reference: [CampusConnect-Demo v1.0 snapshot](https://github.com/Georgegiri/CampusConnect-Demo/tree/12e8ea17f068b019e33ee37ed4b82e579d1993b2), commit 12e8ea17f068b019e33ee37ed4b82e579d1993b2. Eight files were inspected: app.py, booking.py, test_booking.py, requirements.txt, the workflow and three Markdown documents. Source test definitions were inspected, not executed as this project's tests.
 
-Eight text files were inspected at that commit: README.md, BASELINE_REQUIREMENTS.md, TEACHING_DEMO.md, app.py, booking.py, test_booking.py, requirements.txt and .github/workflows/quality-checks.yml. The record below preserves the relevant provenance without requiring a generated inventory file.
+The [later main snapshot](https://github.com/Georgegiri/CampusConnect-Demo/tree/4007b284ebf899e30eed8b5905a0115acb3173f7) was reviewed for comparison only. It contains waitlist and lecturer-slot functionality. L1 does not adopt those algorithms or source-project release history.
 
-Five source test functions were identified, not executed:
+## Adaptation decisions
 
-- test_first_booking_is_accepted
-- test_overlapping_booking_is_rejected
-- test_non_overlapping_booking_is_accepted
-- test_capacity_is_enforced
-- test_cancellation_releases_booking
+| Source pattern or behaviour | Project treatment |
+|---|---|
+| app.py UI and initialise-once session memory | Retain the three-file approach and per-session state. L1 has English preview navigation and fictional data; actor/business actions follow later loops. |
+| Session/Booking dataclasses and lists | Adapt to Workshop, Registration, DemoUser and DemoState with stable IDs, aware dates, location and states. Standard frozen rows remain; optional slots optimisation is removed. |
+| Name matching and overlap checks | Replace names as keys with fixed fictional IDs. Cross-workshop overlap rejection is excluded. Selection remains a demo mechanism, not authentication. |
+| can_book/add_booking and later request_booking | Business-operation adoption remains planned. This project's full Book request must return FULL; explicit Join is V1.1 only after this project's working V1.0. The later Demo's automatic waitlisting is not the oracle. |
+| cancel_booking/cancel_and_promote | Future project cancellation retains history, applies C/S deadlines and uses the project's active FIFO. Do not inherit record deletion or calendar-overlap skipping. |
+| Five baseline test functions | Use their basic testing idea, not their pass history or overlap/deletion expectations. The project has its own 42 foundation cases (the original 40 plus two cutoff boundaries) and later B/W/I plan. |
+| Checkout/setup/install/pytest workflow | Adapt to one job with the project checks, immutable Action pins, dependency locks and failure reports. |
 
-Historical passing tests and releases belong to the source project. These definitions are reference material, not this project's executed test evidence.
+The five source tests are test_first_booking_is_accepted, test_overlapping_booking_is_rejected, test_non_overlapping_booking_is_accepted, test_capacity_is_enforced and test_cancellation_releases_booking. They do not establish this project's working baseline.
 
-## Planned file and function reuse
+AI performed the L1 adaptation under the author's scope/policy directions; current human review remains pending. When later source functions are adopted, record the exact source/destination, modification, commit and verification. The pinned source contains no standalone LICENSE file; attribution records the supplied course-adaptation context without inventing a licence label.
 
-| Source | Treatment and rationale | Project mapping |
+## References
+
+Course originals and screenshots are not redistributed. The following reference identifiers are retained from L0. Automatic transcripts are not independently verified audio; the supplied 09:40/10:45 copies are duplicate accounts. Teaching examples explain methods, while project behaviour follows requirements.md.
+
+### Course and user references
+
+| ID | Source | Support |
 |---|---|---|
-| [app.py](https://github.com/Georgegiri/CampusConnect-Demo/blob/12e8ea17f068b019e33ee37ed4b82e579d1993b2/app.py) views | Adapt cards, Book, own records and cancellation to outdoor details, organiser views and S/C/withdrawal messages. | FR-02-FR-07/FR-11; B06-B17/W13/W14 |
-| Name input and filtering | Replace free-name identity keys with predefined fictional actors and fixed IDs/roles. Keep the demonstration limitation rather than claiming login. | FR-01/FR-05/FR-07; B01/B02/B10/B12/B13 |
-| Session state | Retain same-session memory, initialising once and sharing state across actor switches within that session. Disclose independent/resettable browsers. | QR-04; I06/I09 |
-| [booking.py Session/Booking](https://github.com/Georgegiri/CampusConnect-Demo/blob/12e8ea17f068b019e33ee37ed4b82e579d1993b2/booking.py) | Retain dataclasses/lists. Add aware dates, location, owner, registration IDs/states and cancelled history. | FR-03-FR-10; B05/B17/I07 |
-| booking_count | Count CONFIRMED records only; retained CANCELLED and WAITLISTED records do not consume places. | BR-04; B06/B11/W06-W08 |
-| can_book / add_booking | Adapt validate-then-return-new-state logic with selected actors, IDs, C, active uniqueness and unchanged input. | BR-01-BR-08/BR-13/BR-15/BR-16; B07-B09/I01/I02/I05/I10 |
-| overlaps / overlap branch | Retire cross-workshop overlap rejection. This project enforces per-workshop rules only. | Scope; B09 positive control; R-07 |
-| cancel_booking | Replace history deletion/name-session matching with registration ID, selected ownership, operation deadline, retained state and complete V1.1 promotion. | FR-04/FR-09/FR-10; B11-B17/W06-W12/I04/I05 |
-| [test_booking.py](https://github.com/Georgegiri/CampusConnect-Demo/blob/12e8ea17f068b019e33ee37ed4b82e579d1993b2/test_booking.py) | Adapt first/full/cancellation ideas to actual project entry points. Retire overlap expectations; add role, C/S, history, failures and waitlist cases. | B/W/I plan |
-| [quality-checks.yml](https://github.com/Georgegiri/CampusConnect-Demo/blob/12e8ea17f068b019e33ee37ed4b82e579d1993b2/.github/workflows/quality-checks.yml) | Retain the simple checkout/setup/install/pytest idea. Add static/security/dependency checks, reports and a human-governed quality gate in L1. | CI; R-06/R-07 |
-| [requirements.txt](https://github.com/Georgegiri/CampusConnect-Demo/blob/12e8ea17f068b019e33ee37ed4b82e579d1993b2/requirements.txt) | Keep dependencies small, but lock actual project/tool versions instead of treating source ranges as completed dependency control. | L1 |
-| README / BASELINE_REQUIREMENTS / TEACHING_DEMO | Source context, not the student's engineering history. The classroom instruction to deliberately break overlaps is not an L0 task. | S02/S09 |
+| **S01** | CP5401_Assessment3.pdf, 13 pages; scope pp.3-5, presentation pp.6-7, AI/submission p.8, rubric pp.9-13 | Minimum functionality/roles, quality/risk, V&V, baseline/change, tests, review, decisions, GitHub, deployment and defence. |
+| **S02** | Supplied lecture transcript, 16 November 2026 09:40, also supplied as 10:45; English p.2 and review discussion pp.8-10 | Permission to adapt the simple three-file Demo to a different realistic scenario, disclose AI and retain human oversight. Duplicated transcription is not independent corroboration. |
+| **S03** | Supplied lecture transcript, 16 November 2026 10:46; English pp.2-4 and 6-7 | Risk-based review/escalation, precise disclosure, change/test/decision artefacts, static/security/dependency checks and process understanding. |
+| **S04** | Week3 SQA and Project Plan supplementary deck, risk/stage-exit/small-project sections | Risk ownership and monitoring, explicit stage exits and proportionate planning. |
+| **S05** | Week6 AI Generated Code supplementary deck, slides 11, 14, 17 and 20 | Intent, preserved behaviour, assumptions, prompt-to-diff traceability, human verification and justified risk. |
+| **S06** | Week7 AI Generated Tests and Security Review supplementary deck, slides 7, 12 and 14 | Strong assertions, regression safeguards and tests that establish the intended property. |
+| **S07** | Week8 Tool Assisted Review supplementary deck, quality gates and merge sections | Automated checks, findings dispositions, evidence-based gates and no tool approval. |
+| **S08** | Week9 Team Workflow and Governance supplementary deck, author ownership, focused PRs, disclosure, audit and student-project sections | Human ownership before PR, bounded changes, escalation, auditability and professional judgement. |
+| **S09** | [Pinned CampusConnect tree](https://github.com/Georgegiri/CampusConnect-Demo/tree/12e8ea17f068b019e33ee37ed4b82e579d1993b2) and [Demo reuse record](#adaptation-decisions) | Exact eight-file source inspection, functions and five test definitions. |
+| **S10** | Latest user instructions and supplied architecture/policy screenshots, 16 November 2026 | Simple app.py/booking.py/dataclass-list architecture; creation lead and final-24h waiting-withdrawal policy. These are user choices, not rubric mandates. |
+| **S13** | Week4 Verification and Validation supplementary deck, slides 4, 18 and 22 | Lifecycle evaluation, auditable design findings and requirement-evidence-decision traceability. |
+| **S14** | Week5 Software Testing supplementary deck, slides 4, 9-10, 12-13 and 16 | Test levels, requirement-driven oracles, Arrange/Act/Assert and retained regression. |
 
-## Waitlist provenance
+### Technical references
 
-The pinned v1.0 contains no waitlist. Implement CR-01 only after this project's actual V1.0. If later Demo versions inform implementation, record exact SHAs, functions, modifications and verification. Disclose the reference rather than claiming independent authorship.
-
-## Implementation record
-
-### L1 foundation adaptation
-
-| Destination | Actual use and change | Verification |
+| ID | Source | Support |
 |---|---|---|
-| app.py main | Adapted the Demo's Streamlit/separate-booking-module/initialise-once session pattern. Added a preview navigation shell and session counts. No free-name booking input, source cards or source booking actions are adopted yet. | FND-07 AppTest smoke, rerun and isolation checks. |
-| booking.py models/create_demo_state | Adapted frozen dataclasses and list-based memory to Workshop, Registration, DemoUser and independent DemoState collections. Added aware instants, structural validation and the derived C value. Source add/cancel/overlap algorithms are not adopted in L1. | FND-01-FND-06. |
-| test_booking.py | Used the three-file pytest approach. Foundation cases were written for this design; the Demo's five tests were not represented as this project's executed tests. | 40 collected local foundation cases, including four timestamp-order regression cases; see the L1 record. |
-| quality-checks.yml | Adapted checkout/setup/install/pytest structure. Added SHA pins, hash installation, static/security/dependency checks, reports and the aggregate gate. | Local tool results and actual hosted runs are distinguished in the L1 record. |
-
-AI drafted and verified this adaptation under the author's L1 task. Human L1 review remains pending. The [L1 record](reviews/L1-human-review.md) identifies actual evidence and code identity; source provenance remains pinned to the commit above.
-
-### L1 deep-review comparison
-
-The review compared all eight files at the pinned v1.0 source and inspected the later [Demo main snapshot 4007b284ebf899e30eed8b5905a0115acb3173f7](https://github.com/Georgegiri/CampusConnect-Demo/tree/4007b284ebf899e30eed8b5905a0115acb3173f7). That later snapshot is a comparison reference, not an adopted source version for L1.
-
-| Area | Demo reference | This project's L1 and later obligation |
-|---|---|---|
-| Architecture | Streamlit UI, independent booking module, pytest file and session memory. | Retain that structure; no database, service/repository layer or standalone desktop application is added. |
-| Domain records | Baseline Session/Booking use consultation subjects, lecturer names and time-only values. | Project-specific Workshop/Registration/DemoUser/State use stable IDs, aware dates, location/notes and states. Frozen-row/list patterns are adapted; source booking algorithms are not adopted in L1. |
-| Identity | Name-string matching in baseline; selectable role views in later Demo. | Fictional ID/role data only at L1. Actual selected-role/owner checks remain L2 work; neither source nor project selector is claimed as real authentication. |
-| Booking rule | Baseline rejects cross-consultation overlap; later request_booking automatically waitlists a full request. | No cross-workshop overlap rule. Future Book must remain FULL when full; explicit Join belongs only to V1.1 after this project's working V1.0. Do not copy the later source outcome as a test oracle. |
-| Cancellation/promotion | Source cancellation removes a record; later cancel_and_promote may skip a waiter because of overlap. | Future cancellation retains history; this project's FIFO applies to active waiters without the retired overlap rule. C/S deadlines and final-24h withdrawal remain authoritative. None is implemented early by this comparison. |
-| Tests/CI | Baseline has five booking tests and a basic pytest workflow; later source adds waitlist and slot-creation tests. | L1 has its own 40 foundation cases and four quality jobs. Source test passes/releases are not this project's evidence. The deep review strengthens existing assertions without inflating the test count. |
-
-The reuse is architecture/pattern adaptation with project-specific replacement, not a claim that all teacher code was copied or that the foundation was written independently of the reference/AI. The lecture permits adaptation to a different realistic domain and requires the author to explain the changes, tests, assumptions and decisions. The author must personally review the actual diff before PR/loop acceptance; AI review does not provide that acceptance.
-
-When adoption occurs, add the destination file/function, source location, actual change, commit SHA, AI/human contribution and linked tests. PLANNED must not become ADOPTED or TESTED until those actions occur.
-
-The pinned tree has no standalone LICENSE file. Do not invent a licence label or infer broader rights beyond the recorded course-adaptation context in [Sources](sources.md).
+| **S11** | [GitHub workflow security](https://docs.github.com/en/actions/reference/security/secure-use), [PR reviews](https://docs.github.com/en/pull-requests/how-tos/review-pull-requests/reviewing-proposed-changes-in-a-pull-request), [PR event](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request) | Least privilege, pinned actions, own PRs and tested/head code identities. |
+| **S12** | [Streamlit Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state), [state concepts](https://docs.streamlit.io/develop/concepts/architecture/session-state), [deployment](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy) | Rerun state, independent/resettable sessions and branch-based deployment, not durable/shared booking storage. |
+| **S15** | [Streamlit AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest) and [pip-audit usage](https://github.com/pypa/pip-audit#usage) | L1's simulated UI/state checks and hash-locked dependency audit options; not human/browser validation. |
+| **S16** | [checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1), [setup-python v7.1.0](https://github.com/actions/setup-python/releases/tag/v7.1.0), [upload-artifact v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2) | Official Action versions inspected for L1 and resolved to immutable commit SHAs in the workflow. |
+| **S17** | [Python datetime comparisons](https://docs.python.org/3.12/library/datetime.html#datetime-objects) | Repeated local times and fold semantics; supports the L1 correction to compare validated aware instants in UTC. This does not add a time-zone selector to the application. |
