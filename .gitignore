@@ -1,0 +1,22 @@
+# Python environments and local caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Generated application reports; retain selected evidence deliberately when needed
+.coverage
+.coverage.*
+htmlcov/
+reports/
+
+# Local secrets and machine settings
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+.DS_Store
+Thumbs.db
