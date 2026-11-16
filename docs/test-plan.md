@@ -1,12 +1,12 @@
 # Test and Validation Plan
 
-L0 revision 3. All scenarios are PLANNED / NOT_EXECUTED. IDs represent scenarios and parameter groups, not passing-test counts.
+L0 revision 3 scenario definitions are unchanged. Full B/W/I and validation scenarios remain PLANNED / NOT_EXECUTED. The separate [L1 foundation record](reviews/L1-human-review.md#foundation-test-mapping) reports actual foundation checks and partial supporting coverage; it does not mark those full scenarios complete. IDs represent scenarios and parameter groups, not passing-test counts.
 
 [Rules](business-rules.md) | [Risks](risks.md) | [Traceability](traceability.md) | [Loop evidence format](development-workflow.md#record-for-each-loop)
 
 ## Test design and independent oracles
 
-pytest calls actual booking.py functions without importing Streamlit UI execution. Serially feed each successful returned state into the next action. Independent copies are not a shared-concurrency test.
+Rule tests call actual booking.py functions independently of Streamlit UI execution. Separate Streamlit AppTest smoke/state tests exercise the shell. Neither replaces later personal browser checks or user validation. Serially feed each successful returned state into the next action when operations exist. Independent copies are not a shared-concurrency test.
 
 For every negative or boundary parameter:
 

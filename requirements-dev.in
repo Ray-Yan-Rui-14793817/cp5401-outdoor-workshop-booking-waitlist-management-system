@@ -1,0 +1,9 @@
+# Keep runtime versions aligned with the independently installable application lock.
+-c requirements.txt
+-r requirements.in
+pytest
+pytest-cov
+ruff
+bandit
+pip-audit
+pip-tools

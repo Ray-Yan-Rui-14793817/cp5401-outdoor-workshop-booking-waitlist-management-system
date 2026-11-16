@@ -1,6 +1,6 @@
 # Project Requirements
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. Implementation remains NOT_STARTED. [Rules](docs/business-rules.md) | [Tests](docs/test-plan.md) | [Sources](docs/sources.md)
+L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 foundation implemented; human loop decision PENDING. Requirement acceptance targets below are unchanged and are not claimed complete by L1. [L1 review](docs/reviews/L1-human-review.md) | [Rules](docs/business-rules.md) | [Tests](docs/test-plan.md) | [Sources](docs/sources.md)
 
 ## Problem and purpose
 

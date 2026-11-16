@@ -1,6 +1,6 @@
 # Requirements and Test Traceability
 
-L0 revision 3. All execution links are PENDING. Later add test function/parameters, environment/SHA, observed result, CI or human evidence, PR decision and release.
+L0 revision 3 mappings are unchanged. Full B/W/I execution links remain PENDING. The [L1 foundation mapping](reviews/L1-human-review.md#foundation-test-mapping) records partial supporting checks separately. Later add complete scenario function/parameters, environment/SHA, observed result, CI or human evidence, PR decision and release.
 
 Definitions: [requirements](../requirements.md), [rules](business-rules.md), [risks](risks.md), [tests](test-plan.md), [workflow](development-workflow.md).
 

@@ -2,9 +2,36 @@
 
 A small, single-session prototype for one outdoor workshop provider. Participants reserve limited places and manage their own selected-demo-user records. Organisers create workshops and inspect their own rosters. Release V1.1 adds an explicit FIFO waitlist and automatic promotion before registration closes.
 
-**Design baseline: L0 revision 3. Human decision: ACCEPT_LOOP, 16 November 2026. L1: NOT_STARTED.**
+**Design baseline: L0 revision 3, accepted 16 November 2026. Current loop: L1. Human decision: PENDING. L2: NOT_STARTED.**
 
-This English-language package records the author's accepted design and the human-controlled development plan. It was reviewed against the supplied assessment, lecture transcripts and relevant teaching decks. Application tests, GitHub Actions runs, deployment, validation and releases remain planned. Packaging does not change the accepted functional design.
+This repository now contains the L1 foundation under the accepted design: a runnable Streamlit shell, independent Python models/state factory, foundation tests and GitHub Actions. Participant/organiser operations, a working V1.0, waitlist change and deployment remain later work. The accepted functional design is unchanged.
+
+## L1 delivery and review
+
+See the [L1 work and human review record](docs/reviews/L1-human-review.md) for actual results, AI contributions, test mappings and the unchecked personal acceptance checklist. L0's seven-item author review remains preserved in its historical record. L1 requires its own actual ACCEPT_LOOP before L2.
+
+| File | L1 responsibility |
+|---|---|
+| [app.py](app.py) | Preview views and once-per-session initialisation; no business-action controls yet. |
+| [booking.py](booking.py) | Dataclasses, fictional identity data, independent state factories, structural field checks and derived cutoff. No Streamlit import. |
+| [test_booking.py](test_booking.py) | Foundation checks and separate Streamlit AppTest smoke/state checks. |
+| [requirements.txt](requirements.txt) / [requirements-dev.txt](requirements-dev.txt) | Resolved runtime and development versions with hashes; inputs are the corresponding .in files. |
+| [pyproject.toml](pyproject.toml) | Pytest, Ruff and booking-module coverage configuration. |
+| [quality-checks.yml](.github/workflows/quality-checks.yml) | Static quality, security review, tests and aggregate quality gate. |
+
+### Run locally
+
+Use Python 3.12.14. For an existing project virtual environment on Windows, run the commands below from the repository root. To recreate it with an installed Python 3.12 launcher, first run `py -3.12 -m venv .venv`.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pytest test_booking.py
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
+```
+
+On Linux/macOS, create the environment with Python 3.12 and use `.venv/bin/python` in the same commands. Runtime-only installation uses `--require-hashes -r requirements.txt`. No secrets or database setup are needed.
+
+The preview intentionally starts with no workshops or registrations. Navigation and Refresh view work; actor selection, creation, booking and cancellation are not implemented in L1. This is not application V1.0.
 
 ## Design baseline documents
 
@@ -64,7 +91,7 @@ Creation requires strictly more than 24 hours of lead time. In the final 24 hour
 
 The project author recorded the L0 Revision 3 ACCEPT_LOOP decision on 16 November 2026. The [acceptance record](docs/reviews/L0-human-acceptance.md) documents seven author self-review checks and a written decision rationale. This is a design acceptance decision, not independent reviewer approval or evidence of executed application tests.
 
-The L0 design gate has been accepted by the project author. L1 remains NOT_STARTED. ACCEPT_LOOP permits progression to the next bounded development task but does not approve a merge, deployment or release. The L0 documentation baseline is not application v1.0.
+The L0 design gate has been accepted by the project author. L1 is implemented and awaiting its own human review. ACCEPT_LOOP permits progression to the next bounded development task but does not approve a merge, deployment or release. The L0 documentation baseline and L1 foundation are not application v1.0.
 
 Demo inspection and planned reuse are recorded directly in [Demo reuse](docs/demo-reuse.md). L0 findings and actual AI/human contributions are in [AI use](docs/ai-use.md). Future loops record the AI task, actual checks, human judgement and progression decision using the compact format in the [workflow](docs/development-workflow.md#record-for-each-loop).
 
@@ -72,9 +99,9 @@ R-08 user suitability remains pending the planned validation activities. Design 
 
 ## GitHub baseline history
 
-The repository was initialised before the L0 documentation was added. The documentation baseline is tracked through actual GitHub commits and SHAs. Application code, executable CI checks, test results and releases will be added only when the corresponding development work occurs.
+The repository was initialised before the L0 documentation was added. L1 starts from accepted main commit 822710b238bb14b8eba17cf2ab9a76ab2753bdb2. The separate codex/l1-foundation branch provides code and CI for personal review. Open a draft PR after the author's pre-PR review required by the workflow; do not merge or create application release tags as an automatic consequence of AI checks.
 
 Keep supplied course PDFs, recordings, ZIPs, screenshots, private chat exports, local analysis and old drafts outside the repository. Their relevant references are recorded in Sources. Add application files, executable Actions, test results and later loop records only when that work actually occurs.
 
-The next implementation step is L1, under a new bounded task from the author. No second L0 acceptance is needed. Later design changes require a recorded reason, impact assessment and human decision rather than silently changing this baseline.
+The next implementation step after L1 acceptance is L2, demo actors and ownership. L2 remains NOT_STARTED. Later design changes require a recorded reason, impact assessment and human decision rather than silently changing this baseline.
 

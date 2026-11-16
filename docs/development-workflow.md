@@ -1,8 +1,8 @@
 # Development Workflow
 
-L0 revision 3. **Current gate: ACCEPT_LOOP, recorded from the author on 16 November 2026. L1 NOT_STARTED.**
+Accepted design: L0 revision 3. **Current loop: L1 foundation. Human decision: PENDING. L2 NOT_STARTED.**
 
-The design gate is satisfied. The author currently requests the English L0 design baseline; L1 remains unstarted. See the [actual acceptance record](reviews/L0-human-acceptance.md) and [baseline document index](../README.md#design-baseline-documents).
+The L0 design gate is satisfied. The author has requested L1 implementation under the accepted plan. See the preserved [L0 acceptance](reviews/L0-human-acceptance.md), current [L1 work/review record](reviews/L1-human-review.md) and [baseline document index](../README.md#design-baseline-documents). L1 automation does not provide human acceptance.
 
 Keep the app.py / booking.py / test_booking.py structure while retaining a controlled engineering process. Use the compact record below when each development increment actually occurs. No separate L0 checking tool is part of the baseline.
 
@@ -53,7 +53,7 @@ Create a short record such as docs/reviews/L1-human-review.md during the actual 
 
 For C/S checks, use a fresh active fixture for each boundary; record no-op repeats separately. Permission checks need a valid selected actor, target and unrelated timing conditions. The author should explain why the chosen examples would detect the relevant failure.
 
-Entry to the next loop requires the current loop's scoped outputs, relevant passing checks, assessed findings and a genuine human ACCEPT_LOOP. AI must stop at the gate until that decision is supplied. Relevant changes after a decision require renewed review. L0 already has its actual ACCEPT_LOOP; this does not authorise unrequested L1 implementation.
+Entry to the next loop requires the current loop's scoped outputs, relevant passing checks, assessed findings and a genuine human ACCEPT_LOOP. AI must stop at the gate until that decision is supplied. Relevant changes after a decision require renewed review. L0 already has its actual ACCEPT_LOOP; the current request authorises L1 only.
 
 ## Loop plan
 
@@ -64,7 +64,7 @@ Entry to the next loop requires the current loop's scoped outputs, relevant pass
 - Outputs: accepted requirements, rules, risks, Demo reuse, test mappings, this workflow, AI-use/review findings, source references and the actual human acceptance record.
 - Exit: genuine ACCEPT_LOOP with no material implementation ambiguity. R-08 validation remains planned; release is not pre-approved.
 
-Current outcome: the author accepted L0 revision 3 on 16 November 2026. This closes the L0 design gate and permits the next bounded loop; it does not start L1 automatically or attest to application results.
+Historical outcome: the author accepted L0 revision 3 on 16 November 2026, later adding seven self-review confirmations and a written rationale in GitHub. The new bounded request started L1; it did not change the accepted rules.
 
 ### L1 Simple skeleton and CI
 
@@ -72,6 +72,8 @@ Current outcome: the author accepted L0 revision 3 on 16 November 2026. This clo
 - Human: reproduce setup, inspect separation/initialisation, understand a rule and its boundary tests, and check tool scope.
 - Outputs: runnable skeleton, real tests, locked dependencies and Actions.
 - Exit: functions actually built have collected passing checks, setup/CI work and the human accepts the loop.
+
+Current L1 scope is the runnable shell, immutable row models, mutable per-session state factories, structural data checks, derived cutoff, 36 foundation test cases, hash-locked dependencies and four CI jobs. It excludes actor selection/permissions, creation/booking/cancellation operations and all waitlist behaviour. The [L1 record](reviews/L1-human-review.md) provides the actual evidence and pending human checklist. Stop here until ACCEPT_LOOP; L2 has not started.
 
 ### L2 Demo actors and ownership
 
@@ -131,7 +133,7 @@ Current outcome: the author accepted L0 revision 3 on 16 November 2026. This clo
 
 Each loop ends with a real personal decision. A record for an earlier increment is not approval for later commits. Prefer small coherent PRs; split oversized work without deploying incomplete features.
 
-## CI design for L1
+## CI implemented in L1
 
 | Job | Checks and evidence |
 |---|---|
@@ -140,7 +142,7 @@ Each loop ends with a real personal decision. A record for an earlier increment 
 | tests | pytest test_booking.py; JUnit and booking.py branch coverage; applicable B/W/I scenarios, not a pretend database suite |
 | quality-gate | Required quality gate succeeds only if all required preceding jobs succeed |
 
-Target Python 3.12 and aligned deployed dependencies, locking actual runtime/tool versions and hashes. Trigger on main/working pushes, PRs to main and manually. Use pinned Action SHAs, read-only contents permission and no real credentials or external data service.
+The executable [workflow](../.github/workflows/quality-checks.yml) uses Python 3.12.14, SHA-pinned Actions, hash-locked dependencies and a read-only contents token. It runs on main/codex branch pushes, PRs to main and manual dispatch when available on the default branch. Deployment dependencies must remain aligned in later loops. The current dependency audits cover runtime and development locks and query public package advisory data; there is no application database or credential requirement.
 
 Retain available reports even on failure. Do not use blanket failure bypass; audit-network errors are not clean results. Record collected/passed/failed/skipped counts, head/base/tested SHA and run URL. Do not silently skip critical scenarios or call manual validation automated.
 

@@ -29,6 +29,8 @@ The review uses relevant supplied decks and transcripts rather than claiming ins
 |---|---|---|
 | **S11** | [GitHub workflow security](https://docs.github.com/en/actions/reference/security/secure-use), [PR reviews](https://docs.github.com/en/pull-requests/how-tos/review-pull-requests/reviewing-proposed-changes-in-a-pull-request), [PR event](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request) | Least privilege, pinned actions, own PRs and tested/head code identities. |
 | **S12** | [Streamlit Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state), [state concepts](https://docs.streamlit.io/develop/concepts/architecture/session-state), [deployment](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy) | Rerun state, independent/resettable sessions and branch-based deployment, not durable/shared booking storage. |
+| **S15** | [Streamlit AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest) and [pip-audit usage](https://github.com/pypa/pip-audit#usage) | L1's simulated UI/state checks and hash-locked dependency audit options; not human/browser validation. |
+| **S16** | [checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1), [setup-python v7.1.0](https://github.com/actions/setup-python/releases/tag/v7.1.0), [upload-artifact v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2) | Official Action versions inspected for L1 and resolved to immutable commit SHAs in the workflow. |
 
 ## Requirements versus selected design
 

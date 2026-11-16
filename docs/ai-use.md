@@ -1,6 +1,6 @@
-# AI Use and L0 Review Record
+# AI Use and Development Record
 
-L0 revision 3. Human decision: ACCEPT_LOOP, 16 November 2026. L1: NOT_STARTED.
+Accepted design: L0 revision 3. L1 foundation implemented; human decision PENDING. L2 NOT_STARTED. The L0 sections below retain their historical scope; current execution is recorded in the L1 section.
 
 ## Human direction and actual contributions
 
@@ -8,7 +8,7 @@ The project author selected Outdoor Workshop Booking and Waitlist Management, th
 
 The author requested source-based design review, English GitHub deliverables and a human acceptance gate before each implementation loop. The author explicitly accepted L0 revision 3 with ACCEPT_LOOP and then requested a lean design baseline focused on L0 and human oversight. Bilingual chat supports understanding; repository documents are English.
 
-| Contributor or activity | Actual scope |
+| Contributor or activity | Actual scope at L0 |
 |---|---|
 | Human | Topic, architecture and policy choices; review directions; explicit overall L0 ACCEPT_LOOP in chat on 16 November 2026; direction to exclude auxiliary L0 checking tools from the delivery. |
 | AI | Codex assistant drafted and refined requirements, rules, risks, reuse decisions, test scenarios, mappings, workflow, source references and review findings. AI organised this package and transcribed the human decision into English. No unverified model version is recorded. |
@@ -51,4 +51,23 @@ Use the [workflow record](development-workflow.md#record-for-each-loop) when eac
 
 The author's contribution must become visible through independently chosen expected cases, code understanding, personal checks, assessment of findings and justified decisions. AI can draft records and run checks; it cannot invent personal execution, user feedback or human approval. A human review of an AI result must be labelled as review rather than personal test execution.
 
-The [acceptance record](reviews/L0-human-acceptance.md) records the actual ACCEPT_LOOP. L0 is accepted; L1 remains unstarted. R-08 validation and all implementation, merge and release decisions require their own evidence.
+The [acceptance record](reviews/L0-human-acceptance.md) preserves the actual L0 ACCEPT_LOOP and subsequent author self-review. The author has now requested L1; its distinct work and pending human decision are recorded below. R-08 validation and later merge/release decisions require their own evidence.
+
+## L1 assistance and contribution
+
+**Author task, summarised in English:** Start L1 from the accepted L0 and GitHub repository, retain the CampusConnect-Demo three-file approach, establish app.py/booking.py/test_booking.py, foundation tests and Actions, keep deliverables English, explain work bilingually in chat, record AI assistance and provide a personal checklist. Stop at L1 for ACCEPT_LOOP before L2.
+
+| Activity | Actual AI contribution | Human responsibility/status |
+|---|---|---|
+| Baseline intake | Located the project repository and accepted main commit 822710b238bb14b8eba17cf2ab9a76ab2753bdb2; preserved the author's seven L0 checks/rationale. | L0 accepted; new L1 request supplied by the author. |
+| Scope | Kept L1 to foundations; no actor selection, restricted business operations, creation/booking/cancellation or waitlist implementation. | Confirm this bounded delivery before accepting. |
+| Code | Drafted the preview, dataclasses, independent state factory, structural checks and cutoff property. | Personally inspect separation, model/service distinction and state lifecycle. |
+| Tests | Derived boundary examples from BR-02/BR-03 and the declared state model; generated and executed 36 foundation cases, including AppTest. | Predict selected outcomes independently, assess assertions and record actual personal observations. |
+| Quality | Resolved and hash-locked dependencies; created SHA-pinned Actions and executed local checks. Detected incomplete initial audit coverage, corrected audit mode and verified all 34 runtime/71 development pins; added a CI reconciliation check. | Review the finding/correction, actual hosted CI and remaining limits. |
+| Review records | Recorded actual AI results, partial mappings, assumptions and an unchecked human checklist. | Supply the decision/rationale. No L1 approval has been supplied or inferred. |
+
+AI used Codex, local Python/tooling, GitHub tools and official technical references. No unverified model version, human test execution or external reviewer is invented. Actual results and source/code identities are in the [L1 work/review record](reviews/L1-human-review.md).
+
+Constructor validation is structural, so legitimate historical records can be represented. The future creation service must enforce role and fresh-time S-t>24h. AppTest state insertion is a test fixture, not a released booking operation. The author must assess these assumptions and any findings rather than treating passing checks as approval.
+
+Human L1 edits, personal execution, finding dispositions and ACCEPT_LOOP remain pending. L2 is NOT_STARTED. No merge, deployment, application release or R-08 validation is approved by AI checks.

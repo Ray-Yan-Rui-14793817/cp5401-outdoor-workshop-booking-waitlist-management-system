@@ -1,0 +1,3 @@
+# Intentional runtime dependencies; requirements.txt records resolved versions and hashes.
+streamlit
+tzdata
