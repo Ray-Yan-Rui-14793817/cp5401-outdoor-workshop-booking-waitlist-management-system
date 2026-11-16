@@ -19,7 +19,7 @@ The baseline consists of this README and the ten documents below. The two root G
 | [Test plan](docs/test-plan.md) | B/W/I scenarios, independent test oracles and validation |
 | [Traceability](docs/traceability.md) | Requirements, rules, risks, tests and development loops |
 | [Development workflow](docs/development-workflow.md) | AI tasks, personal checks, outputs, progression gates and CI |
-| [Human acceptance](docs/reviews/L0-human-acceptance.md) | The author's actual chat acceptance; individual checklist observations are not separately recorded |
+| [Human acceptance](docs/reviews/L0-human-acceptance.md) | Seven-item author self-review, written decision rationale and L0 acceptance record |
 | [AI use and L0 review](docs/ai-use.md) | Actual assistance, design-review findings, human direction/acceptance and evidence limits |
 | [Sources](docs/sources.md) | Assessment, lecture and technical references |
 
@@ -62,17 +62,17 @@ Creation requires strictly more than 24 hours of lead time. In the final 24 hour
 
 ## Current gate and evidence
 
-The project author explicitly accepted L0 revision 3 with ACCEPT_LOOP on 16 November 2026. The [acceptance record](docs/reviews/L0-human-acceptance.md) distinguishes that overall decision from checklist observations not individually supplied. It is a human decision separate from the AI design review.
+The project author recorded the L0 Revision 3 ACCEPT_LOOP decision on 16 November 2026. The [acceptance record](docs/reviews/L0-human-acceptance.md) documents seven author self-review checks and a written decision rationale. This is a design acceptance decision, not independent reviewer approval or evidence of executed application tests.
 
-The L0 gate is satisfied. This task prepares the GitHub design baseline; L1 has not started. ACCEPT_LOOP does not approve a merge, application deployment or release. This documentation baseline must not be tagged as application v1.0.
+The L0 design gate has been accepted by the project author. L1 remains NOT_STARTED. ACCEPT_LOOP permits progression to the next bounded development task but does not approve a merge, deployment or release. The L0 documentation baseline is not application v1.0.
 
 Demo inspection and planned reuse are recorded directly in [Demo reuse](docs/demo-reuse.md). L0 findings and actual AI/human contributions are in [AI use](docs/ai-use.md). Future loops record the AI task, actual checks, human judgement and progression decision using the compact format in the [workflow](docs/development-workflow.md#record-for-each-loop).
 
 R-08 user suitability remains pending the planned validation activities. Design acceptance is not evidence that the unimplemented controls work or that intended users accept the policy.
 
-## Initial GitHub baseline
+## GitHub baseline history
 
-Upload the existing files with their relative paths preserved. Suggested initial commit: `docs: establish accepted L0 design baseline`. Retain the resulting real repository URL and commit SHA. No remote is configured and no upload or commit is claimed by this package.
+The repository was initialised before the L0 documentation was added. The documentation baseline is tracked through actual GitHub commits and SHAs. Application code, executable CI checks, test results and releases will be added only when the corresponding development work occurs.
 
 Keep supplied course PDFs, recordings, ZIPs, screenshots, private chat exports, local analysis and old drafts outside the repository. Their relevant references are recorded in Sources. Add application files, executable Actions, test results and later loop records only when that work actually occurs.
 
