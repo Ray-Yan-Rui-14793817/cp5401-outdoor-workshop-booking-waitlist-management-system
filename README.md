@@ -10,6 +10,8 @@ This repository now contains the L1 foundation under the accepted design: a runn
 
 See the [L1 work and human review record](docs/reviews/L1-human-review.md) for actual results, AI contributions, test mappings and the unchecked personal acceptance checklist. L0's seven-item author review remains preserved in its historical record. L1 requires its own actual ACCEPT_LOOP before L2.
 
+The corrected implementation passed all 40 tests locally and in [hosted run 43868519549](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43868519549); all four quality jobs succeeded. This is evidence for the foundation, with human acceptance still pending. For later documentation/branch commits, inspect the latest branch checks as well.
+
 | File | L1 responsibility |
 |---|---|
 | [app.py](app.py) | Preview views and once-per-session initialisation; no business-action controls yet. |

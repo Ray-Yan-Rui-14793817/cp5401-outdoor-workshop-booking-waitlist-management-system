@@ -68,7 +68,25 @@ Executor: AI using the project virtual environment, Windows, Python 3.12.14. The
 
 Local reports are generated under ignored reports/; they are not helper tools or fabricated GitHub results. Hosted artifacts retain code identity, installed versions and selected reports. Advisory results are time-limited observations, not proof of absent vulnerabilities.
 
-Initial hosted evidence: [run 43867810566](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43867810566) passed static-quality, security-review, tests and quality-gate on commit 30918d42acd7ead5d75e9577fe7b0d878f54ae92 with the initial 36 cases. It predates the timestamp correction and does not verify that later change. The final correction requires its own current-head run. No PR is opened before the author's personal pre-PR review; push-triggered CI verifies the bounded branch first.
+Initial hosted evidence: [run 43867810566](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43867810566) passed all four jobs on commit 30918d42acd7ead5d75e9577fe7b0d878f54ae92 with the initial 36 cases. It predates the timestamp correction and does not verify that later change.
+
+### Verified hosted evidence after correction
+
+| Field | Actual evidence |
+|---|---|
+| Branch | [codex/l1-foundation](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/tree/codex/l1-foundation) |
+| Tested implementation commit | [aaf324cccd995b831a7f09347cc329a71b41bcd6](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/aaf324cccd995b831a7f09347cc329a71b41bcd6) |
+| Completed run | [43868519549](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43868519549), push event, conclusion SUCCESS |
+| Environment | GitHub-hosted ubuntu-24.04, Python 3.12.14; committed hash locks installed successfully |
+| Jobs | static-quality SUCCESS; security-review SUCCESS; tests SUCCESS; quality-gate SUCCESS |
+| Test log inspected | 40 collected, 40 passed; 66/66 statements and 12/12 branch destinations covered in booking.py |
+| Security log inspected | Both audits report no known vulnerabilities; reconciliation confirms all 34 runtime and 71 development pins without omissions |
+| Artifacts confirmed | static-quality-43868519549-1; security-review-43868519549-1; tests-43868519549-1 |
+| Artifact retention | These three artifacts expire 30 November 2026; this committed record retains the selected findings/counts/code identity. Preserve further material reports before expiry if needed for submission. |
+| Assessed by | AI executor inspecting actual GitHub logs/metadata; author review remains PENDING |
+| Main and PR state | Main remains 822710b238bb14b8eba17cf2ab9a76ab2753bdb2. No PR opened, merge, deployment or release. |
+
+Any later evidence-only documentation commit must have its own current branch checks inspected. The implementation run above verifies the exact code commit, not future edits. A human decision must identify the branch/PR head actually reviewed. No PR is opened before the author's personal pre-PR review; push-triggered CI verifies the bounded branch first.
 
 ## GitHub Actions and review boundary
 
@@ -98,7 +116,7 @@ AI generated the three core files, tests, dependency inputs/locks, tool configur
 | Structural versus creation rules | Historical dataclasses are permitted; service-level lead/role checks remain L3 obligations. | Explain why constructing a row is not an authorised create operation. |
 | Identity/session limits | Fictional data and independently resettable sessions retained. No real login, shared concurrency or durability claim. | Confirm the stated prototype limits. |
 | AppTest versus user evidence | Test harness insertion exercises state preservation; it is not a real booking task or user validation. | Assess assertions, perform own checks and leave R-08 pending. |
-| Dependency/platform scope | Locks generated on Python 3.12.14/Windows. The initial hosted Ubuntu run installed them and passed all four jobs; the later timestamp correction needs a fresh run. | Review the final code identity and any findings. |
+| Dependency/platform scope | Locks generated on Python 3.12.14/Windows. Both initial and corrected hosted Ubuntu runs installed them successfully; corrected run 43868519549 passed all four jobs and 40 tests. | Review the actual branch/head identity and retained artifacts. |
 
 No substantive human rejection/edit, external review or finding disposition is invented. Record such actions below when they actually occur. All future permission, capacity-allocation, atomic-operation and cutoff-action controls remain required by the accepted design.
 
