@@ -129,10 +129,26 @@ The review re-read assessment pages 3-5 and 8-13; the 16 November 09:40 transcri
 |---|---|---|---|
 | L1-RV01 / P2 | .github/workflows/quality-checks.yml: defaults.run.shell and pip-check pipelines | Unspecified Linux shell uses Bash without pipefail. A failed left-hand command piped to tee returned 0 in the control probe. Explicit shell: bash now makes the same probe return 1. This closes a latent false-green CI path; no actual broken installed dependency is claimed. | AI correction and local verification complete; author assessment PENDING. |
 | L1-RV02 / P2 | test_booking.py: test_app_refresh_and_navigation_preserve_session_state | The old fixture seeded only a workshop, leaving registration state and the confirmed metric unchallenged. Three private app variants individually cleared registrations, reset the registration counter or counted cancelled records. The old selected test passed each; the strengthened snapshot/mixed-state test rejects each. The real 40-case suite passes. | AI test correction verified; author assesses the oracle and scope. |
-| L1-RV03 / P2 | .github/workflows/quality-checks.yml: tests job | Installing only the development lock did not establish runtime-lock independence. Added a fresh runtime-only virtual environment, hashed install, pip check and app/domain/Streamlit imports before development installation. A fresh local environment passes without pytest installed. This was an evidence gap, not an observed runtime import failure. | AI CI correction locally verified; hosted revalidation required on the new commit. |
+| L1-RV03 / P2 | .github/workflows/quality-checks.yml: tests job | Installing only the development lock did not establish runtime-lock independence. Added a fresh runtime-only virtual environment, hashed install, pip check and app/domain/Streamlit imports before development installation. A fresh local environment passes without pytest installed; hosted run 43874953912 also passes the isolated check. This was an evidence gap, not an observed runtime import failure. | AI CI correction verified locally and on GitHub; author assessment PENDING. |
 | L1-RV04 / P2 | This record's intake and AI-use record | Existing intake lacked a named, justified loop risk classification and reviewer route. Added separate foundation/correction risk recommendations, rationale, ownership and escalation conditions. No personal check or acceptance is invented. | Recording gap corrected; human risk judgement and ACCEPT_LOOP remain PENDING. |
 
-Verification after these corrections is separate from the earlier hosted runs above. The current branch must pass its updated CI, including runtime isolation. app.py, booking.py, the accepted rules/risks, dependency locks and the author's L0 record are unchanged by this correction. No new dependency or application feature was introduced.
+Verification after these corrections is separate from the earlier hosted runs above. Updated CI, including runtime isolation, passed on the corrected commit identified below. app.py, booking.py, the accepted rules/risks, dependency locks and the author's L0 record are unchanged by this correction. No new dependency or application feature was introduced.
+
+### Hosted revalidation of deep-review corrections
+
+| Field | Verified evidence |
+|---|---|
+| Corrected implementation/check commit | [b97d8683b4ea6ca9152c4d2455e009c7324afc67](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/b97d8683b4ea6ca9152c4d2455e009c7324afc67) |
+| Hosted run | [43874953912](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43874953912), push event, SUCCESS |
+| Four jobs | static-quality, security-review, tests and quality-gate all SUCCESS |
+| Runtime environment | Fresh runtime-only environment installed successfully; pip check and app/booking/Streamlit imports passed before development dependencies |
+| Test log | 40 collected, 40 passed; strengthened state/count oracle and prior timestamp regressions retained |
+| Shell and audits | Logs confirm bash --noprofile --norc -e -o pipefail; all 34 runtime/71 development pins audited with no known vulnerabilities or omissions |
+| Artifacts | static-quality-43874953912-1, security-review-43874953912-1 and tests-43874953912-1; expire 30 November 2026 |
+| Verification actor | AI assistant inspected actual hosted job logs and artifact metadata. Human observations and risk decisions remain unrecorded. |
+| Main / next loop | Main remains 822710b238bb14b8eba17cf2ab9a76ab2753bdb2; no PR, merge, release or L2 work |
+
+Later evidence-only documentation commits must also have their current branch checks inspected. This table identifies the exact tested correction rather than claiming to verify later edits.
 
 The pipeline probe follows [GitHub's documented shell semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsshell). The three mutation challenges are test-strength evidence from private copies; they are not reported as defects found in the unmodified application. The existing timestamp defect/regression history remains the actual L1 data-model defect example.
 
@@ -149,7 +165,7 @@ The pipeline probe follows [GitHub's documented shell semantics](https://docs.gi
 
 This follows Module 3's proportionate planning/stage exits, Module 4's evidence-decision traceability, Module 5's requirement-driven test oracles, Module 6's intake/risk triage, Module 7's strong assertions/regression, Module 8's tool-versus-approval distinction and Module 9's pre-PR ownership. The teacher's example overlap and automatic-waitlist outcomes are not this project's requirements.
 
-Technical outcome: corrections are locally verified and ready for hosted revalidation and author review. Human outcome: PENDING. L2: NOT_STARTED. A simple architecture is consistent with the lecture; it does not remove the final functionality, validation, controlled-change or defence requirements.
+Technical outcome: corrections are locally and remotely verified, READY_FOR_AUTHOR_REVIEW. Human outcome: PENDING. L2: NOT_STARTED. A simple architecture is consistent with the lecture; it does not remove the final functionality, validation, controlled-change or defence requirements.
 
 PR head, base, tested GitHub SHA and actual checked-out SHA are retained in reports. Pull-request runs may test GitHub's merge commit; head/base identity remains distinct. A current-head check is needed after relevant changes.
 
