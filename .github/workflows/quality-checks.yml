@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -146,6 +150,16 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             requirements-dev.txt
+      - name: Verify isolated runtime installation
+        env:
+          RUNTIME_ENV: ${{ runner.temp }}/outdoor-runtime
+        run: |
+          mkdir -p reports
+          python -m venv "$RUNTIME_ENV"
+          "$RUNTIME_ENV/bin/python" -m pip install --require-hashes -r requirements.txt
+          "$RUNTIME_ENV/bin/python" -m pip check | tee reports/runtime-pip-check.txt
+          "$RUNTIME_ENV/bin/python" -c "import app, booking, streamlit; print('Runtime-only imports passed.')" | tee reports/runtime-import.txt
+          "$RUNTIME_ENV/bin/python" -m pip freeze > reports/runtime-versions.txt
       - name: Install locked dependencies
         id: install
         run: python -m pip install --require-hashes -r requirements-dev.txt

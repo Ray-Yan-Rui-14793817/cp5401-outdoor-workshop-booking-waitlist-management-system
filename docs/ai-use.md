@@ -72,3 +72,15 @@ AI used Codex, local Python/tooling, GitHub tools and official technical referen
 Constructor validation is structural, so legitimate historical records can be represented. The future creation service must enforce role and fresh-time S-t>24h. AppTest state insertion is a test fixture, not a released booking operation. The author must assess these assumptions and any findings rather than treating passing checks as approval.
 
 Human L1 edits, personal execution, finding dispositions and ACCEPT_LOOP remain pending. L2 is NOT_STARTED. No merge, deployment, application release or R-08 validation is approved by AI checks.
+
+## L1 deep-review interaction
+
+**Author task, summarised in English:** Deeply review L1 against accepted L0, Assessment 3/HD rubric, lecture transcripts/decks and Demo code; check architecture/tests/Actions/workflow and AI records; correct findings, provide a bilingual reuse explanation in chat, create no source.md, and remain at L1 for ACCEPT_LOOP.
+
+AI re-read the supplied assessment and relevant transcript/deck sections, compared the pinned Demo v1.0 files and later main snapshot, reviewed the actual L1 diff and challenged the checks. It found a shell-pipeline false-green path, incomplete registration-state/count assertions, missing isolated-runtime evidence and incomplete explicit risk triage.
+
+AI changed only test assertions, CI controls and review/reuse/workflow records. It added explicit Bash failure semantics, a fresh runtime-only installation/import check and a complete-state/mixed-status test oracle. In three private app copies, the old selected test passed each injected fault and the strengthened test rejected each. These are controlled test challenges, not defects claimed in the real application. The real 40-case suite passes locally; the earlier four timestamp regression cases are retained.
+
+AI also verified the gate script's successful control and nine failed/skipped/cancelled predecessor cases. A fresh local runtime environment imports the app/domain/Streamlit without pytest installed. Scope, policy, app.py, booking.py and dependency versions are unchanged. No source.md was generated; the existing sources.md and private course originals are unchanged.
+
+L1-RV01-L1-RV04 record affected locations, evidence and technical dispositions in the [L1 review](reviews/L1-human-review.md#l1-deep-technical-review). Proposed risk classifications/routing are AI recommendations awaiting the author's judgement. Actual personal checks, rejected suggestions, pre-PR review and L1 ACCEPT_LOOP remain pending. No independent human review, merge, release or L2 progression is claimed.

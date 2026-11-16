@@ -51,6 +51,21 @@ The pinned v1.0 contains no waitlist. Implement CR-01 only after this project's 
 
 AI drafted and verified this adaptation under the author's L1 task. Human L1 review remains pending. The [L1 record](reviews/L1-human-review.md) identifies actual evidence and code identity; source provenance remains pinned to the commit above.
 
+### L1 deep-review comparison
+
+The review compared all eight files at the pinned v1.0 source and inspected the later [Demo main snapshot 4007b284ebf899e30eed8b5905a0115acb3173f7](https://github.com/Georgegiri/CampusConnect-Demo/tree/4007b284ebf899e30eed8b5905a0115acb3173f7). That later snapshot is a comparison reference, not an adopted source version for L1.
+
+| Area | Demo reference | This project's L1 and later obligation |
+|---|---|---|
+| Architecture | Streamlit UI, independent booking module, pytest file and session memory. | Retain that structure; no database, service/repository layer or standalone desktop application is added. |
+| Domain records | Baseline Session/Booking use consultation subjects, lecturer names and time-only values. | Project-specific Workshop/Registration/DemoUser/State use stable IDs, aware dates, location/notes and states. Frozen-row/list patterns are adapted; source booking algorithms are not adopted in L1. |
+| Identity | Name-string matching in baseline; selectable role views in later Demo. | Fictional ID/role data only at L1. Actual selected-role/owner checks remain L2 work; neither source nor project selector is claimed as real authentication. |
+| Booking rule | Baseline rejects cross-consultation overlap; later request_booking automatically waitlists a full request. | No cross-workshop overlap rule. Future Book must remain FULL when full; explicit Join belongs only to V1.1 after this project's working V1.0. Do not copy the later source outcome as a test oracle. |
+| Cancellation/promotion | Source cancellation removes a record; later cancel_and_promote may skip a waiter because of overlap. | Future cancellation retains history; this project's FIFO applies to active waiters without the retired overlap rule. C/S deadlines and final-24h withdrawal remain authoritative. None is implemented early by this comparison. |
+| Tests/CI | Baseline has five booking tests and a basic pytest workflow; later source adds waitlist and slot-creation tests. | L1 has its own 40 foundation cases and four quality jobs. Source test passes/releases are not this project's evidence. The deep review strengthens existing assertions without inflating the test count. |
+
+The reuse is architecture/pattern adaptation with project-specific replacement, not a claim that all teacher code was copied or that the foundation was written independently of the reference/AI. The lecture permits adaptation to a different realistic domain and requires the author to explain the changes, tests, assumptions and decisions. The author must personally review the actual diff before PR/loop acceptance; AI review does not provide that acceptance.
+
 When adoption occurs, add the destination file/function, source location, actual change, commit SHA, AI/human contribution and linked tests. PLANNED must not become ADOPTED or TESTED until those actions occur.
 
 The pinned tree has no standalone LICENSE file. Do not invent a licence label or infer broader rights beyond the recorded course-adaptation context in [Sources](sources.md).

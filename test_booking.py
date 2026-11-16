@@ -1,5 +1,6 @@
 """L1 foundation checks; these do not complete the planned B/W/I scenarios."""
 
+from copy import deepcopy
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -193,16 +194,39 @@ def test_app_views_start_without_exception(view: str) -> None:
 def test_app_refresh_and_navigation_preserve_session_state(workshop: Workshop) -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
     state = app.session_state.demo_state
+    created = datetime(2026, 12, 1, tzinfo=UTC)
     state.workshops.append(workshop)
+    state.registrations.extend(
+        [
+            Registration(
+                "registration-1",
+                "workshop-1",
+                "participant-1",
+                RegistrationStatus.CONFIRMED,
+                created,
+                created,
+            ),
+            Registration(
+                "registration-2",
+                "workshop-1",
+                "participant-2",
+                RegistrationStatus.CANCELLED,
+                created,
+                created + timedelta(hours=1),
+            ),
+        ]
+    )
     state.next_workshop_id = 2
+    state.next_registration_id = 3
+    expected = deepcopy(state)
     app.sidebar.button(key="refresh_view").click().run()
     app.sidebar.radio(key="current_view").set_value("My Bookings").run()
 
     assert not app.exception
     assert app.session_state.demo_state is state
-    assert app.session_state.demo_state.workshops == [workshop]
-    assert app.session_state.demo_state.next_workshop_id == 2
+    assert app.session_state.demo_state == expected
     assert app.metric[0].value == "1"
+    assert app.metric[1].value == "1"
 
 
 def test_independent_app_sessions_do_not_share_state(workshop: Workshop) -> None:

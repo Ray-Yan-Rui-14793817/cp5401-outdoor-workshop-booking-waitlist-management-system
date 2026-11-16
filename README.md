@@ -12,6 +12,8 @@ See the [L1 work and human review record](docs/reviews/L1-human-review.md) for a
 
 The corrected implementation passed all 40 tests locally and in [hosted run 43868519549](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43868519549); all four quality jobs succeeded. This is evidence for the foundation, with human acceptance still pending. For later documentation/branch commits, inspect the latest branch checks as well.
 
+The subsequent [L1 deep review](docs/reviews/L1-human-review.md#l1-deep-technical-review) strengthens the existing session/count oracle, explicitly preserves pipeline failures and checks runtime imports without development dependencies. It records Demo comparison, justified risk recommendations and findings for personal assessment. The suite remains 40 cases; no application feature, dependency version or accepted business rule changes. Review the updated branch CI before accepting L1.
+
 | File | L1 responsibility |
 |---|---|
 | [app.py](app.py) | Preview views and once-per-session initialisation; no business-action controls yet. |

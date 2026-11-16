@@ -139,12 +139,14 @@ Each loop ends with a real personal decision. A record for an earlier increment 
 |---|---|
 | static-quality | Ruff on app.py, booking.py and test_booking.py; pip check; reports/installed versions |
 | security-review | Bandit on app.py/booking.py and pip-audit on locked dependencies; scope, versions and assessed findings |
-| tests | pytest test_booking.py; JUnit and booking.py branch coverage; applicable B/W/I scenarios, not a pretend database suite |
+| tests | Fresh runtime-only hash installation/import check; pytest test_booking.py; JUnit and booking.py branch coverage; applicable B/W/I scenarios, not a pretend database suite |
 | quality-gate | Required quality gate succeeds only if all required preceding jobs succeed |
 
 The executable [workflow](../.github/workflows/quality-checks.yml) uses Python 3.12.14, SHA-pinned Actions, hash-locked dependencies and a read-only contents token. It runs on main/codex branch pushes, PRs to main and manual dispatch when available on the default branch. Deployment dependencies must remain aligned in later loops. The current dependency audits cover runtime and development locks and query public package advisory data; there is no application database or credential requirement.
 
 Retain available reports even on failure. Do not use blanket failure bypass; audit-network errors are not clean results. Record collected/passed/failed/skipped counts, head/base/tested SHA and run URL. Do not silently skip critical scenarios or call manual validation automated.
+
+The L1 deep review explicitly selects Bash so failed commands cannot be hidden by report pipelines, and checks runtime imports in an isolated environment before installing development tools. The four job boundaries and all human gates remain unchanged. See L1-RV01-L1-RV04 in the [review record](reviews/L1-human-review.md#l1-deep-technical-review).
 
 Assess substantive findings individually. A narrowly scoped temporary exception needs reason, owner, mitigation and expiry. Preserve selected evidence beyond artifact retention.
 
