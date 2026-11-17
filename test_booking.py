@@ -1,4 +1,4 @@
-"""Retained L1-L3 regressions and L4 participant booking/history checks."""
+"""Retained L1-L3 regressions and L4 booking/history and organiser-draft checks."""
 
 from copy import deepcopy
 from dataclasses import replace
@@ -1118,6 +1118,234 @@ def test_creation_shows_all_field_errors_without_discarding_invalid_values(
     assert app.session_state.demo_state is demo_data and demo_data == before
 
 
+@pytest.mark.parametrize("route", ["direct", "participant", "cleared"])
+def test_l4_f08_failed_drafts_and_errors_are_isolated_by_organiser_id(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, route: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    defaults = creation_form_values(app)
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_title").set_value("Rui navigation draft")
+    app.text_input(key="new_location").set_value("")
+    app.number_input(key="new_capacity").set_value(2)
+    app.text_area(key="new_notes").set_value("Rui: bring water.")
+    app.button(key="create_workshop").click().run()
+    rui_values = creation_form_values(app)
+    assert {e.value for e in app.error} == {CREATION_REJECTED, "Meeting point is required."}
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+    if route != "direct":
+        user_id = "participant-1" if route == "participant" else None
+        app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+        assert "Organiser" not in app.sidebar.radio(key="current_view").options
+        assert not app.text_input and not app.error
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    assert creation_form_values(app) == defaults
+    assert not app.error and not app.success
+    fill_creation_form(app, NOW + timedelta(hours=72))
+    app.text_input(key="new_title").set_value("")
+    app.text_input(key="new_location").set_value("Alex lakeside shelter")
+    app.number_input(key="new_capacity").set_value(31)
+    app.text_area(key="new_notes").set_value("Alex: bring a camera.")
+    app.button(key="create_workshop").click().run()
+    alex_values = creation_form_values(app)
+    alex_errors = {
+        CREATION_REJECTED,
+        "Title is required.",
+        "Capacity must be a whole number from 1 to 30.",
+    }
+    assert {e.value for e in app.error} == alex_errors
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    assert creation_form_values(app) == rui_values
+    assert {e.value for e in app.error} == {CREATION_REJECTED, "Meeting point is required."}
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    assert creation_form_values(app) == alex_values
+    assert {e.value for e in app.error} == alex_errors
+    forms = app.session_state.creation_forms
+    assert set(forms) == {"organiser-1", "organiser-2"}
+    assert forms["organiser-1"] is not forms["organiser-2"]
+    assert len(forms["organiser-1"]["draft"]) == len(forms["organiser-2"]["draft"]) == 8
+    assert forms["organiser-1"]["errors"] == {"location": "Meeting point is required."}
+    assert forms["organiser-2"]["errors"] == {
+        "title": "Title is required.",
+        "capacity": "Capacity must be a whole number from 1 to 30.",
+    }
+    assert all(f["feedback"] == CREATION_REJECTED for f in forms.values())
+    assert not app.exception and demo_data == before
+
+
+@pytest.mark.parametrize("owner_id", ["organiser-1", "organiser-2"])
+def test_l4_f08_success_clears_only_the_current_organisers_failed_form(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, owner_id: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    for user_id in ["organiser-1", "organiser-2"]:
+        app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+        app.sidebar.radio(key="current_view").set_value("Organiser").run()
+        fill_creation_form(app, NOW + timedelta(hours=48))
+        app.text_input(key="new_title").set_value(f"Draft for {user_id}")
+        app.text_input(key="new_location").set_value("")
+        app.button(key="create_workshop").click().run()
+    other_id = "organiser-2" if owner_id == "organiser-1" else "organiser-1"
+    other_before = deepcopy(app.session_state.creation_forms[other_id])
+    app.sidebar.selectbox(key="selected_user_id").set_value(owner_id).run()
+    app.text_input(key="new_location").set_value("East trail entrance")
+    app.button(key="create_workshop").click().run()
+    candidate = app.session_state.demo_state
+    assert not app.exception and not app.error and app.success
+    assert candidate.workshops[:-1] == before.workshops
+    assert candidate.workshops[-1].owner_id == owner_id
+    assert candidate.workshops[-1].workshop_id == "workshop-5"
+    assert candidate.next_workshop_id == before.next_workshop_id + 1
+    assert candidate.registrations == before.registrations
+    assert candidate.next_registration_id == before.next_registration_id
+    assert candidate.users == before.users and demo_data == before
+    assert app.session_state.selected_user_id == owner_id
+    assert creation_form_values(app) == {
+        "title": "",
+        "start_date": (NOW + timedelta(days=3)).date(),
+        "start_time": time(9),
+        "end_date": (NOW + timedelta(days=3)).date(),
+        "end_time": time(12),
+        "location": "",
+        "capacity": 10,
+        "notes": "",
+    }
+    assert not app.session_state.creation_forms[owner_id].get("draft")
+    assert not app.session_state.creation_forms[owner_id].get("errors")
+    assert not app.session_state.creation_forms[owner_id].get("feedback")
+    assert app.session_state.creation_forms[other_id] == other_before
+    app.sidebar.selectbox(key="selected_user_id").set_value(other_id).run()
+    assert app.text_input(key="new_title").value == f"Draft for {other_id}"
+    assert app.text_input(key="new_location").value == ""
+    assert {e.value for e in app.error} == {CREATION_REJECTED, "Meeting point is required."}
+    assert not app.success
+    app.sidebar.selectbox(key="selected_user_id").set_value(owner_id).run()
+    assert app.text_input(key="new_title").value == "" and not app.error
+    assert app.session_state.demo_state is candidate
+
+
+@pytest.mark.parametrize("owner_id", ["organiser-1", "organiser-2"])
+def test_l4_f08_draft_identity_fields_cannot_assign_workshop_ownership(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, owner_id: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value(owner_id).run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_location").set_value("")
+    app.button(key="create_workshop").click().run()
+    other_id = "organiser-2" if owner_id == "organiser-1" else "organiser-1"
+    draft = app.session_state.creation_forms[owner_id]["draft"]
+    draft.update({"owner_id": other_id, "selected_user_id": other_id, "new_owner_id": other_id})
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    assert app.session_state.selected_user_id == owner_id
+    app.text_input(key="new_location").set_value("North trail shelter")
+    app.button(key="create_workshop").click().run()
+    candidate = app.session_state.demo_state
+    assert not app.exception and not app.error and app.success
+    assert candidate.workshops[-1].owner_id == owner_id
+    assert candidate.workshops[:-1] == before.workshops
+    assert candidate.next_workshop_id == before.next_workshop_id + 1
+    assert candidate.next_registration_id == before.next_registration_id
+    assert candidate.registrations == before.registrations and demo_data == before
+
+
+def test_l4_f08_latest_failure_replaces_only_its_own_values_and_errors(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_location").set_value("")
+    app.button(key="create_workshop").click().run()
+    app.text_input(key="new_title").set_value("Latest Rui draft")
+    app.text_input(key="new_location").set_value("Rui shelter")
+    app.number_input(key="new_capacity").set_value(31)
+    app.button(key="create_workshop").click().run()
+    latest_values = creation_form_values(app)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    fill_creation_form(app, NOW + timedelta(hours=72))
+    app.text_input(key="new_title").set_value("")
+    app.button(key="create_workshop").click().run()
+    alex_before = deepcopy(app.session_state.creation_forms["organiser-2"])
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    assert creation_form_values(app) == latest_values
+    assert {e.value for e in app.error} == {
+        CREATION_REJECTED,
+        "Capacity must be a whole number from 1 to 30.",
+    }
+    assert app.session_state.creation_forms["organiser-2"] == alex_before
+    assert app.session_state.demo_state is demo_data and demo_data == before
+    assert not app.exception
+
+
+def test_l4_f08_unsubmitted_edits_are_not_shown_to_a_different_organiser(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    defaults = creation_form_values(app)
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_title").set_value("Unsubmitted Rui edits")
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    assert creation_form_values(app) == defaults
+    assert not app.error and not app.success and not app.exception
+    assert not app.session_state.creation_forms["organiser-1"].get("draft")
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+def test_l4_f08_feedback_is_scoped_even_when_failure_outcomes_differ(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    original_create = booking.create_workshop
+
+    def reject_rui(state: DemoState, actor: DemoUser, **fields: object):
+        if actor.user_id == "organiser-1":
+            return "FORBIDDEN", state
+        return original_create(state, actor, **fields)
+
+    monkeypatch.setattr(booking, "create_workshop", reject_rui)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.button(key="create_workshop").click().run()
+    rui_feedback = [e.value for e in app.error]
+    assert rui_feedback == ["FORBIDDEN: Only organisers may create workshops."]
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    assert not app.error
+    fill_creation_form(app, NOW + timedelta(hours=72))
+    app.text_input(key="new_location").set_value("")
+    app.button(key="create_workshop").click().run()
+    assert {e.value for e in app.error} == {CREATION_REJECTED, "Meeting point is required."}
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    assert [e.value for e in app.error] == rui_feedback
+    assert app.session_state.creation_forms["organiser-1"]["errors"] == {}
+    assert app.session_state.demo_state is demo_data and demo_data == before
+    assert not app.exception and not app.success
+
+
 @pytest.mark.parametrize("route", ["public", "role-switch"])
 def test_failed_creation_survives_leaving_the_form_and_retry_uses_current_owner(
     demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, route: str
@@ -1141,7 +1369,11 @@ def test_failed_creation_survives_leaving_the_form_and_retry_uses_current_owner(
         app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
         app.sidebar.radio(key="current_view").set_value("My Bookings").run()
         app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
-        expected_owner = "organiser-2"
+        app.sidebar.radio(key="current_view").set_value("Organiser").run()
+        assert app.text_input(key="new_title").value == ""
+        assert not app.error
+        app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+        expected_owner = "organiser-1"
     app.sidebar.radio(key="current_view").set_value("Organiser").run()
 
     assert not app.exception and not app.warning
@@ -1765,7 +1997,23 @@ def test_l4_ui_booking_updates_counts_own_history_and_owned_roster(
     original = deepcopy(demo_data)
     app = app_with_state(demo_data)
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
-    app.session_state.creation_draft = {"new_title": "Retained fictional draft"}
+    preserved_forms = {
+        "organiser-2": {
+            "draft": {
+                "new_title": "Retained fictional draft",
+                "new_start_date": (NOW + timedelta(days=2)).date(),
+                "new_start_time": time(9),
+                "new_end_date": (NOW + timedelta(days=2)).date(),
+                "new_end_time": time(11),
+                "new_location": "",
+                "new_capacity": 1,
+                "new_notes": "Fictional preparation notes.",
+            },
+            "errors": {"location": "Meeting point is required."},
+            "feedback": CREATION_REJECTED,
+        }
+    }
+    app.session_state.creation_forms = deepcopy(preserved_forms)
     app.button(key="book_workshop-1").click().run()
     assert not app.exception and not app.error
     assert "registration-5" in app.success[0].value
@@ -1774,7 +2022,7 @@ def test_l4_ui_booking_updates_counts_own_history_and_owned_roster(
     assert accepted.registrations[:4] == original.registrations
     assert accepted.workshops == original.workshops and accepted.next_workshop_id == 5
     assert app.session_state.selected_user_id == "participant-2"
-    assert app.session_state.creation_draft == {"new_title": "Retained fictional draft"}
+    assert app.session_state.creation_forms == preserved_forms
     assert app.metric[1].value == "4"
     app.sidebar.radio(key="current_view").set_value("My Bookings").run()
     frames = [table.value for table in app.dataframe]

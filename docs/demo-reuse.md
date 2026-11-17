@@ -32,6 +32,8 @@ L4 reuses the three-file separation, dataclasses/lists and initialise-once patte
 
 This review re-read the pinned Demo booking.py. can_book/add_booking use names, capacity and overlap, while cancel_booking deletes a row. The Outdoor project keeps ID-based selection, strict cutoff and retained history instead. The F05 correction changes the local form initialisation only; it does not import another Demo algorithm.
 
+L4-F08 is a project-specific UI refinement requested after the L4 review: store failed creation values/errors/feedback by the fixed organiser ID, reload only the current organiser's controls and clear only their entry on success. It reuses the existing session-memory architecture, not a newly copied Demo algorithm. The L3 HF-02 historical acceptance is retained; current behaviour changes by explicit author instruction.
+
 ## References
 
 Course originals and screenshots are not redistributed. The following reference identifiers are retained from L0. Automatic transcripts are not independently verified audio; the supplied 09:40/10:45 copies are duplicate accounts. Teaching examples explain methods, while project behaviour follows requirements.md.
@@ -60,6 +62,7 @@ Course originals and screenshots are not redistributed. The following reference 
 | **S23** | Author's L3 acceptance and feedback, 17 November 2026 | Updated UI/H01-H07 complete; ACCEPT_LOOP; three observations on full/open wording, fictional cross-role drafts and business-layer ownership. Update records/GitHub, keep the personal ZIP local, remove uploaded ZIP files if present, and do not start L4. |
 | **S24** | Author's explicit L4 request, 17 November 2026 | Start from accepted L3/GitHub in L4_develop; participant booking/own history with capacity, duplicate-active, 24h and permission rules; retain regressions/simple architecture/single job, English records/local-only ZIP and preview; stop at L4 pending ACCEPT_LOOP. Supersedes the earlier hold for L4 development only. |
 | **S25** | Author's L4 deep-review instruction, 17 November 2026 | Review accepted L0-L3, assessment/HD, transcripts/slides, Book/history, rules/state/counters, simplicity/tests/CI, F05 and human records; correct findings, update English files/local-only ZIP and retain the preview. Stop at L4 pending ACCEPT_LOOP. |
+| **S27** | Author's explicit L4-F08 request, 17 November 2026 | Isolate each organiser's latest failed eight values, errors and feedback by fixed user_id; preserve same-owner restore and owner-only success reset; derive workshop ownership from the verified actor; retain menu/business permissions, policies and histories. Keep the current simple architecture, run regressions/Actions, record the HF-02 difference, then stop at L4 pending ACCEPT_LOOP. |
 
 ### Technical references
 

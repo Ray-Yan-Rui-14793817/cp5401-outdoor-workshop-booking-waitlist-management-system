@@ -145,25 +145,30 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
         "new_capacity": 10,
         "new_notes": "",
     }
-    reset = st.session_state.pop("reset_creation_form", False)
-    draft = st.session_state.get("creation_draft", {})
+    forms = st.session_state.setdefault("creation_forms", {})
+    form = forms.setdefault(actor.user_id, {})
+    reset = form.pop("reset", False)
+    # The shared widget keys display only the selected organiser's form.
+    changed_organiser = st.session_state.get("creation_form_owner") != actor.user_id
+    draft = form.get("draft", {})
     for key, value in defaults.items():
-        if reset or key not in st.session_state:
+        if reset or changed_organiser or key not in st.session_state:
             st.session_state[key] = value if reset else draft.get(key, value)
-    errors = st.session_state.get("creation_errors", {})
+    st.session_state.creation_form_owner = actor.user_id
+    errors = form.get("errors", {})
 
     def show_field_error(field: str) -> None:
         if field in errors:
             st.error(errors[field])
 
-    message = st.session_state.pop("creation_message", None)
+    message = form.pop("message", None)
     if message:
         st.success(message)
     creation, rosters = st.columns(2)
     with creation:
         st.markdown("#### Create a workshop")
-        if st.session_state.get("creation_feedback"):
-            st.error(st.session_state.creation_feedback)
+        if form.get("feedback"):
+            st.error(form["feedback"])
         with st.form("create_workshop_form", clear_on_submit=False):
             title = st.text_input("Title", key="new_title")
             show_field_error("title")
@@ -225,36 +230,37 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                 created = candidate.workshops[-1]
                 st.session_state.demo_state = candidate
                 st.session_state.roster_workshop_id = created.workshop_id
-                st.session_state.creation_message = (
-                    f"Created {created.workshop_id}: {created.title}."
-                )
-                st.session_state.reset_creation_form = True
-                st.session_state.pop("creation_draft", None)
-                st.session_state.pop("creation_errors", None)
-                st.session_state.pop("creation_feedback", None)
+                forms[actor.user_id] = {
+                    "message": f"Created {created.workshop_id}: {created.title}.",
+                    "reset": True,
+                }
                 st.rerun()
             else:
-                st.session_state.creation_draft = {
-                    "new_title": title,
-                    "new_start_date": starts_date,
-                    "new_start_time": starts_time,
-                    "new_end_date": ends_date,
-                    "new_end_time": ends_time,
-                    "new_location": location,
-                    "new_capacity": capacity,
-                    "new_notes": notes,
-                }
-                st.session_state.creation_errors = (
-                    workshop_creation_errors(**fields) if outcome == "INVALID_INPUT" else {}
-                )
-                st.session_state.creation_feedback = {
-                    "INVALID_INPUT": (
-                        "Workshop not created. Your entries have been kept. "
-                        "Correct the highlighted fields and submit again."
+                forms[actor.user_id] = {
+                    "draft": {
+                        "new_title": title,
+                        "new_start_date": starts_date,
+                        "new_start_time": starts_time,
+                        "new_end_date": ends_date,
+                        "new_end_time": ends_time,
+                        "new_location": location,
+                        "new_capacity": capacity,
+                        "new_notes": notes,
+                    },
+                    "errors": (
+                        workshop_creation_errors(**fields) if outcome == "INVALID_INPUT" else {}
                     ),
-                    "INVALID_ACTOR": "INVALID_ACTOR: Select a valid demo identity.",
-                    "FORBIDDEN": "FORBIDDEN: Only organisers may create workshops.",
-                }.get(outcome, "Workshop creation is unavailable. Your entries have been kept.")
+                    "feedback": {
+                        "INVALID_INPUT": (
+                            "Workshop not created. Your entries have been kept. "
+                            "Correct the highlighted fields and submit again."
+                        ),
+                        "INVALID_ACTOR": "INVALID_ACTOR: Select a valid demo identity.",
+                        "FORBIDDEN": "FORBIDDEN: Only organisers may create workshops.",
+                    }.get(
+                        outcome, "Workshop creation is unavailable. Your entries have been kept."
+                    ),
+                }
                 st.rerun()
 
     with rosters:
