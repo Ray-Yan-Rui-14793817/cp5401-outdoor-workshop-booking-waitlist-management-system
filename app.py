@@ -135,22 +135,21 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
 def show_organiser(state: DemoState, actor: DemoUser) -> None:
     st.info("Create workshops and view confirmed rosters for your own workshops.")
     default_day = server_now().astimezone(WORKSHOP_TIMEZONE).date() + timedelta(days=3)
-    if st.session_state.pop("reset_creation_form", False):
-        defaults = {
-            "new_title": "",
-            "new_start_date": default_day,
-            "new_start_time": time(9),
-            "new_end_date": default_day,
-            "new_end_time": time(12),
-            "new_location": "",
-            "new_capacity": 10,
-            "new_notes": "",
-        }
-        for key, value in defaults.items():
-            st.session_state[key] = value
-    for key, value in st.session_state.get("creation_draft", {}).items():
-        if key not in st.session_state:
-            st.session_state[key] = value
+    defaults = {
+        "new_title": "",
+        "new_start_date": default_day,
+        "new_start_time": time(9),
+        "new_end_date": default_day,
+        "new_end_time": time(12),
+        "new_location": "",
+        "new_capacity": 10,
+        "new_notes": "",
+    }
+    reset = st.session_state.pop("reset_creation_form", False)
+    draft = st.session_state.get("creation_draft", {})
+    for key, value in defaults.items():
+        if reset or key not in st.session_state:
+            st.session_state[key] = value if reset else draft.get(key, value)
     errors = st.session_state.get("creation_errors", {})
 
     def show_field_error(field: str) -> None:
@@ -170,25 +169,25 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
             show_field_error("title")
             starts_date = st.date_input(
                 "Start date (Asia/Singapore)",
-                value=default_day,
+                value=None,
                 format="YYYY-MM-DD",
                 key="new_start_date",
             )
-            starts_time = st.time_input("Start time", value=time(9), step=60, key="new_start_time")
+            starts_time = st.time_input("Start time", value=None, step=60, key="new_start_time")
             show_field_error("starts_at")
             ends_date = st.date_input(
                 "End date (Asia/Singapore)",
-                value=default_day,
+                value=None,
                 format="YYYY-MM-DD",
                 key="new_end_date",
             )
-            ends_time = st.time_input("End time", value=time(12), step=60, key="new_end_time")
+            ends_time = st.time_input("End time", value=None, step=60, key="new_end_time")
             show_field_error("ends_at")
             location = st.text_input("Meeting point", key="new_location")
             show_field_error("location")
             capacity = st.number_input(
                 "Capacity",
-                value=10,
+                value=None,
                 step=1,
                 key="new_capacity",
                 help="Enter a whole number from 1 to 30.",

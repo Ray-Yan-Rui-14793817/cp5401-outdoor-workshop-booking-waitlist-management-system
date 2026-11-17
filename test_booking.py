@@ -1902,3 +1902,103 @@ def test_l4_booking_isolated_from_another_session_and_failure_ui_preserves_input
     app.button(key="book_workshop-1").click().run()
     assert app.exception and "injected booking failure" in app.exception[0].message
     assert not app.success and app.session_state.demo_state is current and current == before
+
+
+@pytest.mark.parametrize("path", ["success-reset", "draft-restore"])
+def test_l4_creation_restoration_and_reset_do_not_log_duplicate_defaults(
+    demo_data: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    path: str,
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.session_state.review_marker = {"keep": ["fictional review data"]}
+    before = deepcopy(demo_data)
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    if path == "draft-restore":
+        app.text_input(key="new_location").set_value("")
+        app.number_input(key="new_capacity").set_value(31)
+        app.button(key="create_workshop").click().run()
+        failed_values = creation_form_values(app)
+        app.sidebar.radio(key="current_view").set_value("Workshops").run()
+
+    # Streamlit logs this warning once per process. Re-enable it as on a fresh server.
+    monkeypatch.setattr("streamlit.elements.lib.policies._shown_default_value_warning", False)
+    caplog.set_level("WARNING", logger="streamlit.elements.lib.policies")
+    caplog.clear()
+    if path == "success-reset":
+        app.button(key="create_workshop").click().run()
+        candidate = app.session_state.demo_state
+        assert app.success and not app.error
+        assert len(candidate.workshops) == len(before.workshops) + 1
+        assert candidate.next_workshop_id == before.next_workshop_id + 1
+        assert candidate.registrations == before.registrations
+        assert candidate.next_registration_id == before.next_registration_id
+        assert creation_form_values(app)["start_date"] == (NOW + timedelta(days=3)).date()
+        assert creation_form_values(app)["capacity"] == 10
+    else:
+        app.sidebar.radio(key="current_view").set_value("Organiser").run()
+        assert app.session_state.demo_state is demo_data
+        assert creation_form_values(app) == failed_values
+        assert {row.value for row in app.error} == {
+            CREATION_REJECTED,
+            "Meeting point is required.",
+            "Capacity must be a whole number from 1 to 30.",
+        }
+    assert not app.exception
+    assert demo_data == before
+    assert app.session_state.selected_user_id == "organiser-1"
+    assert app.session_state.review_marker == {"keep": ["fictional review data"]}
+    assert not [
+        record for record in caplog.records if "created with a default value" in record.getMessage()
+    ]
+
+
+@pytest.mark.parametrize("seconds", [-1, 0, 1])
+def test_l4_personal_history_moves_at_start_without_rewriting_records(
+    populated_state: DemoState, monkeypatch: pytest.MonkeyPatch, seconds: int
+) -> None:
+    state = populated_state
+    now = state.workshops[0].starts_at + timedelta(seconds=seconds)
+    monkeypatch.setattr(booking, "server_now", lambda: now)
+    before = deepcopy(state)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert not app.exception and len(app.dataframe) == 1
+    nodes = list(app.main)
+    current_index = next(
+        i
+        for i, n in enumerate(nodes)
+        if n.type == "subheader" and n.value == "Upcoming confirmed bookings"
+    )
+    history_index = next(
+        i for i, n in enumerate(nodes) if n.type == "subheader" and n.value == "History"
+    )
+    table_index = next(i for i, n in enumerate(nodes) if n is app.dataframe[0])
+    if seconds < 0:
+        assert current_index < table_index < history_index
+    else:
+        assert history_index < table_index
+    assert list(app.dataframe[0].value["Registration ID"]) == ["registration-1"]
+    assert list(app.dataframe[0].value["Status"]) == ["CONFIRMED"]
+    assert app.session_state.demo_state is state and state == before
+
+
+@pytest.mark.parametrize("outcome", ["FORBIDDEN", "UNEXPECTED"])
+def test_l4_booking_ui_never_adopts_a_rejected_candidate(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, outcome: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    rejected = replace(demo_data, registrations=[], next_registration_id=999)
+    monkeypatch.setattr(booking, "book_workshop", lambda *args, **kwargs: (outcome, rejected))
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.button(key="book_workshop-1").click().run()
+    assert not app.exception and not app.success
+    assert any(outcome in item.value for item in app.error)
+    assert app.session_state.demo_state is demo_data and demo_data == before

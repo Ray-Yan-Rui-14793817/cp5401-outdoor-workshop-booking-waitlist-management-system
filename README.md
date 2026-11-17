@@ -10,7 +10,7 @@ This classroom prototype manages fictional workshops and registrations in one br
 |---|---|
 | [app.py](app.py) | Existing fixed-role menus and creation form; participant Book controls, current-time submission, success/refusal feedback and personal current/history views. Adopt only an OK candidate. |
 | [booking.py](booking.py) | Existing validated models, permissions, creation, browse, owned rosters and fixtures; book_workshop and list_own_registrations. No Streamlit import. |
-| [test_booking.py](test_booking.py) | All 177 L1-L3 cases retained; 44 L4 cases, 221 total. Requirements determine outcomes, not the teaching Demo's pass history. |
+| [test_booking.py](test_booking.py) | All 177 L1-L3 cases retained; 51 L4 cases, 228 total. This review retains all 221 preceding cases and adds seven. Requirements determine outcomes, not the teaching Demo's pass history. |
 
 For a fresh session, select **Sam (PARTICIPANT)** and book **Outdoor Navigation Basics**. One new CONFIRMED record appears; the earlier CANCELLED record remains in History. My Bookings shows only Sam's records. Switch to Xingjian to inspect a different list, then Rui Yan's owned roster to see the updated participant list. A fresh Xingjian request for Outdoor Photography Walk returns FULL; a repeat request for Navigation returns DUPLICATE_ACTIVE. The final-24h and historical examples have disabled booking controls. There is no cancellation/Join action in L4.
 
@@ -25,6 +25,8 @@ The business read derives the participant ID from the selected validated actor; 
 ### Preserved behaviour and limits
 
 Four fixed fictional identities, role menus, independent business checks, current-view reset, owned rosters, valid relative demo data, creation >24 hours ahead and capacity 1-30 are retained. Failed creation submissions retain all eight values/errors across navigation; only success clears the form. A failed draft may cross freely selectable demo roles within one session: use fictional data only.
+
+L4-F05 is corrected: eight form defaults are initialised/restored in Session State before rendering, with no competing date/time/capacity widget defaults. Failed values remain intact; successful creation resets only those eight keys. Fresh-process tests and browser/server-log checks verify this without suppressing warnings.
 
 In-app Refresh, navigation and actor switching retain that session's business state. New sessions are unshared; browser reload/server restart may reset data. Selection is not authentication or impersonation resistance. No database, real account, notifications, payments, weather API or emergency override is added. Outdoor preparation and weather/safety decisions remain with the organiser outside this prototype.
 
