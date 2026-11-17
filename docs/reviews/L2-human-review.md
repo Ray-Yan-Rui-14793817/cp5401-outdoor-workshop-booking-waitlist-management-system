@@ -81,14 +81,16 @@ Executor: AI using the existing Python 3.12.14 environment. Current source/test 
 | Check | Observed result |
 |---|---|
 | Local pytest | PASS: 86/86, zero skipped, in 8.54 seconds. Command: python -B -m pytest test_booking.py -q -p no:cacheprovider. |
-| Static/security | PASS: Ruff check and format check for all three Python files; Bandit for app.py/booking.py; pip check. No code/dependency changes followed these checks. Hosted lock-audit status must be tied to the run below. |
+| Static/security | PASS locally and in hosted CI: Ruff check/format, Bandit and pip check. Hosted strict audits found no known vulnerabilities and reconciled all 34 runtime/71 development pins without omissions. Point-in-time results; locks unchanged. |
 | Browser route | Browser plugin not available. Used existing bundled Playwright 1.62.1/headless Chrome, no project dependency added. Temporary scripts, DOM and screenshots remain outside the repository. |
 | Desktop | PASS at http://127.0.0.1:8512, 1280x900: correct URL/title, meaningful page, no Streamlit exception overlay. All four exact role menus and allowed previews, clear reset, cross-role reset, same-role retention and refresh verified. No console warnings/errors or page errors. |
 | Mobile smoke | PASS at 390x844: after sidebar collapse, content remains visible without horizontal page overflow. Not full mobile/cross-browser acceptance. |
-| Hosted CI | PENDING for the navigation revision at document preparation; replace with observed commit/run and job results after publication. The single-job workflow is unchanged. |
+| Hosted CI | PASS: navigation code dff485dbb5ae73add2ada324532c5520e127f653, [run 44018553678](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44018553678), job 133822257784. One quality-checks job; all 18 steps succeeded, none skipped. Logs confirm 86 passed in 6.57 seconds, runtime isolation, static checks, complete lock audits and evidence upload. booking.py has 79/79 statements and 20/20 branches covered; diagnostic foundation coverage only. |
 | Preservation | PASS before publication: 19 files; unchanged booking.py/config/locks/workflow, L0/L1 folders and original tracked working copy. Accepted FR/BR/QR/risk/scenario definitions remain unchanged. All 16 L1 test functions retain their parameters and original assertions; exactly two UI preconditions were adapted. English Markdown and local link targets checked. |
 
 Key browser sequence: page.goto -> choose a fixed identity -> assert exact radio labels -> select permitted view -> switch same/cross role -> clear/refresh -> assert view/content -> desktop/mobile screenshot and console checks. The local preview remains running for personal checks. It is not deployment or user-validation evidence.
+
+Hosted evidence: Ubuntu 24.04/Python 3.12.14. Artifact quality-checks-44018553678-1 expires on 1 December 2026; retain material evidence before expiry. This evidence-only document follow-up changes no executable/configuration hashes. Inspect the latest branch run when accepting; the linked run identifies the verified navigation code rather than claiming the document knew its own future commit SHA.
 
 ## Human acceptance checklist
 
