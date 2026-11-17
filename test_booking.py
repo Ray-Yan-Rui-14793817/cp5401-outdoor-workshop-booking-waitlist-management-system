@@ -2734,3 +2734,134 @@ def test_l5_cancel_in_one_session_does_not_change_an_independent_session(
     other.sidebar.radio(key="current_view").set_value("My Bookings").run()
     assert not other.exception and not other.button(key="cancel_registration-2").disabled
     assert other.session_state.demo_state is second and second == second_before
+
+
+@pytest.mark.parametrize(
+    ("target_id", "owner_id"),
+    [("registration-1", "participant-1"), ("registration-3", "participant-2")],
+)
+@pytest.mark.parametrize("reverse", [False, True])
+def test_l5_review_cancel_changes_only_target_among_multiple_confirmations(
+    populated_state: DemoState, target_id: str, owner_id: str, reverse: bool
+) -> None:
+    state = populated_state
+    state.workshops[0] = replace(state.workshops[0], capacity=2)
+    state.workshops.append(
+        replace(state.workshops[0], workshop_id="workshop-2", owner_id="organiser-2")
+    )
+    created = NOW - timedelta(hours=1)
+    state.registrations.extend(
+        [
+            Registration(
+                "registration-3",
+                "workshop-1",
+                "participant-2",
+                RegistrationStatus.CONFIRMED,
+                created,
+                created,
+            ),
+            Registration(
+                "registration-4",
+                "workshop-2",
+                "participant-1",
+                RegistrationStatus.CONFIRMED,
+                created,
+                created,
+            ),
+        ]
+    )
+    state.next_workshop_id, state.next_registration_id = 3, 5
+    if reverse:
+        state.registrations.reverse()
+    before = deepcopy(state)
+    assert confirmed_count(state, "workshop-1") == 2
+    assert confirmed_count(state, "workshop-2") == 1
+    outcome, candidate = booking.cancel_registration(
+        state, resolve_actor(state, owner_id), target_id, now=NOW
+    )
+    expected_rows = before.registrations.copy()
+    index = next(i for i, row in enumerate(expected_rows) if row.registration_id == target_id)
+    expected_rows[index] = replace(
+        expected_rows[index], status=RegistrationStatus.CANCELLED, updated_at=NOW.astimezone(UTC)
+    )
+    assert outcome == "OK" and candidate == replace(before, registrations=expected_rows)
+    assert confirmed_count(candidate, "workshop-1") == 1
+    assert confirmed_count(candidate, "workshop-2") == 1
+    assert [r.registration_id for r in candidate.registrations] == [
+        r.registration_id for r in before.registrations
+    ]
+    assert candidate.next_workshop_id == 3 and candidate.next_registration_id == 5
+    assert state == before and candidate is not state
+
+
+@pytest.mark.parametrize("route", ["domain", "ui"])
+def test_l5_review_final_state_construction_failure_preserves_domain_and_ui_input(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, route: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    original_rows = demo_data.registrations
+    if route == "ui":
+        app = app_with_state(demo_data)
+        app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+        app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    original_replace = booking.replace
+
+    def fail_on_final_state(value: object, **changes: object):
+        if isinstance(value, DemoState):
+            raise RuntimeError("injected final candidate construction failure")
+        return original_replace(value, **changes)
+
+    monkeypatch.setattr(booking, "replace", fail_on_final_state)
+    if route == "domain":
+        with pytest.raises(RuntimeError, match="injected final candidate construction failure"):
+            booking.cancel_registration(
+                demo_data, resolve_actor(demo_data, "participant-2"), "registration-2", now=NOW
+            )
+    else:
+        app.button(key="cancel_registration-2").click().run()
+        assert app.exception and not app.success
+        assert "injected final candidate construction failure" in app.exception[0].value
+        assert app.session_state.demo_state is demo_data
+        assert app.session_state.selected_user_id == "participant-2"
+    assert demo_data == before and demo_data.registrations is original_rows
+    assert confirmed_count(demo_data, "workshop-2") == 1
+
+
+@pytest.mark.parametrize("target_id", ["registration-2", "registration-5"])
+def test_l5_review_ui_cancels_the_clicked_booking_when_two_are_eligible(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, target_id: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    original = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.button(key="book_workshop-1").click().run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert {b.key for b in app.button if str(b.key).startswith("cancel_")} == {
+        "cancel_registration-2",
+        "cancel_registration-5",
+    }
+    assert not app.button(key="cancel_registration-2").disabled
+    assert not app.button(key="cancel_registration-5").disabled
+    previous = app.session_state.demo_state
+    before = deepcopy(previous)
+    now = NOW + timedelta(seconds=5)
+    monkeypatch.setattr(booking, "server_now", lambda: now)
+    app.button(key=f"cancel_{target_id}").click().run()
+    expected_rows = before.registrations.copy()
+    index = next(i for i, row in enumerate(expected_rows) if row.registration_id == target_id)
+    expected_rows[index] = replace(
+        expected_rows[index], status=RegistrationStatus.CANCELLED, updated_at=now.astimezone(UTC)
+    )
+    assert not app.exception and not app.error
+    assert any(target_id in item.value for item in app.success)
+    candidate = app.session_state.demo_state
+    assert candidate == replace(before, registrations=expected_rows)
+    assert candidate.next_workshop_id == 5 and candidate.next_registration_id == 6
+    other_id = "registration-5" if target_id == "registration-2" else "registration-2"
+    assert set(app.dataframe[0].value["Registration ID"]) == {other_id}
+    assert set(app.dataframe[1].value["Registration ID"]) == {"registration-4", target_id}
+    assert set(app.dataframe[1].value["Status"]) == {"CANCELLED"}
+    assert previous == before and demo_data == original
+    assert app.session_state.selected_user_id == "participant-2"

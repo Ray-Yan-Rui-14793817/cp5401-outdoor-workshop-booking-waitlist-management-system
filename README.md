@@ -10,7 +10,9 @@ L5 starts from accepted L4/GitHub commit 2f2504acff79317c20760971acae2965ee98a1f
 |---|---|
 | [app.py](app.py) | Existing views/forms plus own cancellation controls in My Bookings, fresh submission time, cutoff display/disabled controls and explicit-OK state adoption. |
 | [booking.py](booking.py) | Pure operations over dataclasses/lists. New cancel_registration checks the stored owner and cutoff, retains history and releases one place. |
-| [test_booking.py](test_booking.py) | 298 cases in 112 functions: all 250 prior cases/92 function ASTs/decorators unchanged, plus 48 L5 cases in 20 functions. |
+| [test_booking.py](test_booking.py) | 306 cases in 115 functions: all 298 pre-review cases/112 function ASTs and decorators unchanged, plus eight focused review cases in three functions. The original 250 L1-L4 cases remain included. |
+
+The deep review found three test-oracle gaps: cancelling among multiple confirmed attendees, failure during final State construction and choosing one of two eligible bookings in the UI. Three private faulty copies each passed all 298 old tests; the new tests detect them. The genuine app.py/booking.py already enforce the contracts and remain byte-identical to the pre-review candidate. Current local regression: 306 passed. Findings, source-based course alignment and pending human checks are in the L5 review.
 
 Keep app.py -> booking.py -> Python data structures. No runtime module, database, framework, real login or dependency is added. The single-job Actions workflow and both dependency lock pairs remain unchanged.
 

@@ -2,7 +2,7 @@
 
 **Current: L5 HUMAN_REVIEW_PENDING. Human decision: PENDING. H01-H07: unchecked. L6: NOT_STARTED.**
 
-## Intake and baseline
+## Initial L5 intake and baseline (historical)
 
 The author explicitly requested L5 after accepted L4: participants cancel their own confirmed bookings, release capacity and retain history; enforce strict 24-hour, permission and repeat rules; keep the simple architecture, single-job Actions and L1-L4 regressions; update English delivery/AI/human records, provide a local-only ZIP and live preview, then stop for ACCEPT_LOOP. This supersedes the earlier L5 hold for this bounded implementation only.
 
@@ -10,7 +10,68 @@ Base: [accepted L4/GitHub 2f2504acff79317c20760971acae2965ee98a1fb](https://gith
 
 Executor: Codex assistant/local tools or GitHub Actions as labelled. Intake/local work began under the client date 17 November 2026; hosted verification is recorded on 18 November 2026 following the updated client context (both UTC+08:00). Workshop display is Asia/Singapore. No personal execution timestamp, feedback, risk rating, code edit or acceptance is supplied for L5.
 
-## Scope, architecture and changed files
+## Current deep-review intake
+
+Review base: [7c3081f54c3eb952835b07bca24467c9e7dc02c6](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/7c3081f54c3eb952835b07bca24467c9e7dc02c6), codex/l5-cancellation, 18 November 2026 (UTC+08:00). The author requests independent source/rubric/lecture review of cancellation/history, time/no-op order, permissions, complete State/IDs, test oracles/failure injection, architecture/quality and redundancy, with fixes and a stop at L5. No personal L5 execution or ACCEPT_LOOP is supplied.
+
+This review changes only test_booking.py as executable source, appending eight cases in three functions. Six existing Markdown documents record current evidence/mapping/findings. Seven existing files change; no new delivery file. app.py/booking.py already satisfy the reviewed properties and remain byte-identical to the base. All 298 prior cases/112 test function ASTs and decorators, canonical 39 definition rows/51 scenario rows, workflow/locks/configuration, five historical reviews and 116 protected earlier files remain unchanged. Delivery stays 22 files/11 Markdown documents. Initial implementation counts/changed-file descriptions below are historical, not relabelled as this corrective patch.
+
+Review finding summary: three test-oracle gaps are repaired (L5-F05-F07 below). Deliberately faulty copies passed the old suite; none was introduced into the genuine runtime. Proposed correction risk is Medium for generated-test assumptions; original allocation/owner behaviour retains the earlier High review-depth recommendation. Human risk judgement remains PENDING.
+
+### Deep-review verification
+
+| Check | Actual result and limit |
+|---|---|
+| Multi-attendee oracle | Private cancel-all-confirmed fault passed all 298 old cases in 43.69s. Four new cases cancel either participant's target in either row order with two same-workshop confirmations, cancelled history and a second workshop. Fault fails all four; genuine source changes only the exact row/count and preserves everything else. |
+| Late construction oracle | Private temporary-input-mutation fault passed all 298 old cases in 43.11s. New final-DemoState construction failures through domain/UI reject it with two failures, while genuine source keeps original State/list identity/records/counters and publishes no success. Earlier Registration-construction injection remains unchanged. |
+| Clicked-target oracle | Private UI-always-cancels-first fault passed all 298 old cases in 43.60s. Two real-control cases establish Sam owns two eligible confirmations, then click each. Fault passes the first target but fails the second; genuine source cancels only the clicked ID and preserves the other current record/history/counters. |
+| Focused genuine tests | Eight passed, 298 deselected, 3.52s. These are new review tests against an already-correct runtime, not production-fix red/green claims. |
+| Complete local regression | 306 passed in 62.74s, zero failures/skips, Python 3.12.14; 115 test functions. All 298 previous JUnit identities and 112 function ASTs/decorators remain unchanged, including 250 L1-L4 cases and 48 original L5 cases. |
+| Static/coverage | Ruff, format check, Bandit and pip check PASS. Coverage: 200 statements, one miss, 70 branches/one partial, 99% diagnostic; the unexecuted line is the existing demo-fixture error guard. High coverage was present when faulty copies passed, so it is not correctness/grade proof. |
+| Fresh browser | PASS: 12 Chrome flows through native controls, 1440x1400 and 390x844, isolated fresh service 8517. Correct URL/title/nonblank page, no framework overlay/exception, zero browser warning/error/page error. Screenshots inspected: only clicked registration-5 cancels while registration-2 remains CONFIRMED; later History retains 2/4/5 and Alex's replacement roster has registration-6/Xingjian. Rui draft/errors, locked controls, Refresh and independent sessions are preserved. Fresh server has no duplicate-default warning/traceback. QA 8517 stopped; human preview 8516 retained/healthy. Browser plugin unavailable; existing bundled Playwright used. |
+| Hosted review Actions | PENDING_REVIEW_CI. The current review commit must run its own single-job checks; initial 298-case runs below are historical. |
+| Delivery/baseline integrity | Exact 22-file local/GitHub/archive comparison and CRC are repeated after recording CI. Canonical definitions, accepted snapshots/history and locks/workflow remain unchanged; no private QA tool or personal project ZIP is uploaded. |
+
+### Review of B11-B17, I05 and cancellation I10
+
+| Scenario | Reviewed evidence and conclusion |
+|---|---|
+| B11 | One effective own pre-C cancellation changes the same ID to CANCELLED, keeps created_at/history, changes updated_at and releases exactly one place. New multi-attendee cases prevent losing other confirmations; original complete-candidate/capacity-boundary cases remain. VERIFIED_FOR_TESTED_SCOPE. |
+| B12 | Valid other participant targets a stored active/cancelled ID with an otherwise valid clock: FORBIDDEN and complete original state. Equal display names do not confer ownership. VERIFIED_FOR_TESTED_SCOPE. |
+| B13 | Retained L3 valid-participant creation/roster denials, actual-workshop lookup and non-owner organiser roster denial remain in the full regressions, with timing/input causes isolated or explicitly labelled as precedence tests. Cancellation/rebooking updates the authorised roster. No role/ownership policy changes. |
+| B14 | Well-formed unknown registration/workshop IDs are tested with otherwise valid actors/time through actual cancellation, Book and roster operations. Expect the corresponding UNKNOWN_REGISTRATION/UNKNOWN_WORKSHOP and exact unchanged State/IDs, without false success. Role/invalid-actor cases are separately mapped to BR-01 and B01/B02/B13. |
+| B15 | Fresh active records at C-1/C/C+1/S/S+1, equivalent instants and stale-render/fresh-decision UI checks isolate time as the refusal. Only before C may cancel. VERIFIED_FOR_TESTED_SCOPE. |
+| B16 | Owned CANCELLED repeats before/after C/S are ALREADY_CANCELLED with exact original state and zero allocation. Ownership remains checked first; these no-ops are not reused to prove active cutoff rejection. |
+| B17 | Actual serial cancel/rebook creates a new ID while retaining cancelled history, and an old-ID repeat cannot release the new place. Retained Book deadline cases reject rebooking at/after C with otherwise valid state. No simultaneous-user claim. |
+| I05 | Exact success/refusal/no-op state oracles plus original Registration failure, new final DemoState failure and non-OK candidate UI injections. The design prevents partial in-memory mutation/publication; it does not claim database transactions, durable rollback or recovery. Promotion-failure paths remain V1.1 work. |
+| Cancellation I10 | Actual UI renders open and passes fresh trusted C/C+1 to the operation, which rejects without state/counter changes or false success. Display disabling alone is not the enforcement. Join/promotion/withdrawal parts remain later scope. |
+
+### Architecture, redundancy and defensive checks
+
+The responsibilities remain appropriate: app.py renders selected-identity views and adopts only OK; booking.py enforces actual owner/time/state contracts; tests assert independently specified results. No runtime abstraction or file is added. Target existence and aware-clock checks handle actual business boundaries; UI role/menu filtering and business permission checks guard different entry points. Copied mutable lists are required by QR-02's independent complete-state contract; frozen rows can be shared safely. They are not speculative defensive state repair.
+
+No unnecessary service layer, general validator/repair framework, broad exception swallowing, warning suppression, dependency or unrelated refactor is warranted by the observed paths. Existing UNKNOWN_WORKSHOP handling is a small explicit referenced-target guard, tested as an inconsistent fixture, not a new deletion workflow. The genuine runtime is retained; the patch fixes missing evidence rather than increasing production complexity.
+
+### Assessment, HD rubric and lecture alignment
+
+The four supplied original PDFs and Week1-9 archive match the earlier verified hashes. Relevant assessment pages were freshly extracted; rubric pages 10/12/13 were also rendered and inspected. The two supplied S02 transcript copies have identical normalised text and are not independent corroboration. These are supplied transcriptions, not an independent audio verification. Relevant Week4-9 supplementary slides were inspected directly from the verified archive; originals are not redistributed.
+
+| Assessment criterion | Evidence at L5 and remaining work |
+|---|---|
+| Requirements/quality planning, 15%; S01 pp.3/9-10 | Clear accepted roles/FR/BR/QR/risk targets retained; B/I mapping and three independently challenged oracles are explicit. Human H01/H07 and R-08 suitability are still pending. |
+| Functional app/deployment, 15%; S01 pp.3/10 | Booking/cancellation/history/owned rosters work in the local preview and test scenarios. Assessed hosted deployment and release validation are NOT COMPLETE at this loop. |
+| V&V/testing, 20%; S01 pp.3-4/10-11 | 306 retained/new tests, boundary/failure/security checks, explicit evidence limitations and three detected false-green faults support verification. Intended-user validation and personal acceptance remain separate; pass count/99% coverage cannot close them. |
+| Change/regression/release, 20%; S01 pp.4/12 | Focused branch, original tests, findings/corrections and baseline comparisons support controlled development. L5 is pre-release baseline work, not the assessed meaningful CR-01. Working V1.0, change impact/Issue/PR, justified merge and V1.1 release remain future requirements. |
+| GitHub/CI, 15%; S01 pp.5/9/12 | Progressive code/evidence identities and one unchanged job with tests/static/security/full dependency audits support current work. Required Issue/PR/release lifecycle is not complete and must be demonstrated later. |
+| Presentation/defence/judgement, 15%; S01 pp.8/13 | Exact AI task/files/assumptions, genuine gaps/fixes and planned human checks support explanation. Actual personal understanding, risk classification, feedback, slides and oral defence cannot be supplied by AI or inferred from CI. |
+
+S02 English pp.2/8-9 permits explained adaptation of the three-file Demo to a different realistic problem and stresses small focused changes/human oversight. S03 English pp.2-4/6-7 stresses risk-based ownership/routing, concrete AI disclosure, scans/tests/findings and audit evidence. S01 p.4 permits the student's justified own decision unless the teaching team requires an external reviewer; organisational lecture examples are not a blanket instruction to invent an external approval here. The test-only patch remains pending the author's judgement; no approval or escalation outcome is fabricated.
+
+Lecture traceability: Week4 supplementary slides 4/18/22 distinguish lifecycle V&V and recorded decisions; Week5 slides 4/9/12 support test levels and requirement oracles; Week6 slides 11/14/17/20 support bounded intake, prompt-to-diff traceability, assumptions and risk judgement; Week7 slides 7/12/14 support strong observable assertions/regression/actual cross-owner checks; Week8 slides 26 (labelled 20)/28 (labelled 22) support proportionate gates and tool-evidence triage; Week9 slides 2/5/19 require human code understanding, focused changes and defensible evidence. Teaching overlap/waitlist examples do not change this project's accepted FULL/ID/cutoff rules.
+
+Technical conclusion: the reviewed genuine paths conform to the accepted cancellation contracts; the three oracle gaps are corrected. This supports the current loop's process/evidence, not a claim that the complete assessment or HD grade is achieved. L5 H01-H07 and ACCEPT_LOOP remain PENDING; L6 is NOT_STARTED.
+
+## Initial implementation scope (historical)
 
 | File | Actual change |
 |---|---|
@@ -55,7 +116,9 @@ L5 is baseline development before V1.0 release, not the assessed waitlist change
 
 AI-proposed review depth: High, because seat release, actual-target ownership, no-op precedence and complete state/counter preservation need scrutiny. This is a review proposal, not a human-approved residual rating or specialist approval. The author must judge the evidence/limits in H07.
 
-## Verification evidence
+<a id="verification-evidence"></a>
+
+## Initial implementation verification (historical)
 
 | Check | Actual result and executor |
 |---|---|
@@ -82,6 +145,10 @@ Injected tests at the domain/UI boundaries cover construction/call exceptions an
 | L5-F02 | Repeated cancellation after C/S must be ALREADY_CANCELLED rather than an active time rejection. The implementation follows BR-06's owner-first/no-op-first order; five fresh repeat cases and two actual cancel/rebook chains confirm no extra release or ID change. This is intended behaviour, not a claimed inherited product defect. Human H04 pending. |
 | L5-F03 | Only OK may replace UI state. Three distinct-candidate injections and one call-exception check verify the exact prior object/records/counters and no false success; retained F08 state and identity survive the happy path. No broad catch/repair abstraction was needed. Human evidence judgement pending. |
 | L5-F04 | Pre-publication checks caught a duplicated old L4 status preamble and locally generated ignored pytest/Ruff caches. Remove the duplicate, clarify the current gate and move only those caches into private evidence after verifying source/destination paths. The final export has exactly 22 files; canonical definitions and historical acceptance files are unchanged. Closed documentation/packaging correction. |
+| L5-F05 | Oracle gap: cancelling all confirmed attendees in a workshop passed the old 298 tests because effective-cancellation fixtures had one confirmation there. Four new legitimate multi-attendee/order/owner cases reject the isolated fault and verify exactly one changed ID/count with preserved other workshop/history/counters. Genuine runtime unchanged. Closed technical test correction; human H02/H06/H07 pending. |
+| L5-F06 | Oracle gap: temporary input mutation before final State copy passed old tests; the earlier injected failure occurred before that stage. Add two final-DemoState failures through actual domain/UI calls, checking original State/list identity/records/counters and no success. Both reject the fault; genuine runtime unchanged. Closed technical test correction; human evidence judgement pending. |
+| L5-F07 | Oracle gap: always cancelling the first owned confirmation passed old tests because actual UI cancellations had one eligible target. Add two real-control cases with registration-2/5 both eligible; the fault fails when the second is clicked. Genuine source changes only the clicked target and retains the other active booking/history/counters. Closed technical test correction; H06/H07 pending. |
+| L5-F08 | During this review's documentation draft, B14 was incorrectly described as role/actor denial. Re-read the unchanged canonical scenario: B14 covers unknown workshop/registration targets. Correct the review/test-plan mapping to actual UNKNOWN-outcome tests and keep role/owner checks under their proper definitions. No business/test implementation or canonical definition changes. Closed traceability correction. |
 
 No confirmed rule violation remains in the executed paths. Automated success is bounded evidence, not proof of all possible faults. Later findings must be recorded before acceptance; AI does not fabricate a student edit, rejected suggestion, risk decision or independent personal execution.
 
@@ -101,7 +168,7 @@ Carry forward L4-HF-01/02/03 without rewriting their original acceptance: cancel
 
 ## AI and human contribution
 
-The author supplied scope/policy and accepted L0-L4. AI implemented one domain operation and its UI wiring, wrote 48 tests using the accepted contracts, preserved all prior tests/history, ran local/browser/hosted checks and prepared English delivery/mapping/ZIP. Actual changed paths are listed above. The author has not supplied L5 code edits, personal observations, per-finding dispositions, a risk rationale or ACCEPT_LOOP. GitHub Actions is an automated executor, not an approver.
+The author supplied scope/policy and accepted L0-L4. AI implemented the original domain/UI change and 48 tests, then independently reviewed the oracles in this follow-up, appended eight targeted cases, preserved all 298 prior cases/history and kept the genuine runtime unchanged. AI performed the source-based comparison, three controlled faults, local/browser/hosted checks and English delivery/mapping/ZIP updates. Actual changed paths are listed above. The author has not supplied L5 code edits, personal observations, per-finding dispositions, a risk rationale or ACCEPT_LOOP. GitHub Actions is an automated executor, not an approver.
 
 ## Human acceptance checklist
 
@@ -112,8 +179,8 @@ These are planned checks for the author, not AI-completed executions. Start with
 - [ ] **H03 - Reallocate one released place.** Switch to Xingjian -> Workshops -> Book Photography. Expect new registration-5, total confirmations three and retained Sam history. Alex's Photography roster must contain Xingjian. Inspect actual cancel/rebook/repeat tests to confirm an old cancelled ID cannot release this new place and a further eligible serial Book is FULL.
 - [ ] **H04 - Strict cutoff and repeat semantics.** Inspect locked Trail Safety controls and fresh active C-1/C/C+1/S/S+1 tests, including a page rendered open but processed at C. Effective cancellation at C must reject without state/counter changes. Separately inspect owned CANCELLED repeats before/after C/S: ALREADY_CANCELLED with no mutation. Do not reuse a cancelled fixture to claim active deadline enforcement.
 - [ ] **H05 - Permissions and identity.** Compare Sam/Xingjian own controls/history. No identity/organisers have no participant cancellation menu/control. Inspect direct wrong-role, forged-actor and other-owner tests with valid unrelated preconditions, plus equal-name checks. Explain why stored ownership is enforced in booking.py beyond menu hiding, and why demo selection is not real authentication.
-- [ ] **H06 - Regression, drafts and session limits.** Fail Rui creation, navigate to cancel/rebook as participants, then return to Rui: his latest eight values/errors remain his own. Recheck F05 reset/restore and F08 owner-only success reset using retained tests. Check refresh and an independent browser session; explain reload/restart data loss. Inspect or run all 298 regressions and record what you actually executed rather than copying AI results.
-- [ ] **H07 - Human judgement and next decision.** Explain Demo reuse and project-specific cancellation, exact independent oracles, serial scope, internal injections and AI evidence attribution. Review L5-F01-F04 and proposed High review depth; record actual findings/edits/rejected suggestions, residual-risk rationale and reviewer/date. Supply candidate-specific ACCEPT_LOOP, CHANGES_REQUIRED or proportionate escalation. Stop at L5; acceptance alone does not start L6.
+- [ ] **H06 - Regression, drafts and session limits.** Fail Rui creation, navigate to cancel/rebook as participants, then return to Rui: his latest eight values/errors remain his own. In another fresh session, book Navigation as Sam to obtain two eligible confirmations (registration-2/5), then cancel registration-5 and verify registration-2 remains active and the other Navigation participant is retained. Inspect the new multi-attendee and late final-construction failure cases. Recheck L4-F05 reset/restore and L4-F08 owner-only success reset using retained tests. Check refresh and an independent browser session; explain reload/restart data loss. Inspect or run all 306 regressions and record what you actually executed rather than copying AI results.
+- [ ] **H07 - Human judgement and next decision.** Explain Demo reuse and project-specific cancellation, exact independent oracles, serial scope, internal injections and AI evidence attribution. Review L5-F01-F08, the three old-suite false-green faults, the corrected B14 mapping, the proposed High base review depth and Medium test-correction risk; record actual findings/edits/rejected suggestions, residual-risk rationale and reviewer/date. Supply candidate-specific ACCEPT_LOOP, CHANGES_REQUIRED or proportionate escalation. Stop at L5; acceptance alone does not start L6.
 
 Example commands from the repository root with an existing Python environment:
 
