@@ -1,4 +1,4 @@
-"""Workshop creation, public browsing and owned rosters using session data."""
+"""Workshop creation, participant booking and selected-identity reads in memory."""
 
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime, timedelta
@@ -273,6 +273,59 @@ def confirmed_count(state: DemoState, workshop_id: str) -> int:
         row.workshop_id == workshop_id and row.status == RegistrationStatus.CONFIRMED
         for row in state.registrations
     )
+
+
+def book_workshop(
+    state: DemoState, actor: DemoUser | None, workshop_id: str, *, now: datetime
+) -> tuple[str, DemoState]:
+    """Book serially against the current state; never mutate the input snapshot."""
+    permission = check_permission(state, actor, Role.PARTICIPANT)
+    if permission != "OK":
+        return permission, state
+    workshop = next((w for w in state.workshops if w.workshop_id == workshop_id), None)
+    if workshop is None:
+        return "UNKNOWN_WORKSHOP", state
+    try:
+        _require_aware(now, "now")
+    except ValueError:
+        return "INVALID_INPUT", state
+    now = now.astimezone(UTC)
+    if now >= workshop.registration_cutoff.astimezone(UTC):
+        return "REGISTRATION_CLOSED", state
+    if any(
+        row.workshop_id == workshop_id
+        and row.participant_id == actor.user_id
+        and row.status == RegistrationStatus.CONFIRMED
+        for row in state.registrations
+    ):
+        return "DUPLICATE_ACTIVE", state
+    if confirmed_count(state, workshop_id) >= workshop.capacity:
+        return "FULL", state
+    registration = Registration(
+        registration_id=f"registration-{state.next_registration_id}",
+        workshop_id=workshop_id,
+        participant_id=actor.user_id,
+        status=RegistrationStatus.CONFIRMED,
+        created_at=now,
+        updated_at=now,
+    )
+    return "OK", replace(
+        state,
+        users=state.users.copy(),
+        workshops=state.workshops.copy(),
+        registrations=[*state.registrations, registration],
+        next_registration_id=state.next_registration_id + 1,
+    )
+
+
+def list_own_registrations(
+    state: DemoState, actor: DemoUser | None
+) -> tuple[str, tuple[Registration, ...]]:
+    """Return this selected participant's records, including retained history."""
+    permission = check_permission(state, actor, Role.PARTICIPANT)
+    if permission != "OK":
+        return permission, ()
+    return "OK", tuple(row for row in state.registrations if row.participant_id == actor.user_id)
 
 
 def list_owned_workshops(

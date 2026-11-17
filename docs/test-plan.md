@@ -1,12 +1,29 @@
 # Test Plan and Traceability
 
-L0 revision 3 scenario definitions are unchanged. L3 retains all 87 L2 parameter cases and adds 90 cases: 177 in 58 functions. All 172 preceding cases remain. Nine existing form cases now exclude extra/duplicate error messages; five new cases cover rejected-input lifecycle, retry feedback and the captured decision time. Earlier UI-context/message adaptations remain documented, with no business outcome/state assertion or parameter removed. B03-B05/B13 are implemented; B06 presentation and B14's roster-target path are partial. Remaining registration/waitlist operations, complete lifecycle scenarios and validation remain planned. The [L3 record](reviews/L3-human-review.md#verification-results) identifies current results and executor.
+L0 revision 3 scenario definitions are unchanged. L4 retains all 177 L1-L3 parameter cases in 58 functions and adds 44 cases in 23 functions: 221 cases in 81 functions. All retained test-function ASTs/parameter definitions match L3; the shared My Bookings message oracle now describes its implemented content. L3's 87 retained L2 plus 90 L3 cases remain, including form retention/retry/reset. No business outcome/state assertion is removed. Current results/executors are in the [L4 review](reviews/L4-human-review.md#verification-results); earlier records retain their historical scope. Human acceptance, full lifecycle, cancellation, waiting and real-user validation are not inferred.
+
 
 [Rules](../requirements.md#business-rules) | [Risks](../requirements.md#risk-controls) | [Traceability](#traceability) | [Loop evidence format](../README.md#record-for-each-loop)
 
+## L4 implemented test mapping
+
+The names below are exact test suffixes after test_l4_. All use actual business entry points or Streamlit AppTest unless a fault-injection boundary is explicitly identified.
+
+| Group | Cases | Exact test suffixes | Requirement/scenario/risk and oracle |
+|---|---:|---|---|
+| L4-01 | 3 | booking_allocates_one_complete_independent_candidate; rebooking_retains_cancelled_history_and_allows_an_overlapping_workshop | FR-03/05; BR-04/05/07/13/14; QR-01/02; B07/B17; R-01/R-04. Capacity 1/30, complete expected candidate, one allocation, cancelled history retained and overlapping workshops independent. |
+| L4-02 | 9 | booking_role_denials_preserve_all_data; unknown_booking_target_is_explicit_without_mutation; booking_rejects_an_unusable_clock_without_allocating | FR-03; BR-01/03/07/13; QR-02/03; Book B14 and permission scope; R-03/R-05. Missing/unknown/forged identities, both organisers, unknown target and unusable clock all preserve complete state/counters. |
+| L4-03 | 9 | booking_uses_strict_cutoff_even_with_spare_capacity; booking_compares_actual_instants_across_zones; booking_rejection_precedence_is_time_then_duplicate_then_full | BR-03/16; QR-01; Book B06/B15/B17; R-05/R-07. Otherwise eligible actor with spare capacity at C-1/C/C+1/S/after S; equivalent UTC/New York instants; precedence checked separately, not used to hide isolated causes. |
+| L4-04 | 4 | full_booking_does_not_waitlist_or_advance_ids; duplicate_with_spare_capacity_keeps_original_id; serial_last_place_and_repeated_request_use_the_latest_state; registration_construction_failure_preserves_complete_input | BR-04/05/13; QR-01/02; B07-B09; I01/I02 and booking I05; R-01/R-04/R-07. FULL with eligible actor, duplicate with spare capacity, feed successful state into next request, repeated IDs/counts unchanged and injected construction exception. Serial checks are not concurrency tests. |
+| L4-05 | 7 | own_records_filter_by_id_and_keep_all_statuses; private_read_denials_return_no_records; empty_personal_history_is_a_successful_empty_read | FR-05; BR-01/05; QR-03; B10; R-03. Both IDs including equal display names, all retained statuses, empty success and no returned records for wrong/missing actors. No arbitrary other-user read endpoint exists. |
+| L4-06 | 7 | ui_booking_updates_counts_own_history_and_owned_roster; ui_rejection_keeps_every_record_and_counter; booking_controls_are_participant_only; locked_and_started_booking_controls_are_disabled | FR-03/05/07; BR-01/04/05/13/16; QR-01-04; Book/own-view B06-B10, partial I06/I08/I09; R-01/R-03/R-04/R-07. Real controls create one record, update counts/owned roster, retain draft/identity, show only own IDs and reject full/repeat without mutation. |
+| L4-07 | 5 | stale_booking_ui_uses_fresh_time_at_the_operation; started_confirmed_record_is_history_without_status_change; personal_ui_does_not_render_records_on_non_ok_result; booking_isolated_from_another_session_and_failure_ui_preserves_input | BR-03/13/16; QR-02-04; booking portions of I05/I09/I10; R-03-R-05/R-07. Inject decision clock across C, preserve original historical status, reject non-OK even with private rows, independent factory state and injected UI-call exception with no false success/replacement. |
+
+Total: 44 new cases. Fault injection proves the specified wiring/failure boundary, not that an ordinary user can edit the clock or force an internal error. The stale Book test renders with an open display clock, then supplies C at the actual business call. I10's later cancellation/Join/promotion/withdrawal paths remain unimplemented. Browser reload/restart behaviour in I09 remains distinct from a business-operation factory isolation check.
+
 ## L2 implemented test mapping
 
-The accepted L2 baseline contained 87 cases in 30 functions: 42 L1 plus 45 L2. All parameter cases below remain in L3. Public/organiser message expectations now describe working views. Three empty-state L1 UI functions explicitly initialise create_demo_state; the abnormal-permission test preloads its populated fixture before injecting the fault, so demo seeding is not the condition under test. Expected behaviour remains derived from FR-01, BR-01/BR-14, QR-03/QR-04 and the author's menu instruction. PREVIEW_MESSAGES is independent of app.py. Historical L2 results are not relabelled as L3 execution.
+The accepted L2 baseline contained 87 cases in 30 functions: 42 L1 plus 45 L2. All parameter cases below remain in L4. Public/organiser message expectations now describe working views. Three empty-state L1 UI functions explicitly initialise create_demo_state; the abnormal-permission test preloads its populated fixture before injecting the fault, so demo seeding is not the condition under test. Expected behaviour remains derived from FR-01, BR-01/BR-14, QR-03/QR-04 and the author's menu instruction. PREVIEW_MESSAGES is independent of app.py. Historical L2 results are not relabelled as L3 execution.
 
 | Group | New cases | Exact tests | Requirement/risk and acceptance focus |
 |---|---|---|---|
@@ -26,7 +43,7 @@ Those controlled-copy observations are historical deep-review evidence, not fres
 
 The historical L2 navigation review added controlled-copy evidence: removing public content only for an unselected identity passed the old 86-case suite but failed three strengthened checks. An always-reset fault previously passed four transition cases whose starting private view had never rendered; strengthened checks detected all six private-start failures. Show-all-menus and bypass-helper faults were also rejected. These were deliberate private faults, not production defects. See the unchanged L2 record for those historical results and limitations.
 
-## L3 implemented test mapping
+## L3 retained test mapping (historical development)
 
 The following 90 L3 cases use otherwise-valid fixtures to isolate each rejection, except the explicit role-before-invalid-input precedence parameters and the named multiple-error form case. FR/BR and the author's bounded form request define expected outcomes and state; the application is not its own test oracle.
 

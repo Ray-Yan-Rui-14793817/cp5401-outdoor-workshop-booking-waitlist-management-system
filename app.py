@@ -1,6 +1,6 @@
-"""L3 workshop browsing, creation and owned confirmed rosters."""
+"""L4 participant booking/history with retained workshop creation and owned rosters."""
 
-from datetime import datetime, time, timedelta
+from datetime import UTC, datetime, time, timedelta
 
 import streamlit as st
 
@@ -10,12 +10,14 @@ from booking import (
     DemoUser,
     RegistrationStatus,
     Role,
+    book_workshop,
     browse_workshops,
     check_permission,
     confirmed_count,
     create_demo_data,
     create_workshop,
     get_workshop_roster,
+    list_own_registrations,
     list_owned_workshops,
     resolve_actor,
     server_now,
@@ -27,8 +29,11 @@ def format_instant(value: datetime) -> str:
     return value.astimezone(WORKSHOP_TIMEZONE).strftime("%Y-%m-%d %H:%M:%S") + " (Asia/Singapore)"
 
 
-def show_workshops(state: DemoState, now: datetime) -> None:
+def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> None:
     st.info("Browse workshops below. Times are shown in Asia/Singapore.")
+    message = st.session_state.pop("booking_message", None)
+    if message and actor is not None and message[0] == actor.user_id:
+        st.success(message[1])
     workshops = browse_workshops(state)
     if not workshops:
         st.write("No workshops have been created in this session.")
@@ -53,7 +58,78 @@ def show_workshops(state: DemoState, now: datetime) -> None:
             elif now >= workshop.registration_cutoff:
                 st.caption("Confirmed roster locked: booking is closed under the 24-hour policy.")
             else:
-                st.caption("Registration window open. Booking actions arrive in a later loop.")
+                st.caption("Registration window open. Availability is shown in the counts above.")
+            if actor is not None and actor.role == Role.PARTICIPANT:
+                if st.button(
+                    "Book workshop",
+                    key=f"book_{workshop.workshop_id}",
+                    disabled=now >= workshop.registration_cutoff,
+                    help="Booking requires a free place, no active duplicate and an open window.",
+                ):
+                    outcome, candidate = book_workshop(
+                        state, actor, workshop.workshop_id, now=server_now()
+                    )
+                    if outcome == "OK":
+                        registration = candidate.registrations[-1]
+                        st.session_state.demo_state = candidate
+                        st.session_state.booking_message = (
+                            actor.user_id,
+                            f"Booked {workshop.title}: {registration.registration_id} (CONFIRMED).",
+                        )
+                        st.rerun()
+                    else:
+                        explanations = {
+                            "INVALID_ACTOR": "Select a valid participant demo identity.",
+                            "FORBIDDEN": "Only participants may book workshops.",
+                            "UNKNOWN_WORKSHOP": "This workshop is no longer available.",
+                            "INVALID_INPUT": "The server time is unavailable. Please try again.",
+                            "REGISTRATION_CLOSED": "Booking closed 24 hours before the start.",
+                            "DUPLICATE_ACTIVE": "You already have a confirmed booking for this workshop.",
+                            "FULL": "No places remain. Waitlisting is not available in this release.",
+                        }
+                        st.error(
+                            f"{outcome}: {explanations.get(outcome, 'Booking is unavailable.')}"
+                        )
+
+
+def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
+    st.info("View your confirmed bookings and retained history for the selected demo identity.")
+    outcome, registrations = list_own_registrations(state, actor)
+    if outcome != "OK":
+        st.error("Your booking records are unavailable. Refresh and try again.")
+        return
+    workshops = {workshop.workshop_id: workshop for workshop in state.workshops}
+    current, history = [], []
+    for record in registrations:
+        workshop = workshops[record.workshop_id]
+        row = {
+            "Registration ID": record.registration_id,
+            "Workshop ID": record.workshop_id,
+            "Workshop": workshop.title,
+            "Status": record.status.value,
+            "Start": format_instant(workshop.starts_at),
+            "End": format_instant(workshop.ends_at),
+            "Registration cutoff": format_instant(workshop.registration_cutoff),
+            "Meeting point": workshop.location,
+            "Created": format_instant(record.created_at),
+            "Updated": format_instant(record.updated_at),
+        }
+        if record.status == RegistrationStatus.CONFIRMED and now.astimezone(
+            UTC
+        ) < workshop.starts_at.astimezone(UTC):
+            current.append(row)
+        else:
+            history.append(row)
+    for title, rows in (("Upcoming confirmed bookings", current), ("History", history)):
+        st.subheader(title)
+        if rows:
+            st.dataframe(rows, hide_index=True, width="stretch")
+        else:
+            st.write("No records in this section for the selected identity.")
+    st.caption(
+        "History includes cancelled records and started workshops; original statuses are retained. "
+        "Cancellation is not available in this development loop."
+    )
 
 
 def show_organiser(state: DemoState, actor: DemoUser) -> None:
@@ -234,7 +310,7 @@ def main() -> None:
 
     st.title("Outdoor Workshop Booking and Waitlist Management System")
     st.caption(
-        "L3 preview: browse and create workshops. Booking and cancellation follow in later loops."
+        "L4 preview: book workshops and view your records. Cancellation follows in a later loop."
     )
     required_roles = {"My Bookings": Role.PARTICIPANT, "Organiser": Role.ORGANISER}
 
@@ -280,7 +356,7 @@ def main() -> None:
     if view not in ("Workshops", "My Bookings", "Organiser"):
         st.error("This view is unavailable. Please refresh and try again.")
     elif view == "Workshops":
-        show_workshops(state, server_now())
+        show_workshops(state, server_now(), actor)
     else:
         required_role = required_roles[view]
         permission = check_permission(state, actor, required_role)
@@ -292,7 +368,7 @@ def main() -> None:
             if view == "Organiser":
                 show_organiser(state, actor)
             else:
-                st.info("Booking actions and personal history will be added in later loops.")
+                show_my_bookings(state, actor, server_now())
         else:
             st.error("This view is unavailable. Please refresh and try again.")
 
