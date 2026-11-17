@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. Current loop: L1 simplified edition, deep review. Human decision: PENDING. L2: NOT_STARTED.**
+**Design: accepted L0 revision 3. Current loop: L1 simplified edition, accepted. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Shanghai). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 
@@ -37,7 +37,7 @@ Keep both pairs of dependency files: requirements.in/requirements.txt and requir
 | [Demo reuse](docs/demo-reuse.md) | Reference versions, adaptation decisions and references. |
 | [AI use](docs/ai-use.md) | Significant tasks and actual AI/human contributions. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical author decision and seven recorded checks. |
-| [L1 review](docs/reviews/L1-human-review.md) | Actual findings/results, human checklist and pending decision. |
+| [L1 review](docs/reviews/L1-human-review.md) | Actual findings/results, author-confirmed checklist completion and ACCEPT_LOOP. |
 
 For GitHub delivery, the contents of L1_develop belong at the repository root, including the hidden .github directory; do not wrap them inside another L1_develop directory. This review uses the separate codex/l1-simplified-review branch to verify CI. The [L1 review](docs/reviews/L1-human-review.md#verification-results) identifies the tested commit/run; the original working copy and L0_develop remain unchanged.
 
@@ -64,7 +64,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 | Loop | AI task and outputs | Personal check | Exit condition |
 |---|---|---|---|
 | L0 | Requirements, rules, risks, reuse and test plan. | Review scope/policies and explain the design. | ACCEPT_LOOP recorded in the historical L0 record. |
-| L1 | Three-file foundation, real tests, locks and CI; current simplified documents. | Reproduce setup, understand boundaries and assess the L1 checklist. | Relevant checks pass and the author supplies ACCEPT_LOOP. |
+| L1 | Three-file foundation, real tests, locks and CI; current simplified documents. | Reproduce setup, understand boundaries and assess the L1 checklist. | SATISFIED: author declared H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026; see the L1 review. |
 | L2 | Fixed-ID actor selection and selected-role/owner checks. | Challenge role resolution, reusable permission checks and identity limits. | B01/B02 and permission-foundation tests plus current CI pass; ACCEPT_LOOP. Complete B10/B12/B13 through actual operations in L3-L5. |
 | L3 | Creation, browsing, rosters and valid demo fixtures. | Check >24h/=24h/<24h, input types, S/C and ownership. | B03-B06, unchanged-input rejection and CI pass; ACCEPT_LOOP. |
 | L4 | Booking and own history using latest serial state. | Check last place, duplicates, actor changes and stale submission. | B07-B10 and relevant I01/I02/I10 pass; ACCEPT_LOOP. |
@@ -75,6 +75,8 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 | L9 | Main deployment, smoke evidence, V1.1 and submission materials. | Decide merge, inspect main CI/deployed behaviour and release limits. | Verified deployed commit, validation and ACCEPT_RELEASE. |
 
 Loop-level foundation evidence is partial support for later scenarios. Complete business scenarios remain required before V1.0/V1.1 release; permission-helper tests alone do not complete B10/B12/B13. L1 does not fulfil the assessment's functioning-application, validation or release criteria yet.
+
+L1 acceptance makes L2 eligible under the plan. L2 implementation awaits the author's next instruction. This acceptance does not grant READY_TO_MERGE or ACCEPT_RELEASE.
 
 ## GitHub Actions
 

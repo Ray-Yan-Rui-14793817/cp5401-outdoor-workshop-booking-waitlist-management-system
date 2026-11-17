@@ -1,10 +1,10 @@
 # L1 Work and Human Review
 
-**L1 simplified edition, deep review. Human decision: PENDING. L2: NOT_STARTED.**
+**L1 simplified edition, deep review. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Shanghai). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
 
 ## Review intake and scope
 
-Author task: review the simplified L1 against accepted L0 revision 3, Assessment 3/HD criteria, supplied lecture transcripts and slides; check architecture, simplification, tests, Actions, workflow and AI records; fix findings and wait at L1. Executor/review tool: Codex. This record is AI-assisted technical analysis, not the author's personal acceptance.
+Author task: review the simplified L1 against accepted L0 revision 3, Assessment 3/HD criteria, supplied lecture transcripts and slides; check architecture, simplification, tests, Actions, workflow and AI records; fix findings and wait at L1. Executor/review tool: Codex. Technical analysis below is AI-assisted. The author's subsequent acceptance and completion statement are recorded separately in the human acceptance checklist.
 
 | Boundary | Treatment |
 |---|---|
@@ -22,7 +22,7 @@ Author task: review the simplified L1 against accepted L0 revision 3, Assessment
 | Unchanged policy | Creation needs more than 24h; at C close Book/confirmed cancellation/Join/promotion; permit owned waiting withdrawal until S. New tests calculate C only; enforcement remains later work. |
 | Reviewer routing | The author owns the current self-review and must explain the code/oracles before a PR. Do not imply independent approval. Escalate unresolved policy or material security/competence questions as appropriate. |
 
-AI proposes MEDIUM review depth: generated test oracles and CI organisation can create false confidence. Validators, actor boundaries and dependency versions are unchanged in this review; authentication/storage/dependency changes would require fresh risk triage. The author must record the actual risk judgement and decision below. R-08 remains VALIDATION_PENDING.
+AI proposes MEDIUM review depth: generated test oracles and CI organisation can create false confidence. Validators, actor boundaries and dependency versions are unchanged in this review; authentication/storage/dependency changes would require fresh risk triage. The author has declared H07 complete and supplied ACCEPT_LOOP. A separate written risk classification/rationale was not included in that message; the AI recommendation is not relabelled as the author's own reasoning. R-08 remains VALIDATION_PENDING.
 
 ## Findings and dispositions
 
@@ -31,7 +31,7 @@ AI proposes MEDIUM review depth: generated test oracles and CI organisation can 
 | SR-01 / Medium | test_booking.py: Singapore-only cutoff assertions could miss subtraction in local wall time across DST. Existing coverage did not expose this oracle gap. | CORRECTED: preserve the original case and add fall-back/spring-forward cases with fixed expected instants. A private faulty copy passed the old cutoff test but failed both new cases; the real unchanged booking.py passes all 42. This is a test weakness, not a newly discovered production defect. |
 | SR-02 / Medium | quality-checks.yml and prior review: the consolidated job had only local syntax/control checks; historical four-job success was insufficient evidence for the new configuration. | CORRECTED WITH EVIDENCE: the actual single-job run succeeded on the tested commit below. All relevant steps ran successfully and the combined reports artifact was uploaded. No further CI code change was needed. |
 | SR-03 / Low | README L2 exit referenced B10/B12/B13 although actual read/create/cancel operations arrive in L3-L5. This could encourage overstating permission-helper coverage. | CORRECTED: L2 exits on actor resolution and permission-foundation tests. Full B10/B12/B13 remain required through real operations before V1.0. No scenario definition, release target or L0 file changes. |
-| SR-04 / Low | Current evidence needed an explicit course comparison and separation of AI technical verification from the author's review. | CORRECTED IN DOCUMENTATION: this record links scope, assumptions, oracles, findings and course expectations. Actual human observations/decision remain PENDING, so governance is not claimed complete. |
+| SR-04 / Low | Current evidence needed an explicit course comparison and separation of AI technical verification from the author's review. | CORRECTED IN DOCUMENTATION: this record links scope, assumptions, oracles, findings and course expectations. Human acceptance was pending at technical-review time; the author subsequently declared H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026. Individual personal notes were not supplied with that statement. |
 
 Earlier corrected L1 findings remain safeguards: UTC instant ordering, complete lock-audit reconciliation, explicit Bash/pipefail and full-state/mixed-status assertions. Historical detail: [prior L1 review](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/8ab483885f92a4861042486e40d152b63f4fa115/docs/reviews/L1-human-review.md). Earlier four-job runs do not identify this reviewed export.
 
@@ -73,7 +73,7 @@ References S01-S17 are retained in [Demo reuse](../demo-reuse.md#references). Th
 | V&V/testing, 20%; S01 pp.3/10-11; S13/S14/S06 | This document/code review and 42 automated cases are verification. Strengthened oracles detect a concrete fault. User validation, core-business failure cases and selected security boundaries remain later activities. |
 | Controlled change/releases, 20%; S01 pp.4/12 | Retain working V1.0 before CR-01, impact analysis, changed tests plus regression, PR/findings/human merge decision and V1.1 deployment. This L1 review is not the assessed change. |
 | GitHub/CI evidence, 15%; S01 pp.5/12; S07 | One job is sufficient when it actually runs the relevant checks and retains evidence. The hosted commit/run below closes the execution gap in SR-02. Preserve progressive history and selected evidence before 14-day artifact expiry. |
-| Defence/judgement, 15%; S01 pp.6-8/13; S05/S08 | AI-use records significant tasks and substantial generated work. Author understanding, personal observations, risk judgement and acceptance are still required; green CI or AI review cannot supply them. |
+| Defence/judgement, 15%; S01 pp.6-8/13; S05/S08 | AI-use records significant tasks and substantial generated work. The author now declares H01-H07 complete and accepts L1; individual personal notes are not transcribed from AI execution. Final defence still requires the author to explain and defend the submitted work; green CI cannot supply that understanding. |
 | Lecture use of Demo; S02 p.2; S03 pp.6-7 | Keep app.py -> booking.py with dataclasses/lists and test_booking.py. The extra files are dependency/configuration or primary task/evidence documents. Three core files are a permitted simple pattern, not a ban on required evidence files. |
 | Human oversight; S02 pp.8-10; S03 pp.2-4; S05/S08 | Human ownership starts before the PR. Each loop keeps intent, preserved behaviour, assumptions, evidence, findings and the author's reasoned decision. Review routing depends on actual risk; no external approval is invented. |
 
@@ -106,24 +106,26 @@ Private JUnit/coverage, static-scan reports, source checks and controlled-fault 
 
 ## Human acceptance checklist
 
-All items require actual author observations. Record whether you executed a check or assessed AI/CI evidence. Self-review is not independent external approval.
+On 17 November 2026 (Asia/Shanghai), the project author explicitly supplied ACCEPT_LOOP and stated that H01-H07 had been completed. The checked items below record that author declaration, not an AI inference or independent external approval. The date is the confirmation/acceptance date; individual execution dates were not supplied.
 
-- [ ] **H01 Setup:** Personally open the L1 preview and record the environment, three views and a refresh observation; optionally rerun pytest and record its actual result.
-- [ ] **H02 Code:** Explain the three core files, frozen rows/mutable session lists, independent factories and why model construction does not authorise workshop creation.
-- [ ] **H03 Oracles:** Predict capacity and cutoff outcomes before reading results; explain why the two new cases fail the private local-time fault and what they do not test.
-- [ ] **H04 Limits:** Check state/counter snapshots and mixed-status counting; explain fictional identity, session/reset, concurrency and pending business-operation limits.
-- [ ] **H05 CI:** Inspect the current single quality-checks run/commit, runtime-only install, audits, JUnit/coverage and failure controls. Check any old required-check context before a future merge.
-- [ ] **H06 AI and scope:** Compare changes with accepted L0 and this task; confirm retained policies/locks/original tests; record human edits, rejected suggestions and remaining findings.
-- [ ] **H07 Decision:** Record reviewer/date/code identity, risk rationale and ACCEPT_LOOP or CHANGES_REQUIRED. Treat R-08 and final assessment/release evidence separately.
+English translation of the author's confirmation: "ACCEPT_LOOP. I have completed the H01-H07 human acceptance checks. Update my L1." This is a translation, not a verbatim English statement. The accepted candidate is the simplified L1 delivered in the preceding conversation: commit cb1f4a261e31e5486b4982b72317f4c39445eecf on codex/l1-foundation. Its [run 43901733050](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43901733050) passed the single job and all 42 tests. AI previously verified that CI result; it is not represented as a fresh personal test execution by the author.
+
+- [x] **H01 Setup:** Personally open the L1 preview and record the environment, three views and a refresh observation; optionally rerun pytest and record its actual result.
+- [x] **H02 Code:** Explain the three core files, frozen rows/mutable session lists, independent factories and why model construction does not authorise workshop creation.
+- [x] **H03 Oracles:** Predict capacity and cutoff outcomes before reading results; explain why the two new cases fail the private local-time fault and what they do not test.
+- [x] **H04 Limits:** Check state/counter snapshots and mixed-status counting; explain fictional identity, session/reset, concurrency and pending business-operation limits.
+- [x] **H05 CI:** Inspect the current single quality-checks run/commit, runtime-only install, audits, JUnit/coverage and failure controls. Check any old required-check context before a future merge.
+- [x] **H06 AI and scope:** Compare changes with accepted L0 and this task; confirm retained policies/locks/original tests; record human edits, rejected suggestions and remaining findings.
+- [x] **H07 Decision:** Record reviewer/date/code identity, risk rationale and ACCEPT_LOOP or CHANGES_REQUIRED. Treat R-08 and final assessment/release evidence separately.
 
 | Human record | Actual value |
 |---|---|
-| Reviewer/date and reviewed code identity | NOT_RECORDED |
-| Personally executed checks and observations | NOT_RECORDED |
-| Results reviewed rather than executed | NOT_RECORDED |
-| Code understanding and independent expected outcomes | NOT_RECORDED |
-| Finding dispositions, edits or rejected suggestions | NOT_RECORDED |
-| Risk judgement and residual limits | NOT_RECORDED |
-| Decision | PENDING |
+| Reviewer/date and reviewed code identity | Project author, identified by the user role in the project conversation. Confirmation date: 17 November 2026, Asia/Shanghai. Accepted candidate: cb1f4a261e31e5486b4982b72317f4c39445eecf, the simplified L1 most recently delivered. |
+| Personally executed checks and observations | H01-H07 completion explicitly declared. Individual commands, environment details and step-by-step observations were not included in the acceptance message. |
+| Results reviewed rather than executed | H05 completion declared. Run 43901733050 is linked as existing CI evidence; no separate personal execution log was supplied. |
+| Code understanding and independent expected outcomes | H02-H04 completion declared. Individual explanations were not transcribed in this message. |
+| Finding dispositions, edits or rejected suggestions | H06 completion declared; technical dispositions remain above. No additional human edits or rejected suggestions were reported in this message. |
+| Risk judgement and residual limits | H07 completion and ACCEPT_LOOP explicitly declared. A separate written risk classification/rationale was not included. AI MEDIUM triage remains AI analysis; R-08 and later release validation remain open. |
+| Decision | ACCEPT_LOOP, supplied by the author and transcribed by AI. |
 
-Actual ACCEPT_LOOP is required before L2. READY_TO_MERGE and ACCEPT_RELEASE remain separate decisions under the [workflow](../../README.md#development-workflow).
+The L1 human gate is SATISFIED by the explicit ACCEPT_LOOP. This record-only update changes no code, tests, workflow, dependency locks or business rules. L2 is eligible but NOT_STARTED, awaiting the author's next instruction. READY_TO_MERGE and ACCEPT_RELEASE remain separate decisions under the [workflow](../../README.md#development-workflow).

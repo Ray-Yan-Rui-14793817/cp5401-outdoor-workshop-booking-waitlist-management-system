@@ -1,6 +1,6 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 foundation implemented; human loop decision PENDING. Requirement acceptance targets below are unchanged and are not claimed complete by L1. [L1 review](docs/reviews/L1-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 foundation implemented; human loop decision ACCEPT_LOOP, 17 November 2026 (Asia/Shanghai), with H01-H07 completion declared by the author. L2: NOT_STARTED. Requirement acceptance targets below are unchanged and are not claimed complete by L1. [L1 review](docs/reviews/L1-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
 ## Problem and purpose
 
