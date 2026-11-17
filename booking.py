@@ -1,4 +1,4 @@
-"""Framework-independent data and state foundations for the L1 prototype.
+"""Framework-independent models and demo permission foundations.
 
 Business operations are added in later accepted loops. Constructing a Workshop
 represents data; it does not authorise creation or bypass the future lead-time rule.
@@ -95,9 +95,38 @@ def create_demo_state() -> DemoState:
     """Return independent mutable collections and fixed fictional identity data."""
     return DemoState(
         users=[
-            DemoUser("participant-1", "Alex", Role.PARTICIPANT),
+            DemoUser("participant-1", "Xingjian", Role.PARTICIPANT),
             DemoUser("participant-2", "Sam", Role.PARTICIPANT),
-            DemoUser("organiser-1", "Casey", Role.ORGANISER),
-            DemoUser("organiser-2", "Jordan", Role.ORGANISER),
+            DemoUser("organiser-1", "Rui Yan", Role.ORGANISER),
+            DemoUser("organiser-2", "Alex", Role.ORGANISER),
         ]
     )
+
+
+def resolve_actor(state: DemoState, user_id: str | None) -> DemoUser | None:
+    """Resolve a selected ID to the session's fixed demo identity, or None."""
+    return next((user for user in state.users if user.user_id == user_id), None)
+
+
+def check_permission(
+    state: DemoState,
+    actor: DemoUser | None,
+    required_role: Role,
+    *,
+    owner_id: str | None = None,
+) -> str:
+    """Return OK, INVALID_ACTOR or FORBIDDEN without changing state.
+
+    Later operations must obtain owner_id from the looked-up target record.
+    This helper does not look up targets or authenticate the selected person.
+    """
+    if actor is None:
+        return "INVALID_ACTOR"
+    canonical = resolve_actor(state, actor.user_id)
+    if canonical is None or actor.role != canonical.role:
+        return "INVALID_ACTOR"
+    if canonical.role != required_role:
+        return "FORBIDDEN"
+    if owner_id is not None and canonical.user_id != owner_id:
+        return "FORBIDDEN"
+    return "OK"

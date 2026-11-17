@@ -1,6 +1,21 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 foundation implemented; human loop decision ACCEPT_LOOP, 17 November 2026 (Asia/Singapore), with H01-H07 completion declared by the author. L2: NOT_STARTED. Requirement acceptance targets below are unchanged and are not claimed complete by L1. [L1 review](docs/reviews/L1-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 accepted on 17 November 2026 (Asia/Singapore). Current loop: L2 identity and permission foundations; human decision PENDING. L3: NOT_STARTED. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+
+## L2 implementation scope
+
+The author's L2 instruction fixes the demonstration identities below. Stable IDs and their roles are retained from L1; display names are updated. No account editor or real login is introduced.
+
+| Fixed ID | Demo name | Role |
+|---|---|---|
+| organiser-1 | Rui Yan | ORGANISER |
+| organiser-2 | Alex | ORGANISER |
+| participant-1 | Xingjian | PARTICIPANT |
+| participant-2 | Sam | PARTICIPANT |
+
+resolve_actor maps a selected ID to the canonical session DemoUser, or None. check_permission returns INVALID_ACTOR for an absent/unknown actor or inconsistent role claim; FORBIDDEN for a valid actor with the wrong operation role or optional owner; otherwise OK. Both functions leave all input state unchanged. Names are display labels, not permission keys.
+
+The role requested by an operation is an application constant, not a user role editor. Future operations must obtain owner_id from the actual looked-up target record; the helper alone does not establish target existence or implement cancellation/roster access. B01/B02 receive L2 identity/preview checks. B10/B12/B13 and complete QR-03 business enforcement remain later work. Switching or clearing the selector never reseeds business state. Selection is freely switchable and does not authenticate a real person.
 
 ## Problem and purpose
 

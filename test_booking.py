@@ -1,4 +1,4 @@
-"""L1 foundation checks; these do not complete the planned B/W/I scenarios."""
+"""Retained L1 regressions and L2 identity/permission foundation checks."""
 
 from copy import deepcopy
 from dataclasses import replace
@@ -11,11 +11,15 @@ from streamlit.testing.v1 import AppTest
 
 from booking import (
     WORKSHOP_TIMEZONE,
+    DemoState,
+    DemoUser,
     Registration,
     RegistrationStatus,
     Role,
     Workshop,
+    check_permission,
     create_demo_state,
+    resolve_actor,
 )
 
 APP_PATH = Path(__file__).with_name("app.py")
@@ -264,3 +268,208 @@ def test_independent_app_sessions_do_not_share_state(workshop: Workshop) -> None
     assert second.metric[0].value == "0"
     assert second.session_state.demo_state.workshops == []
     assert second.session_state.demo_state.next_workshop_id == 1
+
+
+@pytest.fixture
+def populated_state(workshop: Workshop) -> DemoState:
+    state = create_demo_state()
+    created = datetime(2026, 12, 1, tzinfo=UTC)
+    state.workshops.append(workshop)
+    state.registrations.extend(
+        [
+            Registration(
+                "registration-1",
+                "workshop-1",
+                "participant-1",
+                RegistrationStatus.CONFIRMED,
+                created,
+                created,
+            ),
+            Registration(
+                "registration-2",
+                "workshop-1",
+                "participant-2",
+                RegistrationStatus.CANCELLED,
+                created,
+                created + timedelta(hours=1),
+            ),
+        ]
+    )
+    state.next_workshop_id = 2
+    state.next_registration_id = 3
+    return state
+
+
+@pytest.mark.parametrize(
+    ("user_id", "display_name", "role"),
+    [
+        ("organiser-1", "Rui Yan", Role.ORGANISER),
+        ("organiser-2", "Alex", Role.ORGANISER),
+        ("participant-1", "Xingjian", Role.PARTICIPANT),
+        ("participant-2", "Sam", Role.PARTICIPANT),
+    ],
+)
+def test_fixed_identity_resolves_by_id_without_mutation(
+    populated_state: DemoState, user_id: str, display_name: str, role: Role
+) -> None:
+    expected = deepcopy(populated_state)
+    actor = resolve_actor(populated_state, user_id)
+    assert actor == DemoUser(user_id, display_name, role)
+    assert actor is next(user for user in populated_state.users if user.user_id == user_id)
+    assert populated_state == expected
+
+
+@pytest.mark.parametrize("user_id", [None, "", "missing-user", "Rui Yan"])
+def test_unselected_unknown_and_display_name_inputs_do_not_resolve(
+    populated_state: DemoState, user_id: str | None
+) -> None:
+    expected = deepcopy(populated_state)
+    actor = resolve_actor(populated_state, user_id)
+    assert actor is None
+    assert check_permission(populated_state, actor, Role.ORGANISER) == "INVALID_ACTOR"
+    assert populated_state == expected
+
+
+@pytest.mark.parametrize(
+    ("user_id", "required_role", "owner_id", "expected_outcome"),
+    [
+        ("organiser-1", Role.ORGANISER, None, "OK"),
+        ("participant-1", Role.PARTICIPANT, None, "OK"),
+        ("participant-1", Role.ORGANISER, None, "FORBIDDEN"),
+        ("organiser-1", Role.PARTICIPANT, None, "FORBIDDEN"),
+        ("organiser-1", Role.ORGANISER, "organiser-1", "OK"),
+        ("organiser-2", Role.ORGANISER, "organiser-1", "FORBIDDEN"),
+        ("participant-1", Role.PARTICIPANT, "participant-1", "OK"),
+        ("participant-2", Role.PARTICIPANT, "participant-1", "FORBIDDEN"),
+    ],
+)
+def test_role_and_owner_checks_return_explicit_outcomes_without_mutation(
+    populated_state: DemoState,
+    user_id: str,
+    required_role: Role,
+    owner_id: str | None,
+    expected_outcome: str,
+) -> None:
+    expected = deepcopy(populated_state)
+    actor = resolve_actor(populated_state, user_id)
+    assert (
+        check_permission(populated_state, actor, required_role, owner_id=owner_id)
+        == expected_outcome
+    )
+    assert populated_state == expected
+
+
+@pytest.mark.parametrize(
+    "actor",
+    [
+        DemoUser("organiser-1", "Rui Yan", Role.PARTICIPANT),
+        DemoUser("participant-1", "Xingjian", Role.ORGANISER),
+        DemoUser("missing-user", "Rui Yan", Role.ORGANISER),
+    ],
+)
+def test_unknown_or_role_inconsistent_actor_is_invalid(
+    populated_state: DemoState, actor: DemoUser
+) -> None:
+    expected = deepcopy(populated_state)
+    assert (
+        check_permission(populated_state, actor, Role.ORGANISER, owner_id="organiser-1")
+        == "INVALID_ACTOR"
+    )
+    assert populated_state == expected
+
+
+def test_equal_display_names_do_not_grant_another_organisers_permission(
+    populated_state: DemoState,
+) -> None:
+    populated_state.users = [
+        replace(user, display_name="Shared name") if user.role == Role.ORGANISER else user
+        for user in populated_state.users
+    ]
+    expected = deepcopy(populated_state)
+    actor = resolve_actor(populated_state, "organiser-2")
+    assert (
+        check_permission(populated_state, actor, Role.ORGANISER, owner_id="organiser-1")
+        == "FORBIDDEN"
+    )
+    assert populated_state == expected
+
+
+def test_identity_selector_has_only_the_fixed_demo_options() -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    assert not app.exception
+    assert len(app.sidebar.selectbox) == 1
+    assert app.sidebar.selectbox(key="selected_user_id").options == [
+        "No demo identity selected",
+        "Xingjian (PARTICIPANT)",
+        "Sam (PARTICIPANT)",
+        "Rui Yan (ORGANISER)",
+        "Alex (ORGANISER)",
+    ]
+    assert any("not secure login" in item.value for item in app.sidebar.caption)
+
+
+@pytest.mark.parametrize(
+    ("user_id", "display_name", "role"),
+    [
+        ("organiser-1", "Rui Yan", Role.ORGANISER),
+        ("organiser-2", "Alex", Role.ORGANISER),
+        ("participant-1", "Xingjian", Role.PARTICIPANT),
+        ("participant-2", "Sam", Role.PARTICIPANT),
+    ],
+)
+def test_selected_fixed_role_controls_both_restricted_preview_views(
+    user_id: str, display_name: str, role: Role
+) -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+    assert f"Selected: {display_name} | Role: {role}" in [
+        item.value for item in app.sidebar.caption
+    ]
+    for view, required_role in [("My Bookings", Role.PARTICIPANT), ("Organiser", Role.ORGANISER)]:
+        app.sidebar.radio(key="current_view").set_value(view).run()
+        assert not app.exception
+        if role == required_role:
+            assert not app.warning
+        else:
+            assert [item.value for item in app.warning] == [
+                f"This view is available to {required_role.value.lower()}s only."
+            ]
+
+
+def test_identity_switch_clear_refresh_and_navigation_preserve_complete_state(
+    populated_state: DemoState,
+) -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    app.session_state.demo_state = populated_state
+    expected = deepcopy(populated_state)
+    for user_id in ["organiser-1", "participant-1", "organiser-2", "participant-2", None]:
+        app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+        for view in ["Workshops", "My Bookings", "Organiser"]:
+            app.sidebar.radio(key="current_view").set_value(view).run()
+            app.sidebar.button(key="refresh_view").click().run()
+            assert not app.exception
+            assert app.session_state.demo_state is populated_state
+            assert app.session_state.demo_state == expected
+            assert [metric.value for metric in app.metric] == ["1", "1"]
+    assert app.sidebar.selectbox(key="selected_user_id").value is None
+
+
+@pytest.mark.parametrize("view", ["My Bookings", "Organiser"])
+def test_unselected_identity_cannot_use_restricted_preview(view: str) -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    app.sidebar.radio(key="current_view").set_value(view).run()
+    assert not app.exception
+    assert [item.value for item in app.warning] == ["Select a demo identity to use this view."]
+
+
+def test_separate_sessions_do_not_share_selected_identity() -> None:
+    first = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    second = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    first.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    second.run()
+    assert second.sidebar.selectbox(key="selected_user_id").value is None
+    second.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    first.run()
+    assert not first.exception and not second.exception
+    assert first.sidebar.selectbox(key="selected_user_id").value == "organiser-1"
+    assert second.sidebar.selectbox(key="selected_user_id").value == "participant-1"

@@ -1,18 +1,27 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. Current loop: L1 simplified edition, accepted. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
+**Design: accepted L0 revision 3. L1: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current loop: L2 identity and permission foundations. Human decision: PENDING. L3: NOT_STARTED.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 
-## L1 development
+## L2 development
 
 | File | Responsibility |
 |---|---|
-| [app.py](app.py) | Preview views, refresh and once-per-session initialisation. |
-| [booking.py](booking.py) | Independent models, structural validation, cutoff calculation and state factory. |
-| [test_booking.py](test_booking.py) | All original 40 foundation cases plus two elapsed-hour cutoff cases; state/count checks and timestamp regressions. |
+| [app.py](app.py) | Fixed demo identity selection, role-gated previews, refresh and once-per-session initialisation. |
+| [booking.py](booking.py) | Existing models/time contracts plus resolve_actor and check_permission. No Streamlit dependency. |
+| [test_booking.py](test_booking.py) | All 42 L1 cases retained, plus 29 L2 cases: 71 total. |
 
-L1 starts with no workshops or registrations. Actor selection, creation, booking/cancellation and waitlist operations follow the later loops. The accepted timing/capacity policies remain in [requirements.md](requirements.md); L1 is not application V1.0.
+| Fixed ID | Demo name | Fixed role |
+|---|---|---|
+| organiser-1 | Rui Yan | ORGANISER |
+| organiser-2 | Alex | ORGANISER |
+| participant-1 | Xingjian | PARTICIPANT |
+| participant-2 | Sam | PARTICIPANT |
+
+The selector starts with no identity and supports clearing. Roles come from the fixed ID records; there is no separate role editor. Workshops remains a public preview. My Bookings requires PARTICIPANT; Organiser requires ORGANISER. Anyone may select another demo identity, so these checks are not authentication or impersonation protection.
+
+L2 starts with no workshops or registrations. Creation, booking/cancellation and roster operations follow later loops. check_permission compares a valid actor's role and an optional trusted owner ID; it does not look up or modify a target. Complete B10/B12/B13 require actual operations in L3-L5. The accepted timing/capacity policies remain in [requirements.md](requirements.md); L2 is not application V1.0.
 
 ## Run and check
 
@@ -26,7 +35,7 @@ Use Python 3.12.14. With an existing project environment on Windows:
 
 To create the environment with an installed Python 3.12 launcher, first run `py -3.12 -m venv .venv`. On Linux/macOS, use Python 3.12 to create it and use `.venv/bin/python`. Runtime-only installation uses `--require-hashes -r requirements.txt`. No secrets or database setup are required.
 
-Keep both pairs of dependency files: requirements.in/requirements.txt and requirements-dev.in/requirements-dev.txt. The .in files specify inputs; the .txt files are generated version/hash locks. Dependency updates regenerate both locks using their recorded commands and rerun the checks. No dependency version or hash changed in this simplification.
+Keep both pairs of dependency files: requirements.in/requirements.txt and requirements-dev.in/requirements-dev.txt. The .in files specify inputs; the .txt files are generated version/hash locks. Dependency updates regenerate both locks using their recorded commands and rerun the checks. No dependency version or hash changed in L2.
 
 ## Design baseline documents
 
@@ -37,11 +46,12 @@ Keep both pairs of dependency files: requirements.in/requirements.txt and requir
 | [Demo reuse](docs/demo-reuse.md) | Reference versions, adaptation decisions and references. |
 | [AI use](docs/ai-use.md) | Significant tasks and actual AI/human contributions. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical author decision and seven recorded checks. |
-| [L1 review](docs/reviews/L1-human-review.md) | Actual findings/results, author-confirmed checklist completion and ACCEPT_LOOP. |
+| [L1 review](docs/reviews/L1-human-review.md) | Historical findings/results and author-confirmed ACCEPT_LOOP. |
+| [L2 review](docs/reviews/L2-human-review.md) | Current scope, AI review/evidence, test oracles and pending human checklist. |
 
-For GitHub delivery, the contents of L1_develop belong at the repository root, including the hidden .github directory; do not wrap them inside another L1_develop directory. This review uses the separate codex/l1-simplified-review branch to verify CI. The [L1 review](docs/reviews/L1-human-review.md#verification-results) identifies the tested commit/run; the original working copy and L0_develop remain unchanged.
+For GitHub delivery, the contents of L2_develop belong at the repository root, including the hidden .github directory. Use codex/l2-identities for L2 verification. The [L2 review](docs/reviews/L2-human-review.md#verification-results) identifies actual results/commit/run. Local L0_develop, L1_develop and the original working copy remain unchanged.
 
-Each topic has one primary location. The historical L0 record describes its decision date; current L1 status is in the L1 review. L0_develop remains unchanged. Only the navigation link in L1's copy of the historical record follows the consolidated workflow below.
+Each topic has one primary location. Historical L0/L1 records describe their decision dates, including the then-current next-loop status. Current status belongs in the L2 review. Those historical records are retained unchanged from the accepted L1.
 
 ## Development workflow
 
@@ -65,7 +75,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 |---|---|---|---|
 | L0 | Requirements, rules, risks, reuse and test plan. | Review scope/policies and explain the design. | ACCEPT_LOOP recorded in the historical L0 record. |
 | L1 | Three-file foundation, real tests, locks and CI; current simplified documents. | Reproduce setup, understand boundaries and assess the L1 checklist. | SATISFIED: author declared H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026; see the L1 review. |
-| L2 | Fixed-ID actor selection and selected-role/owner checks. | Challenge role resolution, reusable permission checks and identity limits. | B01/B02 and permission-foundation tests plus current CI pass; ACCEPT_LOOP. Complete B10/B12/B13 through actual operations in L3-L5. |
+| L2 | Fixed-ID actor selection and selected-role/owner checks; current task. | Challenge role resolution, reusable permission checks and identity limits. | B01/B02 and permission-foundation tests plus current CI pass; ACCEPT_LOOP required. Complete B10/B12/B13 through actual operations in L3-L5. |
 | L3 | Creation, browsing, rosters and valid demo fixtures. | Check >24h/=24h/<24h, input types, S/C and ownership. | B03-B06, unchanged-input rejection and CI pass; ACCEPT_LOOP. |
 | L4 | Booking and own history using latest serial state. | Check last place, duplicates, actor changes and stale submission. | B07-B10 and relevant I01/I02/I10 pass; ACCEPT_LOOP. |
 | L5 | Cancellation, history, repeats and failure safety. | Check owner denial, cutoff, no-op and full-state preservation. | B11-B17 and relevant I05/I10/regression pass; ACCEPT_LOOP. |
@@ -74,9 +84,9 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 | L8 | Promotion, full regression and focused change review. | Assess oracles, failures/repeats, VAL-03 and R-08; complete personal review before PR. | Complete change, current checks and resolved blockers support READY_TO_MERGE. |
 | L9 | Main deployment, smoke evidence, V1.1 and submission materials. | Decide merge, inspect main CI/deployed behaviour and release limits. | Verified deployed commit, validation and ACCEPT_RELEASE. |
 
-Loop-level foundation evidence is partial support for later scenarios. Complete business scenarios remain required before V1.0/V1.1 release; permission-helper tests alone do not complete B10/B12/B13. L1 does not fulfil the assessment's functioning-application, validation or release criteria yet.
+Loop-level foundation evidence is partial support for later scenarios. Complete business scenarios remain required before V1.0/V1.1 release; permission-helper tests alone do not complete B10/B12/B13. L2 does not fulfil the assessment's functioning-application, validation or release criteria yet.
 
-L1 acceptance makes L2 eligible under the plan. L2 implementation awaits the author's next instruction. This acceptance does not grant READY_TO_MERGE or ACCEPT_RELEASE.
+The author explicitly requested L2 after accepting L1. L2 stops for its own ACCEPT_LOOP; L3 remains NOT_STARTED. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions.
 
 ## GitHub Actions
 
@@ -84,7 +94,7 @@ L1 acceptance makes L2 eligible under the plan. L2 implementation awaits the aut
 
 The workflow retains SHA-pinned Actions, read-only contents permission, hash installation, explicit Bash/pipefail and reports uploaded even on failure. Reports include head/base/tested identity and tool versions, with 14-day retention. Preserve material evidence for submission before expiry. Coverage is diagnostic, not an HD threshold.
 
-Events remain main/codex pushes, PRs to main and manual dispatch when the workflow is on the default branch. The single job's failure status replaces the old aggregate job. If repository rules require the old quality-gate name, update the required check to quality-checks before merging. No PR, merge or release is authorised by the simplification request.
+Events remain main/codex pushes, PRs to main and manual dispatch when the workflow is on the default branch. The single job's failure status replaces the old aggregate job. If repository rules require the old quality-gate name, update the required check to quality-checks before merging. L2 ends at the human loop gate; PR, merge and release decisions remain separate.
 
 ## Version and submission evidence
 

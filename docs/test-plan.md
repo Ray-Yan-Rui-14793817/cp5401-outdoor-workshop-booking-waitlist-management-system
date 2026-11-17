@@ -1,8 +1,22 @@
 # Test Plan and Traceability
 
-L0 revision 3 scenario definitions are unchanged. Full B/W/I and validation scenarios remain PLANNED / NOT_EXECUTED. The separate [L1 foundation record](reviews/L1-human-review.md#foundation-test-mapping) reports actual foundation checks and partial supporting coverage; it does not mark those full scenarios complete. IDs represent scenarios and parameter groups, not passing-test counts.
+L0 revision 3 scenario definitions are unchanged. The 42 L1 cases are retained. L2 adds identity/permission verification for B01/B02 and foundation support for later scenarios; remaining full B/W/I operations and validation are PLANNED / NOT_EXECUTED. The [L1 record](reviews/L1-human-review.md#foundation-test-mapping) is historical; the [L2 record](reviews/L2-human-review.md#verification-results) reports current observations. IDs represent scenarios and parameter groups, not passing-test counts.
 
 [Rules](../requirements.md#business-rules) | [Risks](../requirements.md#risk-controls) | [Traceability](#traceability) | [Loop evidence format](../README.md#record-for-each-loop)
+
+## L2 implemented test mapping
+
+Expected results come from FR-01, BR-01/BR-14, QR-03/QR-04 and the author's fixed-name/role instruction. The complete collected suite has 71 cases in 26 functions: 42 unchanged L1 cases plus 29 new L2 cases. Actual execution and the human gate are in the L2 record.
+
+| Group | New cases | Exact tests | Requirement/risk and acceptance focus |
+|---|---|---|---|
+| L2-01 | 8 | test_fixed_identity_resolves_by_id_without_mutation; test_unselected_unknown_and_display_name_inputs_do_not_resolve | B01/B02; FR-01/BR-01; R-03/R-07. Four exact ID/name/role mappings; no identity, unknown IDs and display names do not resolve. |
+| L2-02 | 12 | test_role_and_owner_checks_return_explicit_outcomes_without_mutation; test_unknown_or_role_inconsistent_actor_is_invalid; test_equal_display_names_do_not_grant_another_organisers_permission | BR-01, QR-03; R-03/R-06/R-07. Correct role/owner gives OK; wrong role/owner gives FORBIDDEN; forged/unknown actors give INVALID_ACTOR. Compare complete populated state/counters. Partial B10/B12/B13 foundation only. |
+| L2-03 | 7 | test_identity_selector_has_only_the_fixed_demo_options; test_selected_fixed_role_controls_both_restricted_preview_views; test_unselected_identity_cannot_use_restricted_preview | B01/B02, partial I08; R-03/R-08. Fixed labels/roles, both preview permissions and no-selection denial. Not real authentication or real-user validation. |
+| L2-04 | 1 | test_identity_switch_clear_refresh_and_navigation_preserve_complete_state | B01, QR-04; partial I06/I08; R-04. All four identities, clearing, navigation and refresh preserve complete populated state, object identity and counters. |
+| L2-05 | 1 | test_separate_sessions_do_not_share_selected_identity | QR-04; partial I09; R-04. Separate AppTest sessions retain different selections. Browser reload/restart lifecycle remains separately checked. |
+
+Private controlled copies challenge role-claim validation and owner comparison. They are not changes to the delivered application or evidence of a defect that existed there. Helper and preview checks do not complete actual cancellation/roster scenarios. Human review and VAL-01/02/03 remain separate from these automated results.
 
 ## Test design and independent oracles
 
@@ -117,7 +131,7 @@ The old same-day 08:59 promotion for a 09:00 start is prohibited under W12/I10. 
 
 ## Traceability
 
-These mappings retain the accepted FR, BR, QR, risk and scenario identifiers. Full B/W/I execution results remain pending. The [L1 review](reviews/L1-human-review.md#foundation-test-mapping) records the executed foundation subset.
+These mappings retain the accepted FR, BR, QR, risk and scenario identifiers. Full business-operation B/W/I results remain pending. The L2 mapping above records the current identity/permission subset; the [L1 review](reviews/L1-human-review.md#foundation-test-mapping) preserves earlier foundation evidence.
 
 ### Functional coverage
 
