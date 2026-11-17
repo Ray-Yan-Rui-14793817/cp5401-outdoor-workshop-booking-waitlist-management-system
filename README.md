@@ -10,7 +10,7 @@ A small classroom application for one outdoor workshop provider. It manages fict
 |---|---|
 | [app.py](app.py) | Role-specific navigation, workshop cards, creation form, current-time submission, owned roster selection and complete successful-state adoption. |
 | [booking.py](booking.py) | Retained models/identity checks; creation, public ordering/counts, owned list/roster access, trusted clock and valid relative demo fixtures. No Streamlit import. |
-| [test_booking.py](test_booking.py) | 158 parameter cases in 51 functions: all 87 L2 cases retained with documented UI-context/message adaptations, plus 71 L3 cases. |
+| [test_booking.py](test_booking.py) | 161 parameter cases in 52 functions: all 87 L2 cases retained with documented UI-context/message adaptations and stronger denial assertions, plus 74 L3 cases. |
 
 | Fixed ID | Demo name | Role | Visible menu |
 |---|---|---|---|
@@ -22,7 +22,7 @@ A small classroom application for one outdoor workshop provider. It manages fict
 
 Roles come from fixed canonical IDs. Hidden menus improve navigation; independent UI/business checks reject forbidden access. Same-role switches retain permitted views; disallowed views reset to Workshops. Organiser switches also reset obsolete roster selections to an owned target. Anyone may select a demo identity, so this is not authentication or impersonation protection.
 
-L3 implements creation only when S-t>24 elapsed hours, integer capacity 1-30, valid aware times/end>S and required text. IDs/ownership are assigned by the application. Creation returns an outcome and complete new state without mutating the input; the UI adopts only OK results. A roster lookup checks the actual stored owner and returns confirmed records only.
+L3 implements creation only when S-t>24 elapsed hours, integer capacity 1-30, valid aware times/end>S and required text. IDs/ownership are assigned by the application. Creation normalises and validates one Workshop record, then returns an outcome and complete new state without mutating the input; the UI adopts only OK results. A roster lookup checks the actual stored owner and returns confirmed records only. Each owned roster displays its selected workshop's confirmed count, distinct from the session-wide metric.
 
 ## Demo data and limits
 

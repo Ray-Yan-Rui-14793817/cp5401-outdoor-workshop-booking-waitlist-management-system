@@ -534,6 +534,8 @@ def test_permission_failure_does_not_render_allowed_preview_or_change_state(
         }
         for item in app.info
     )
+    assert not app.dataframe
+    assert all(button.key != "create_workshop" for button in app.button)
     assert app.session_state.demo_state is populated_state
     assert app.session_state.demo_state == expected
 
@@ -584,6 +586,8 @@ def test_bypassing_hidden_menu_still_rejects_access_without_mutation(
         }
         for item in app.info
     )
+    assert not app.dataframe
+    assert all(button.key != "create_workshop" for button in app.button)
     assert app.session_state.demo_state is populated_state
     assert app.session_state.demo_state == expected
 
@@ -905,6 +909,23 @@ def test_demo_data_has_valid_relative_history_capacity_and_independent_collectio
     second = create_demo_data(NOW)
     assert (len(demo_data.workshops), len(demo_data.registrations)) == (4, 4)
     assert demo_data.next_workshop_id == demo_data.next_registration_id == 5
+    users = {user.user_id: user for user in demo_data.users}
+    workshops = {workshop.workshop_id: workshop for workshop in demo_data.workshops}
+    assert set(workshops) == {f"workshop-{index}" for index in range(1, 5)}
+    assert {row.registration_id for row in demo_data.registrations} == {
+        f"registration-{index}" for index in range(1, 5)
+    }
+    for workshop in demo_data.workshops:
+        assert users[workshop.owner_id].role == Role.ORGANISER
+    for row in demo_data.registrations:
+        assert row.workshop_id in workshops
+        assert users[row.participant_id].role == Role.PARTICIPANT
+    active_pairs = [
+        (row.workshop_id, row.participant_id)
+        for row in demo_data.registrations
+        if row.status == RegistrationStatus.CONFIRMED
+    ]
+    assert len(active_pairs) == len(set(active_pairs))
     assert demo_data.workshops[0].starts_at - NOW >= timedelta(hours=48)
     assert demo_data.workshops[1].starts_at - NOW >= timedelta(hours=48)
     assert demo_data.workshops[2].registration_cutoff <= NOW < demo_data.workshops[2].starts_at
@@ -1015,6 +1036,33 @@ def test_organiser_identity_switch_resets_roster_to_owned_target(demo_data: Demo
     }
     app.selectbox(key="roster_workshop_id").set_value("workshop-2").run()
     assert app.dataframe[0].value["Participant"].tolist() == ["Sam"]
+    assert demo_data == before
+
+
+@pytest.mark.parametrize(
+    ("owner_id", "workshop_id", "expected_count"),
+    [
+        ("organiser-1", "workshop-1", 1),
+        ("organiser-2", "workshop-2", 1),
+        ("organiser-2", "workshop-4", 0),
+    ],
+)
+def test_owned_roster_displays_selected_confirmed_count(
+    demo_data: DemoState, owner_id: str, workshop_id: str, expected_count: int
+) -> None:
+    app = app_with_state(demo_data)
+    before = deepcopy(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value(owner_id).run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.selectbox(key="roster_workshop_id").set_value(workshop_id).run()
+
+    assert not app.exception
+    assert f"Confirmed participants: {expected_count}" in [row.value for row in app.caption]
+    if expected_count:
+        assert len(app.dataframe[0].value) == expected_count
+    else:
+        assert not app.dataframe
+        assert "No confirmed participants for this workshop." in [row.value for row in app.markdown]
     assert demo_data == before
 
 

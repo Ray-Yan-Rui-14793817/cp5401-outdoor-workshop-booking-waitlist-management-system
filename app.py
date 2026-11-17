@@ -153,6 +153,7 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
         if outcome != "OK":
             st.error(f"{outcome}: The confirmed roster is unavailable for this identity.")
             return
+        st.caption(f"Confirmed participants: {len(registrations)}")
         st.caption("Only confirmed participants are listed; cancelled history consumes no place.")
         if not registrations:
             st.write("No confirmed participants for this workshop.")

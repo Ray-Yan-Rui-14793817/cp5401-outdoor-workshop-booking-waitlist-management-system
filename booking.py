@@ -149,30 +149,24 @@ def create_workshop(
     permission = check_permission(state, actor, Role.ORGANISER)
     if permission != "OK":
         return permission, state
+    if not isinstance(preparation_notes, str):
+        return "INVALID_INPUT", state
     try:
         _require_aware(now, "now")
         workshop = Workshop(
             workshop_id=f"workshop-{state.next_workshop_id}",
             owner_id=actor.user_id,
-            title=title,
+            title=title.strip() if isinstance(title, str) else title,
             starts_at=starts_at,
             ends_at=ends_at,
-            location=location,
+            location=location.strip() if isinstance(location, str) else location,
             capacity=capacity,
-            preparation_notes=preparation_notes,
+            preparation_notes=preparation_notes.strip(),
         )
     except ValueError:
         return "INVALID_INPUT", state
-    if not isinstance(preparation_notes, str):
-        return "INVALID_INPUT", state
     if workshop.starts_at.astimezone(UTC) - now.astimezone(UTC) <= REGISTRATION_LEAD:
         return "INVALID_INPUT", state
-    workshop = replace(
-        workshop,
-        title=workshop.title.strip(),
-        location=workshop.location.strip(),
-        preparation_notes=preparation_notes.strip(),
-    )
     return "OK", replace(
         state,
         users=state.users.copy(),
