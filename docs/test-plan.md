@@ -72,6 +72,8 @@ Those controlled-copy observations are historical deep-review evidence, not fres
 
 The historical L2 navigation review added controlled-copy evidence: removing public content only for an unselected identity passed the old 86-case suite but failed three strengthened checks. An always-reset fault previously passed four transition cases whose starting private view had never rendered; strengthened checks detected all six private-start failures. Show-all-menus and bypass-helper faults were also rejected. These were deliberate private faults, not production defects. See the unchanged L2 record for those historical results and limitations.
 
+<a id="l3-implemented-test-mapping"></a>
+
 ## L3 retained test mapping (historical development)
 
 The following 90 L3 cases use otherwise-valid fixtures to isolate each rejection, except the explicit role-before-invalid-input precedence parameters and the named multiple-error form case. FR/BR and the author's bounded form request define expected outcomes and state; the application is not its own test oracle.

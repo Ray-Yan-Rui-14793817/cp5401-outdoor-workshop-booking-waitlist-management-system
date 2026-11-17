@@ -64,6 +64,8 @@ Browser QA used existing bundled Playwright because the Browser plugin is unavai
 
 The author still owns H01-H07, explanation of AI-assisted code/tests, actual personal observations, risk rationale and the next ACCEPT_LOOP/CHANGES_REQUIRED decision. Historical L3 HF-02 remains unchanged; current F08 isolation follows the author's explicit later request. No personal checkmark or L5 authorisation is supplied by this review.
 
+AI also found an old section link from the unchanged L3 review to a renamed test-plan heading. It restored a compatibility anchor in the current plan and retained the former F08 evidence anchor, preserving the historical files. All 27 local linked section targets are checked; no runtime code is involved.
+
 ## L0 review findings
 
 The L0 review clarified isolated test preconditions, derived queue positions, observable result/state contracts, demonstration dates and validation decisions. R-08 user suitability remains pending actual task feedback. The original records and author decision remain available in the [accepted baseline](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/tree/822710b238bb14b8eba17cf2ab9a76ab2753bdb2) and [L0 acceptance](reviews/L0-human-acceptance.md).
