@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. Current loop: L1 simplified edition, accepted. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Shanghai). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
+**Design: accepted L0 revision 3. Current loop: L1 simplified edition, accepted. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 

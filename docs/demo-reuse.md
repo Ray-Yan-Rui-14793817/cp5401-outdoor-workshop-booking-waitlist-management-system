@@ -20,7 +20,7 @@ The [later main snapshot](https://github.com/Georgegiri/CampusConnect-Demo/tree/
 
 The five source tests are test_first_booking_is_accepted, test_overlapping_booking_is_rejected, test_non_overlapping_booking_is_accepted, test_capacity_is_enforced and test_cancellation_releases_booking. They do not establish this project's working baseline.
 
-AI performed the L1 adaptation under the author's scope/policy directions. On 17 November 2026 (Asia/Shanghai), the author declared H01-H07 complete and supplied ACCEPT_LOOP; see the [L1 review](reviews/L1-human-review.md#human-acceptance-checklist). When later source functions are adopted, record the exact source/destination, modification, commit and verification. The pinned source contains no standalone LICENSE file; attribution records the supplied course-adaptation context without inventing a licence label.
+AI performed the L1 adaptation under the author's scope/policy directions. On 17 November 2026 (Asia/Singapore), the author declared H01-H07 complete and supplied ACCEPT_LOOP; see the [L1 review](reviews/L1-human-review.md#human-acceptance-checklist). When later source functions are adopted, record the exact source/destination, modification, commit and verification. The pinned source contains no standalone LICENSE file; attribution records the supplied course-adaptation context without inventing a licence label.
 
 ## References
 

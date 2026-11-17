@@ -1,6 +1,6 @@
 # L1 Work and Human Review
 
-**L1 simplified edition, deep review. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Shanghai). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
+**L1 simplified edition, deep review. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). H01-H07: AUTHOR_CONFIRMED_COMPLETE. L2: NOT_STARTED.**
 
 ## Review intake and scope
 
@@ -106,9 +106,9 @@ Private JUnit/coverage, static-scan reports, source checks and controlled-fault 
 
 ## Human acceptance checklist
 
-On 17 November 2026 (Asia/Shanghai), the project author explicitly supplied ACCEPT_LOOP and stated that H01-H07 had been completed. The checked items below record that author declaration, not an AI inference or independent external approval. The date is the confirmation/acceptance date; individual execution dates were not supplied.
+On 17 November 2026 (Asia/Singapore), the project author explicitly supplied ACCEPT_LOOP and stated that H01-H07 had been completed. The checked items below record that author declaration, not an AI inference or independent external approval. The date is the confirmation/acceptance date; individual execution dates were not supplied.
 
-English translation of the author's confirmation: "ACCEPT_LOOP. I have completed the H01-H07 human acceptance checks. Update my L1." This is a translation, not a verbatim English statement. The accepted candidate is the simplified L1 delivered in the preceding conversation: commit cb1f4a261e31e5486b4982b72317f4c39445eecf on codex/l1-foundation. Its [run 43901733050](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43901733050) passed the single job and all 42 tests. AI previously verified that CI result; it is not represented as a fresh personal test execution by the author.
+English translation of the author's confirmation: "ACCEPT_LOOP. I have completed the H01-H07 human acceptance checks. Update my L1." This is a translation, not a verbatim English statement. The author subsequently confirmed the acceptance date as 17 November 2026 (Asia/Singapore). The accepted candidate is the simplified L1 delivered in the preceding conversation: commit cb1f4a261e31e5486b4982b72317f4c39445eecf on codex/l1-foundation. Its [run 43901733050](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/43901733050) passed the single job and all 42 tests. AI previously verified that CI result; it is not represented as a fresh personal test execution by the author.
 
 - [x] **H01 Setup:** Personally open the L1 preview and record the environment, three views and a refresh observation; optionally rerun pytest and record its actual result.
 - [x] **H02 Code:** Explain the three core files, frozen rows/mutable session lists, independent factories and why model construction does not authorise workshop creation.
@@ -120,7 +120,7 @@ English translation of the author's confirmation: "ACCEPT_LOOP. I have completed
 
 | Human record | Actual value |
 |---|---|
-| Reviewer/date and reviewed code identity | Project author, identified by the user role in the project conversation. Confirmation date: 17 November 2026, Asia/Shanghai. Accepted candidate: cb1f4a261e31e5486b4982b72317f4c39445eecf, the simplified L1 most recently delivered. |
+| Reviewer/date and reviewed code identity | Project author, identified by the user role in the project conversation. Confirmation date: 17 November 2026, Asia/Singapore. Accepted candidate: cb1f4a261e31e5486b4982b72317f4c39445eecf, the simplified L1 most recently delivered. |
 | Personally executed checks and observations | H01-H07 completion explicitly declared. Individual commands, environment details and step-by-step observations were not included in the acceptance message. |
 | Results reviewed rather than executed | H05 completion declared. Run 43901733050 is linked as existing CI evidence; no separate personal execution log was supplied. |
 | Code understanding and independent expected outcomes | H02-H04 completion declared. Individual explanations were not transcribed in this message. |
