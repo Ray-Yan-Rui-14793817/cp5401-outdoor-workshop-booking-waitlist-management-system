@@ -1,4 +1,4 @@
-"""Workshop creation, participant booking and selected-identity reads in memory."""
+"""Workshop creation, booking/cancellation and selected-identity reads in memory."""
 
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime, timedelta
@@ -315,6 +315,47 @@ def book_workshop(
         workshops=state.workshops.copy(),
         registrations=[*state.registrations, registration],
         next_registration_id=state.next_registration_id + 1,
+    )
+
+
+def cancel_registration(
+    state: DemoState, actor: DemoUser | None, registration_id: str, *, now: datetime
+) -> tuple[str, DemoState]:
+    """Cancel one owned confirmation before C; retain its ID and immutable history."""
+    registration = next(
+        (row for row in state.registrations if row.registration_id == registration_id), None
+    )
+    permission = check_permission(
+        state,
+        actor,
+        Role.PARTICIPANT,
+        owner_id=registration.participant_id if registration is not None else None,
+    )
+    if permission != "OK":
+        return permission, state
+    if registration is None:
+        return "UNKNOWN_REGISTRATION", state
+    if registration.status == RegistrationStatus.CANCELLED:
+        return "ALREADY_CANCELLED", state
+    workshop = next((w for w in state.workshops if w.workshop_id == registration.workshop_id), None)
+    if workshop is None:
+        return "UNKNOWN_WORKSHOP", state
+    try:
+        _require_aware(now, "now")
+    except ValueError:
+        return "INVALID_INPUT", state
+    now = now.astimezone(UTC)
+    if now >= workshop.registration_cutoff.astimezone(UTC):
+        return "REGISTRATION_CLOSED", state
+    cancelled = replace(registration, status=RegistrationStatus.CANCELLED, updated_at=now)
+    return "OK", replace(
+        state,
+        users=state.users.copy(),
+        workshops=state.workshops.copy(),
+        registrations=[
+            cancelled if row.registration_id == registration_id else row
+            for row in state.registrations
+        ],
     )
 
 

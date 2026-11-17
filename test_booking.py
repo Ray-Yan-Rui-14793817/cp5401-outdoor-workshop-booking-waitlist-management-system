@@ -1,4 +1,4 @@
-"""Retained L1-L3 regressions and L4 booking/history and organiser-draft checks."""
+"""Retained L1-L4 regressions and L5 owned cancellation/history checks."""
 
 from copy import deepcopy
 from dataclasses import replace
@@ -2334,3 +2334,403 @@ def test_l4_f08_review_creation_refusal_does_not_adopt_a_different_candidate(
     assert creation_form_values(app) == submitted_values
     assert app.session_state.creation_forms["organiser-2"] == other_before
     assert len(app.session_state.creation_forms["organiser-1"]["draft"]) == 8
+
+
+@pytest.mark.parametrize("owner_id", ["participant-1", "participant-2"])
+@pytest.mark.parametrize("capacity", [1, 30])
+def test_l5_cancel_retains_one_history_row_and_returns_an_independent_complete_state(
+    populated_state: DemoState, owner_id: str, capacity: int
+) -> None:
+    state = populated_state
+    state.workshops[0] = replace(state.workshops[0], capacity=capacity)
+    state.registrations[0] = replace(state.registrations[0], participant_id=owner_id)
+    before = deepcopy(state)
+    outcome, candidate = booking.cancel_registration(
+        state, resolve_actor(state, owner_id), "registration-1", now=NOW
+    )
+    expected_row = replace(
+        before.registrations[0], status=RegistrationStatus.CANCELLED, updated_at=NOW.astimezone(UTC)
+    )
+    assert outcome == "OK"
+    assert candidate == replace(before, registrations=[expected_row, before.registrations[1]])
+    assert candidate is not state and state == before
+    assert confirmed_count(candidate, "workshop-1") == confirmed_count(before, "workshop-1") - 1
+    assert candidate.workshops[0].capacity - confirmed_count(candidate, "workshop-1") == capacity
+    for name in ("users", "workshops", "registrations"):
+        assert getattr(candidate, name) is not getattr(state, name)
+
+
+@pytest.mark.parametrize(
+    ("actor", "expected"),
+    [
+        (None, "INVALID_ACTOR"),
+        (DemoUser("unknown", "Xingjian", Role.PARTICIPANT), "INVALID_ACTOR"),
+        (DemoUser("organiser-1", "Rui Yan", Role.PARTICIPANT), "INVALID_ACTOR"),
+        (DemoUser("participant-1", "Xingjian", Role.ORGANISER), "INVALID_ACTOR"),
+        (DemoUser("organiser-1", "Rui Yan", Role.ORGANISER), "FORBIDDEN"),
+        (DemoUser("organiser-2", "Alex", Role.ORGANISER), "FORBIDDEN"),
+    ],
+)
+def test_l5_cancel_role_denials_preserve_every_record_and_counter(
+    populated_state: DemoState, actor: DemoUser | None, expected: str
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, result = booking.cancel_registration(populated_state, actor, "registration-1", now=NOW)
+    assert outcome == expected
+    assert result is populated_state and result == before
+
+
+@pytest.mark.parametrize(
+    ("actor_id", "target"),
+    [("participant-2", "registration-1"), ("participant-1", "registration-2")],
+)
+def test_l5_cancel_checks_the_stored_owner_even_for_cancelled_targets(
+    populated_state: DemoState, actor_id: str, target: str
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, result = booking.cancel_registration(
+        populated_state, resolve_actor(populated_state, actor_id), target, now=NOW
+    )
+    assert outcome == "FORBIDDEN"
+    assert result is populated_state and result == before
+
+
+def test_l5_equal_display_names_do_not_grant_cancellation_ownership(
+    populated_state: DemoState,
+) -> None:
+    state = populated_state
+    state.users[1] = replace(state.users[1], display_name="Xingjian")
+    before = deepcopy(state)
+    outcome, result = booking.cancel_registration(
+        state, resolve_actor(state, "participant-2"), "registration-1", now=NOW
+    )
+    assert outcome == "FORBIDDEN" and result is state and state == before
+
+
+def test_l5_unknown_registration_is_explicit_and_does_not_change_state(
+    populated_state: DemoState,
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, result = booking.cancel_registration(
+        populated_state,
+        resolve_actor(populated_state, "participant-1"),
+        "registration-999",
+        now=NOW,
+    )
+    assert outcome == "UNKNOWN_REGISTRATION"
+    assert result is populated_state and result == before
+
+
+@pytest.mark.parametrize("offset", [-1, 0, 1, 86400, 86401])
+def test_l5_effective_cancellation_requires_strictly_before_cutoff(
+    populated_state: DemoState, offset: int
+) -> None:
+    state = populated_state
+    now = state.workshops[0].registration_cutoff + timedelta(seconds=offset)
+    before = deepcopy(state)
+    outcome, result = booking.cancel_registration(
+        state, resolve_actor(state, "participant-1"), "registration-1", now=now
+    )
+    assert outcome == ("OK" if offset < 0 else "REGISTRATION_CLOSED")
+    assert state == before
+    if offset < 0:
+        assert result.registrations[0] == replace(
+            before.registrations[0], status=RegistrationStatus.CANCELLED, updated_at=now
+        )
+        assert confirmed_count(result, "workshop-1") == 0
+        assert result.next_registration_id == before.next_registration_id
+    else:
+        assert result is state and result == before
+
+
+@pytest.mark.parametrize("zone", [UTC, ZoneInfo("America/New_York")])
+def test_l5_cancellation_compares_equivalent_aware_instants(
+    populated_state: DemoState, zone: object
+) -> None:
+    state = populated_state
+    before = deepcopy(state)
+    for offset, expected in [(-1, "OK"), (0, "REGISTRATION_CLOSED")]:
+        now = (state.workshops[0].registration_cutoff + timedelta(seconds=offset)).astimezone(zone)
+        outcome, result = booking.cancel_registration(
+            state, resolve_actor(state, "participant-1"), "registration-1", now=now
+        )
+        assert outcome == expected and state == before
+        if expected == "OK":
+            assert result.registrations[0].updated_at == now.astimezone(UTC)
+        else:
+            assert result is state
+
+
+@pytest.mark.parametrize("now", [None, datetime(2026, 12, 1, 9)])
+def test_l5_active_cancellation_rejects_an_unusable_application_clock(
+    populated_state: DemoState, now: object
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, result = booking.cancel_registration(
+        populated_state, resolve_actor(populated_state, "participant-1"), "registration-1", now=now
+    )
+    assert outcome == "INVALID_INPUT" and result is populated_state and result == before
+
+
+@pytest.mark.parametrize("offset", [-1, 0, 1, 86400, 86401])
+def test_l5_owned_cancelled_repeat_is_a_no_op_before_and_after_cutoff_and_start(
+    populated_state: DemoState, offset: int
+) -> None:
+    state = populated_state
+    before = deepcopy(state)
+    now = state.workshops[0].registration_cutoff + timedelta(seconds=offset)
+    outcome, result = booking.cancel_registration(
+        state, resolve_actor(state, "participant-2"), "registration-2", now=now
+    )
+    assert outcome == "ALREADY_CANCELLED" and result is state and state == before
+    assert confirmed_count(result, "workshop-1") == 1
+
+
+def test_l5_missing_referenced_workshop_does_not_release_a_place(
+    populated_state: DemoState,
+) -> None:
+    state = populated_state
+    state.workshops.clear()  # Internal inconsistent fixture, not a workshop-deletion feature.
+    before = deepcopy(state)
+    outcome, result = booking.cancel_registration(
+        state, resolve_actor(state, "participant-1"), "registration-1", now=NOW
+    )
+    assert outcome == "UNKNOWN_WORKSHOP" and result is state and state == before
+
+
+def test_l5_cancel_construction_exception_preserves_complete_input(
+    populated_state: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    before = deepcopy(populated_state)
+    original_replace = booking.replace
+
+    def fail_on_registration(value: object, **changes: object):
+        if isinstance(value, Registration):
+            raise RuntimeError("injected cancellation construction failure")
+        return original_replace(value, **changes)
+
+    monkeypatch.setattr(booking, "replace", fail_on_registration)
+    with pytest.raises(RuntimeError, match="injected cancellation construction failure"):
+        booking.cancel_registration(
+            populated_state,
+            resolve_actor(populated_state, "participant-1"),
+            "registration-1",
+            now=NOW,
+        )
+    assert populated_state == before
+
+
+@pytest.mark.parametrize("next_actor_id", ["participant-1", "participant-2"])
+def test_l5_serial_cancel_rebook_and_repeat_preserve_history_and_one_place(
+    populated_state: DemoState, next_actor_id: str
+) -> None:
+    state = populated_state
+    state.workshops[0] = replace(state.workshops[0], capacity=1)
+    before = deepcopy(state)
+    outcome, full = booking.book_workshop(
+        state, resolve_actor(state, "participant-2"), "workshop-1", now=NOW
+    )
+    assert outcome == "FULL" and full is state
+    outcome, cancelled = booking.cancel_registration(
+        state, resolve_actor(state, "participant-1"), "registration-1", now=NOW
+    )
+    assert outcome == "OK" and confirmed_count(cancelled, "workshop-1") == 0
+    outcome, rebooked = booking.book_workshop(
+        cancelled,
+        resolve_actor(cancelled, next_actor_id),
+        "workshop-1",
+        now=NOW + timedelta(seconds=1),
+    )
+    assert outcome == "OK" and rebooked.registrations[-1].registration_id == "registration-3"
+    assert rebooked.registrations[-1].participant_id == next_actor_id
+    assert rebooked.registrations[:2] == cancelled.registrations
+    snapshot = deepcopy(rebooked)
+    for instant in [
+        NOW + timedelta(seconds=2),
+        state.workshops[0].registration_cutoff,
+        state.workshops[0].ends_at,
+    ]:
+        outcome, repeated = booking.cancel_registration(
+            rebooked, resolve_actor(rebooked, "participant-1"), "registration-1", now=instant
+        )
+        assert outcome == "ALREADY_CANCELLED" and repeated is rebooked and rebooked == snapshot
+        assert confirmed_count(repeated, "workshop-1") == 1
+    other_id = "participant-2" if next_actor_id == "participant-1" else "participant-1"
+    outcome, refused = booking.book_workshop(
+        rebooked, resolve_actor(rebooked, other_id), "workshop-1", now=NOW + timedelta(seconds=3)
+    )
+    assert outcome == "FULL" and refused is rebooked
+    assert rebooked.next_registration_id == 4 and state == before
+
+
+def test_l5_ui_cancel_updates_history_capacity_and_owned_roster_without_losing_drafts(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    saved_forms = {
+        "organiser-1": {
+            "draft": {"new_title": "Fictional Rui draft"},
+            "errors": {"location": "Meeting point is required."},
+            "feedback": CREATION_REJECTED,
+        }
+    }
+    app.session_state.creation_forms = deepcopy(saved_forms)
+    app.session_state.review_marker = {"keep": ["fictional L5 review"]}
+    app.button(key="cancel_registration-2").click().run()
+    assert not app.exception and not app.error
+    assert any("registration-2" in item.value for item in app.success)
+    candidate = app.session_state.demo_state
+    expected_rows = before.registrations.copy()
+    expected_rows[1] = replace(
+        expected_rows[1], status=RegistrationStatus.CANCELLED, updated_at=NOW.astimezone(UTC)
+    )
+    assert candidate == replace(before, registrations=expected_rows)
+    assert app.session_state.selected_user_id == "participant-2"
+    assert app.session_state.current_view == "My Bookings"
+    assert app.session_state.creation_forms == saved_forms
+    assert app.session_state.review_marker == {"keep": ["fictional L5 review"]}
+    assert app.metric[1].value == "2" and len(app.dataframe) == 1
+    assert set(app.dataframe[0].value["Registration ID"]) == {"registration-2", "registration-4"}
+    assert set(app.dataframe[0].value["Status"]) == {"CANCELLED"}
+    assert not [b for b in app.button if str(b.key).startswith("cancel_")]
+    app.sidebar.button(key="refresh_view").click().run()
+    assert app.session_state.demo_state == candidate and not app.success
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    assert not app.success
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    assert any("Capacity: 1 | Confirmed: 0 | Remaining: 1" in m.value for m in app.markdown)
+    app.button(key="book_workshop-2").click().run()
+    assert app.session_state.demo_state.registrations[-1].registration_id == "registration-5"
+    assert app.session_state.demo_state.next_registration_id == 6
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.selectbox(key="roster_workshop_id").set_value("workshop-2").run()
+    assert list(app.dataframe[0].value["Participant"]) == ["Xingjian"]
+    assert app.session_state.creation_forms["organiser-1"] == saved_forms["organiser-1"]
+    assert demo_data == before
+
+
+@pytest.mark.parametrize(
+    ("actor_id", "expected"),
+    [
+        ("participant-1", {"cancel_registration-1", "cancel_registration-3"}),
+        ("participant-2", {"cancel_registration-2"}),
+    ],
+)
+def test_l5_ui_exposes_only_own_confirmed_cancellation_targets(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, actor_id: str, expected: set[str]
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value(actor_id).run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert {b.key for b in app.button if str(b.key).startswith("cancel_")} == expected
+    if actor_id == "participant-1":
+        assert app.button(key="cancel_registration-3").disabled
+        assert not app.button(key="cancel_registration-1").disabled
+    assert not app.exception
+
+
+@pytest.mark.parametrize("actor_id", [None, "organiser-1", "organiser-2"])
+def test_l5_non_participants_have_no_cancellation_menu_or_controls(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, actor_id: str | None
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value(actor_id).run()
+    assert "My Bookings" not in app.sidebar.radio(key="current_view").options
+    assert not [b for b in app.button if str(b.key).startswith("cancel_")]
+    assert not app.exception and app.session_state.demo_state is demo_data and demo_data == before
+
+
+@pytest.mark.parametrize("offset", [0, 86400, 86401])
+def test_l5_ui_disables_effective_cancellation_at_cutoff_and_after_start(
+    populated_state: DemoState, monkeypatch: pytest.MonkeyPatch, offset: int
+) -> None:
+    now = populated_state.workshops[0].registration_cutoff + timedelta(seconds=offset)
+    monkeypatch.setattr(booking, "server_now", lambda: now)
+    before = deepcopy(populated_state)
+    app = app_with_state(populated_state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert app.button(key="cancel_registration-1").disabled
+    assert not app.exception and app.session_state.demo_state is populated_state
+    assert populated_state == before
+
+
+@pytest.mark.parametrize("offset", [0, 1])
+def test_l5_stale_cancellation_ui_uses_fresh_decision_time(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, offset: int
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    times = iter([NOW, demo_data.workshops[1].registration_cutoff + timedelta(seconds=offset)])
+    monkeypatch.setattr(booking, "server_now", lambda: next(times))
+    app.button(key="cancel_registration-2").click().run()
+    assert not app.exception and not app.success
+    assert any("REGISTRATION_CLOSED" in e.value for e in app.error)
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+@pytest.mark.parametrize("outcome", ["FORBIDDEN", "ALREADY_CANCELLED", "UNEXPECTED"])
+def test_l5_ui_never_adopts_a_non_ok_cancellation_candidate(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, outcome: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    refused = replace(demo_data, registrations=[], next_workshop_id=900, next_registration_id=901)
+    monkeypatch.setattr(booking, "cancel_registration", lambda *args, **kwargs: (outcome, refused))
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    app.button(key="cancel_registration-2").click().run()
+    assert not app.exception and not app.success
+    assert any(outcome in e.value for e in [*app.error, *app.info])
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+def test_l5_ui_cancellation_exception_keeps_the_original_business_snapshot(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+
+    def fail(*args: object, **kwargs: object):
+        raise RuntimeError("injected cancellation call failure")
+
+    monkeypatch.setattr(booking, "cancel_registration", fail)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    app.button(key="cancel_registration-2").click().run()
+    assert app.exception and not app.success
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+def test_l5_cancel_in_one_session_does_not_change_an_independent_session(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    first, second = create_demo_data(NOW), create_demo_data(NOW)
+    second_before = deepcopy(second)
+    app = app_with_state(first)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    app.button(key="cancel_registration-2").click().run()
+    assert (
+        not app.exception
+        and app.session_state.demo_state.registrations[1].status == RegistrationStatus.CANCELLED
+    )
+    other = app_with_state(second)
+    other.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    other.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert not other.exception and not other.button(key="cancel_registration-2").disabled
+    assert other.session_state.demo_state is second and second == second_before

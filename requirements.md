@@ -1,6 +1,6 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3 remains the accepted design. L1-L4 are accepted. On 17 November 2026 (UTC+08:00), the author declared updated L4 UI/H01-H07 complete and supplied ACCEPT_LOOP for 7bbbeabb223538d5827a0249116a7f640334add4. Current status: L4-F08 ACCEPT_LOOP; L5 NOT_STARTED under the explicit hold. Accepted FR/BR/QR/risk targets are unchanged. The accepted scope is the tested serial workflow; cancellation remains L5 work and simultaneous multi-user concurrency is not verified. [Current review](docs/reviews/L4-human-review.md#current-human-acceptance) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3 and L1-L4 remain accepted. The explicit L5 instruction authorises own confirmed cancellation from GitHub 2f2504acff79317c20760971acae2965ee98a1fb, superseding the earlier L5 hold for this development scope only. Current status: L5 HUMAN_REVIEW_PENDING; L6 NOT_STARTED. Accepted FR/BR/QR/risk definitions are unchanged. [Current review](docs/reviews/L5-human-review.md) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
 ## Identity foundations retained from accepted L2
 
@@ -27,7 +27,7 @@ The author's navigation update combines menu visibility with independent access 
 
 Before rendering the menu, reset a disallowed/unknown saved view to Workshops; retain a permitted current view. Independently recheck a private view's role through check_permission even if menu selection is bypassed. Unknown returned views/results must not display private preview content. These UI refinements support FR-01, BR-01 and QR-03/QR-04; they do not change the accepted business rules or claim real authentication.
 
-## Implemented L3-L4 subset
+## Retained L3-L4 subset (historical implementation)
 
 L3 creation/public browsing/owned confirmed rosters and its complete form-feedback lifecycle are retained. L4 implements FR-03 and FR-05's V1.0 booking/history subset. FR-01/02/06/07 foundations remain. Cancellation (FR-04) awaits L5; all waitlist operations await CR-01 after working V1.0.
 
@@ -44,6 +44,16 @@ L4-F05 is fixed within the existing form: initialise or restore the eight known 
 L4-F08 is an explicitly requested UI-state refinement of FR-06, without changing any canonical FR/BR/QR/risk definition. In one session, creation_forms[user_id] holds that organiser's latest failed eight values, field errors and feedback. Eight shared visible widget keys are reloaded from the selected organiser when the form owner changes, or restored when widget cleanup removes them. Success clears only the selected organiser's failure and resets their visible inputs; success feedback/reset signals are also organiser-scoped. Workshop ownership still comes only from the current validated actor passed to create_workshop, never from draft metadata. Participant/no-identity menus and business rejections are unchanged.
 
 The old L3 HF-02 shared-draft behaviour remains historical evidence. F08 replaces that behaviour only in the current L4 application. Previously unowned shared draft data is not automatically assigned to a current identity. No guarantee is added for unsubmitted edits, authentication, shared storage or persistence across sessions/restarts. The exact acceptance-to-test mapping is in the L4 review and test plan.
+
+## Implemented L5 subset
+
+L5 implements FR-04's V1.0 cancellation and extends FR-05 history evidence. cancel_registration accepts state, selected actor, registration ID and trusted now, returning (outcome, complete_candidate). Check participant role/actual target/stored ownership. Unknown registration returns UNKNOWN_REGISTRATION; invalid actor/wrong role/non-owner returns the existing permission outcome without mutation. An owned CANCELLED repeat returns ALREADY_CANCELLED before active time checks, including after C/S.
+
+An active confirmation requires an aware usable application clock and strict t<C. At/after C return REGISTRATION_CLOSED, including stale submissions. Success changes only that row's status to CANCELLED and updated_at to the UTC decision instant. Preserve its ID/created_at, every other row and both counters; copy mutable lists into the complete candidate and keep input unchanged. A missing referenced workshop returns UNKNOWN_WORKSHOP without mutation; this is an internal inconsistent-fixture guard, not a workshop-deletion feature. Construction exceptions propagate without partial state.
+
+My Bookings shows only own confirmed cancellation buttons and disables locked/started targets. The actual operation receives fresh server_now; only OK replaces business state. ALREADY_CANCELLED is informational and creates no further release/success. Keep organiser forms/errors, actor/current page and unrelated session values. Cancelled rows stay in History; a later pre-C Book gets a new ID, and old-ID repeats cannot release its place.
+
+Verification: 298 cases in 112 functions, including all 250 L1-L4 cases/92 unchanged test function ASTs and parameter definitions, plus 48 L5 cases in 20 functions. B11/B12/B15/B16/B17 and cancellation portions of I05/I08/I09/I10 now have implemented evidence. I01/I02 still describe serial actions; no simultaneous-concurrency claim is made. V1.1 waiting/promotion paths and full VAL/R-08 remain future work. L5 human checks and ACCEPT_LOOP remain pending. This instruction implements cancellation reserved by L4-HF-01 while preserving L4-HF-02/03 and original L3 HF-02 history.
 
 ## Problem and purpose
 
@@ -241,7 +251,7 @@ Selection is not identity security. Early allocation without notification does n
 
 ## Risk controls
 
-The following is the accepted risk-control plan. Full business-control execution remains pending; implemented scope, evidence and the current human gate are recorded in the [L4 review](docs/reviews/L4-human-review.md). The project author owns the risks. Initial ratings are qualitative planning judgements; R-08 remains VALIDATION_PENDING.
+The following is the accepted risk-control plan. Full business-control execution remains pending; implemented scope, evidence and the current human gate are recorded in the [L5 review](docs/reviews/L5-human-review.md). The project author owns the risks. Initial ratings are qualitative planning judgements; R-08 remains VALIDATION_PENDING.
 
 ### Controls and planned acceptance
 

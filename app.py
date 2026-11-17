@@ -1,4 +1,4 @@
-"""L4 participant booking/history with retained workshop creation and owned rosters."""
+"""L5 booking/cancellation with retained workshop creation, history and owned rosters."""
 
 from datetime import UTC, datetime, time, timedelta
 
@@ -12,6 +12,7 @@ from booking import (
     Role,
     book_workshop,
     browse_workshops,
+    cancel_registration,
     check_permission,
     confirmed_count,
     create_demo_data,
@@ -98,6 +99,9 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
     if outcome != "OK":
         st.error("Your booking records are unavailable. Refresh and try again.")
         return
+    message = st.session_state.pop("cancellation_message", None)
+    if message and message[0] == actor.user_id:
+        st.success(message[1])
     workshops = {workshop.workshop_id: workshop for workshop in state.workshops}
     current, history = [], []
     for record in registrations:
@@ -126,9 +130,47 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
             st.dataframe(rows, hide_index=True, width="stretch")
         else:
             st.write("No records in this section for the selected identity.")
+    confirmed = [r for r in registrations if r.status == RegistrationStatus.CONFIRMED]
+    if confirmed:
+        st.subheader("Cancel a confirmed booking")
+        for record in confirmed:
+            workshop = workshops[record.workshop_id]
+            if st.button(
+                f"Cancel {record.registration_id}: {workshop.title}",
+                key=f"cancel_{record.registration_id}",
+                disabled=now.astimezone(UTC) >= workshop.registration_cutoff.astimezone(UTC),
+                help="Only the owner may cancel, strictly before the 24-hour cutoff.",
+            ):
+                outcome, candidate = cancel_registration(
+                    state, actor, record.registration_id, now=server_now()
+                )
+                if outcome == "OK":
+                    st.session_state.demo_state = candidate
+                    st.session_state.cancellation_message = (
+                        actor.user_id,
+                        f"Cancelled {record.registration_id}: {workshop.title}. "
+                        "One place released; the registration remains in History.",
+                    )
+                    st.rerun()
+                elif outcome == "ALREADY_CANCELLED":
+                    st.info(
+                        "ALREADY_CANCELLED: This record is already cancelled; no further place released."
+                    )
+                else:
+                    explanations = {
+                        "INVALID_ACTOR": "Select a valid participant demo identity.",
+                        "FORBIDDEN": "Only participants may cancel their own bookings.",
+                        "UNKNOWN_REGISTRATION": "This registration is no longer available.",
+                        "UNKNOWN_WORKSHOP": "This workshop is no longer available.",
+                        "INVALID_INPUT": "The server time is unavailable. Please try again.",
+                        "REGISTRATION_CLOSED": "Confirmed cancellation closed 24 hours before the start.",
+                    }
+                    st.error(
+                        f"{outcome}: {explanations.get(outcome, 'Cancellation is unavailable.')}"
+                    )
     st.caption(
         "History includes cancelled records and started workshops; original statuses are retained. "
-        "Cancellation is not available in this development loop."
+        "Cancel only your own confirmed booking before its 24-hour cutoff."
     )
 
 
@@ -315,7 +357,7 @@ def main() -> None:
 
     st.title("Outdoor Workshop Booking and Waitlist Management System")
     st.caption(
-        "L4 preview: book workshops and view your records. Cancellation follows in a later loop."
+        "L5 preview: book workshops, cancel your confirmed bookings and retain your history."
     )
     required_roles = {"My Bookings": Role.PARTICIPANT, "Organiser": Role.ORGANISER}
 

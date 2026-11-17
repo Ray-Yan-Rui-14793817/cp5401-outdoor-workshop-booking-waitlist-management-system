@@ -1,106 +1,102 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Accepted: L0 revision 3 and L1-L4. Current: L4-F08, ACCEPT_LOOP confirmed 17 November 2026. L5: NOT_STARTED.**
+**Accepted: L0 revision 3 and L1-L4. Current: L5, HUMAN_REVIEW_PENDING. L6: NOT_STARTED.**
 
-This classroom prototype manages fictional workshops and registrations in one browser session. L4 starts from accepted L3 commit 74f9281f420755a42141d9792c023cec5d53bf34. The author's subsequent declaration accepts the updated L4 UI and H01-H07 for candidate 7bbbeabb223538d5827a0249116a7f640334add4. The three supplied feedback items and evidence boundaries are recorded in the L4 review. The three-file architecture remains Streamlit app.py -> pure Python booking.py -> dataclasses/lists, verified by test_booking.py and one Actions job.
+L5 starts from accepted L4/GitHub commit 2f2504acff79317c20760971acae2965ee98a1fb. The new author instruction permits own confirmed cancellation, released capacity and retained history. It supersedes the historical L4 hold for L5 development only. All five historical reviews and accepted local L0-L4 folders/archives remain unchanged.
 
-## L4 development
+## L5 implementation
 
 | File | Responsibility |
 |---|---|
-| [app.py](app.py) | Existing fixed-role menus and creation form; participant Book controls, current-time submission, success/refusal feedback and personal current/history views. Adopt only an OK candidate. |
-| [booking.py](booking.py) | Existing validated models, permissions, creation, browse, owned rosters and fixtures; book_workshop and list_own_registrations. No Streamlit import. |
-| [test_booking.py](test_booking.py) | 250 cases in 92 functions: all 238 pre-review cases retained unchanged, plus 12 focused F08 review cases. Earlier F08 adaptations remain explicitly documented. Requirements determine outcomes, not the teaching Demo's pass history. |
+| [app.py](app.py) | Existing views/forms plus own cancellation controls in My Bookings, fresh submission time, cutoff display/disabled controls and explicit-OK state adoption. |
+| [booking.py](booking.py) | Pure operations over dataclasses/lists. New cancel_registration checks the stored owner and cutoff, retains history and releases one place. |
+| [test_booking.py](test_booking.py) | 298 cases in 112 functions: all 250 prior cases/92 function ASTs/decorators unchanged, plus 48 L5 cases in 20 functions. |
 
-For a fresh session, select **Sam (PARTICIPANT)** and book **Outdoor Navigation Basics**. One new CONFIRMED record appears; the earlier CANCELLED record remains in History. My Bookings shows only Sam's records. Switch to Xingjian to inspect a different list, then Rui Yan's owned roster to see the updated participant list. A fresh Xingjian request for Outdoor Photography Walk returns FULL; a repeat request for Navigation returns DUPLICATE_ACTIVE. The final-24h and historical examples have disabled booking controls. There is no cancellation/Join action in L4.
+Keep app.py -> booking.py -> Python data structures. No runtime module, database, framework, real login or dependency is added. The single-job Actions workflow and both dependency lock pairs remain unchanged.
 
-### Booking contract
+### Cancellation contract
 
-Use the latest same-session state. Resolve a valid participant, find the actual workshop, validate the aware trusted clock, enforce t<C, check active duplication, then capacity. C is S minus 24 elapsed hours; exactly C is closed, including after S. Full direct Book returns FULL without waitlisting. A cancelled record does not consume capacity or block a pre-cutoff rebooking. No overlap prohibition is added.
+Cancel by registration ID. Check the selected participant role, actual target and stored owner. INVALID_ACTOR, FORBIDDEN and UNKNOWN_REGISTRATION preserve the entire input. An owned CANCELLED record returns ALREADY_CANCELLED without mutation/allocation, including at/after C or S. This no-op is checked before time closure.
 
-Success creates one new registration ID with CONFIRMED and equal creation/update instants, advances only next_registration_id once, and returns a complete state with independent mutable lists. The input snapshot remains unchanged. All refusals and construction exceptions preserve its records/counters. UI replacement occurs only after OK. Serial processing is assumed; no database transaction, concurrency guarantee or retry-idempotency token is claimed.
+An active confirmation requires fresh aware trusted time and t<C, where C=S minus 24 elapsed hours. Exactly C and later return REGISTRATION_CLOSED. Success changes the same row to CANCELLED, keeps its IDs/created_at, updates updated_at in UTC and leaves other rows and both counters unchanged. Return a complete new state with copied mutable lists; never mutate the input. Construction exceptions propagate without partial state. Only OK replaces the UI business state; ALREADY_CANCELLED is informational. No broad state repair or exception suppression is added.
 
-The business read derives the participant ID from the selected validated actor; it accepts no other person's ID. The UI splits returned records into upcoming CONFIRMED bookings and history (CANCELLED records or started workshops). This display grouping never changes stored status. Time/meeting point/IDs and original timestamps remain visible. Started CONFIRMED does not imply attendance or completion.
+One effective cancellation releases exactly one confirmed place. A subsequent eligible pre-C Book creates a new ID and preserves cancelled history. Repeating the old cancellation cannot release the newly booked place. FULL stays FULL. No waitlist/promotion or overlap restriction is added; serial allocation is tested, not simultaneous multi-user concurrency.
 
-### Preserved behaviour and limits
+My Bookings exposes only the selected participant's confirmed targets. Locked/started controls are disabled; the business operation independently checks its decision time. Cancelled rows remain in History with no repeat button. Success feedback is actor-scoped. Selection, organiser failed drafts/errors and unrelated session data are retained.
 
-Four fixed fictional identities, role menus, independent business checks, current-view reset, owned rosters, valid relative demo data, creation >24 hours ahead and capacity 1-30 are retained. Failed creation submissions retain all eight values/errors across navigation; only success clears the form. L4-F08 now keeps each organiser's latest failed eight values, errors and feedback under their fixed user_id. Switching organisers loads that organiser's saved failure or defaults; success clears only that organiser. Unsubmitted edits are not promised across navigation. Use fictional data only.
+### Preview scenario
 
-L3 HF-02 accepted a shared rejected draft crossing demo roles. The explicit F08 request supersedes that current UI behaviour; the original L3 acceptance record and accepted folders remain unchanged. The freely selectable demo identities still provide no authentication or cross-session persistence. Existing unowned shared UI drafts are not attributed to whichever organiser happens to be selected after a code update.
+In a fresh session, select Sam, open My Bookings and cancel registration-2 (Outdoor Photography Walk). The confirmed total drops from three to two; registration-2 and the existing registration-4 remain in History. Refresh must not release another place or allocate an ID. Switch to Xingjian and Book Photography: the released place becomes registration-5. Switch to Alex, open Organiser and select Photography: its roster contains Xingjian. Sam's cancelled row remains history. Xingjian's Trail Safety cancellation is disabled under the final-24h policy.
 
-The F08 deep review found two oracle gaps, without a confirmed defect in the genuine runtime: invalid zero/empty values after form restoration, and adoption of a different candidate after rejected creation. Twelve new cases detect both isolated faults. All 90 pre-review test functions/parameter sets, app.py and booking.py remain unchanged. The current full local result is 250 passed; browser checks and hosted evidence are in the L4 review.
+## Preserved behaviour and limits
 
-L4-F05 is corrected: eight form defaults are initialised/restored in Session State before rendering, with no competing date/time/capacity widget defaults. Failed values remain intact; successful creation resets only those eight keys. Fresh-process tests and browser/server-log checks verify this without suppressing warnings.
+Creation remains >24h with integer capacity 1-30, valid dates and current-organiser ownership. Fixed identities, hidden menus, independent business rejection, own-record filtering, owned rosters, once-per-session fixtures, L4-F05 defaults/reset and F08 failed-draft isolation are retained. No prior test function is adapted for L5.
 
-In-app Refresh, navigation and actor switching retain that session's business state. New sessions are unshared; browser reload/server restart may reset data. Selection is not authentication or impersonation resistance. No database, real account, notifications, payments, weather API or emergency override is added. Outdoor preparation and weather/safety decisions remain with the organiser outside this prototype.
+L4-HF-01 reserved actual cancellation for an authorised L5; the new instruction now implements it. L4-HF-02's isolated refusal oracles and serial-only scope remain. L4-HF-03's author/AI evidence distinction remains. Historical L3 HF-02 and all accepted reviews retain their original bytes.
 
-L4 adds no cancellation, waitlist, deployment or release approval. V1.0 still requires L5 cancellation and L6 release validation; V1.1 follows a separately reviewed CR-01. R-08 and VAL-01/02/03 remain pending real user suitability checks. Automated success does not guarantee an HD grade or replace assessment deliverables.
+Use fictional data. Selection is not authentication or impersonation resistance. In-app refresh/reruns preserve the session; independent sessions are unshared and browser reload/new sessions/restart may reset data. Source rollback is not data recovery. No notifications, payments, weather API or emergency override is added. Full VAL/R-08 suitability and release/deployment evidence remain later work.
 
 ## Run and check
 
-Use Python 3.12.14. From the repository/extracted archive root on Windows:
+Use Python 3.12.14. From the repository or extracted archive root:
 
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest test_booking.py
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1 --server.port 8514 --server.headless true
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1 --server.port 8516 --server.headless true
 ```
 
-Reuse an existing environment when available. Linux/macOS use .venv/bin/python. Runtime-only installation uses --require-hashes -r requirements.txt. Keep both input/lock pairs unchanged until a deliberate dependency revision.
+Reuse an existing environment. In this workspace, from L5_develop use ..\.venv\Scripts\python.exe for the existing parent environment. Linux/macOS use the equivalent bin/python path. Runtime-only installation uses --require-hashes -r requirements.txt.
 
-The temporary L4 preview at http://127.0.0.1:8514 was closed at the author's request after acceptance; port 8514 is released and its health endpoint is unreachable. The command above can restart it later. Earlier loop previews are separate. Automated browser/controlled-fault executions remain AI evidence; the author's UI/H01-H07 declaration and independent CI verification are recorded separately.
+The live human preview is [http://127.0.0.1:8516](http://127.0.0.1:8516), retained for personal checks. AI browser sessions are separate. Relative demo dates initialise once; they are not fixed assessment dates.
 
 ## Design baseline documents
 
 | Document | Content |
 |---|---|
-| [Requirements](requirements.md) | Accepted FR/BR/QR/risk definitions and current implemented subset. |
-| [Test plan](docs/test-plan.md) | Preserved B/W/I/validation definitions; retained mapping and new L4 test groups. |
-| [Demo reuse](docs/demo-reuse.md) | Pinned Demo, project-specific adaptation and course reference identifiers. |
-| [AI use](docs/ai-use.md) | Significant tasks, assumptions, actual AI work and distinct human responsibility. |
-| [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical accepted design. |
-| [L1 review](docs/reviews/L1-human-review.md), [L2 review](docs/reviews/L2-human-review.md), [L3 review](docs/reviews/L3-human-review.md) | Unchanged historical evidence/acceptance, including L3 H01-H07 and HF-01-HF-03. |
-| [L4 review](docs/reviews/L4-human-review.md) | Accepted candidate, technical evidence, completed author-declared H01-H07, three feedback items, residual limits and the L5 hold. |
+| [Requirements](requirements.md) | Unchanged canonical FR/BR/QR/risk targets and implemented L5 scope. |
+| [Test plan](docs/test-plan.md) | Preserved scenarios, retained regressions and exact 48-case L5 mapping. |
+| [Demo reuse](docs/demo-reuse.md) | Pinned reference and explained project-specific adaptation. |
+| [AI use](docs/ai-use.md) | Actual tasks, assumptions/corrections and distinct human responsibility. |
+| [L0](docs/reviews/L0-human-acceptance.md), [L1](docs/reviews/L1-human-review.md), [L2](docs/reviews/L2-human-review.md), [L3](docs/reviews/L3-human-review.md), [L4](docs/reviews/L4-human-review.md) | Unchanged historical decisions/feedback. |
+| [L5 review](docs/reviews/L5-human-review.md) | Current intent/evidence/findings/risks and unchecked H01-H07. |
 
-Historical next-loop holds describe the decision at that time. The new instruction authorises L4 development only. Current gate status is in the L4 review.
-
-L4_develop contents belong at repository root on codex/l4-bookings, including .github. The 21-file personal L4_develop.zip stays local, with the same source files at archive root. Do not upload/commit it or attach it to a release. ZIP extensions are ignored in any case. Environments, caches, reports, private QA scripts and course originals are excluded. Accepted local folders/archives and the original tracked working copy are preserved.
+Historical next-loop holds describe earlier decisions. The new instruction authorises L5 only; its review is the current gate record. Put L5_develop contents at repository root on codex/l5-cancellation, including .github. The 22-file personal L5_develop.zip stays local with source at archive root. Do not commit/upload it or attach it to a release. Exclude private QA tools/reports/screenshots, environments, caches and course originals.
 
 ## Development workflow
 
-The author sets intent/rules and evaluates independent expected results. AI implements the bounded task, reports corrections/assumptions and supplies automated evidence. The author inspects code, performs actual checks, reviews findings/limits and records the next decision. A green Actions job cannot provide human acceptance.
+The author sets intent and judges independent expected outcomes. AI implements bounded changes and discloses assumptions/corrections/evidence. The author inspects code/tests, performs actual checks, reviews findings/risks and records the next decision. Actions cannot provide human acceptance.
 
 | Decision | Meaning |
 |---|---|
-| ACCEPT_LOOP | Accept the identified bounded candidate after personal review. A later loop begins only when requested. |
-| READY_TO_MERGE | Approve a reviewed PR with current evidence and justified findings/risk dispositions. |
-| ACCEPT_RELEASE | Approve a verified release/deployment with required validation. |
-| CHANGES_REQUIRED / SPECIALIST_ADVICE_REQUIRED | Correct findings or obtain appropriate advice before dependent work. |
+| ACCEPT_LOOP | Accept the identified loop after personal review; a later loop needs a later instruction. |
+| READY_TO_MERGE | Approve a reviewed PR with current checks and justified findings/risk dispositions. |
+| ACCEPT_RELEASE | Approve verified deployment/release and required validation. |
+| CHANGES_REQUIRED / SPECIALIST_ADVICE_REQUIRED | Correct findings or seek proportionate advice before dependent work. |
 
-On 17 November 2026 (UTC+08:00), the author explicitly declared updated L4 UI/H01-H07 complete and supplied ACCEPT_LOOP for 7bbbeabb223538d5827a0249116a7f640334add4. Their feedback accepts the tested booking/history contracts for serial execution, retains cancellation for L5, requires isolated refusal reasons, and distinguishes independently verified CI from AI browser/fault evidence. No individual personal command log, additional code edit or separate formal risk category was supplied. L5 remains NOT_STARTED under the explicit hold; READY_TO_MERGE, ACCEPT_RELEASE and full VAL/R-08 remain separate.
+L5 UI/H01-H07, actual personal feedback/edits, risk judgement, reviewer/date and ACCEPT_LOOP are PENDING. No L4 checkmarks or independent CI-verification declaration are copied into L5. No PR, main merge, release or L6 work is included.
 
 ## Record for each loop
 
-Record intended/preserved behaviour, FR/BR/QR/risk/test mapping, AI task/assumptions, actual changed files, independent oracles, actual executor/results, findings/corrections, code identity, reviewer/date/decision and residual risks. Record genuine human feedback and any rejected/edited AI suggestion; do not fabricate contributions. Link CI rather than duplicating generated logs.
+Record intended/preserved behaviour, FR/BR/QR/risk/test mapping, changed files, AI tasks/assumptions/corrections, independent oracles, actual executor/results, code identity, findings, reviewer/date/decision and residual limits. Record genuine human feedback and edited/rejected AI suggestions without inventing contributions. Link CI rather than committing generated logs.
 
 ## Loop plan
 
 | Loop | Work and exit |
 |---|---|
-| L0-L3 | Accepted design, foundations, fixed identities/navigation, workshop creation/browsing/owned rosters. Historical records unchanged. |
-| L4 | ACCEPT_LOOP: updated UI/H01-H07 declared complete; serial booking/history and F08 evidence accepted for the stated scope. Preview closed; L5 held. |
-| L5 | Own cancellation, retained history, repeat safety and relevant regression/deadline/permission tests; not started. |
-| L6 | Working V1.0, required deployment/validation and ACCEPT_RELEASE. |
-| L7-L8 | CR-01 waitlist impact/implementation, regression/new tests, validation and justified pre-merge decision. |
-| L9 | Approved merge, main/deployment smoke, V1.1 release and submission/defence evidence. |
+| L0-L4 | Accepted design, foundations, fixed roles, creation/rosters, booking/history and F08 isolation. |
+| L5 | Own cancellation/history/capacity; stop pending UI/H01-H07 and ACCEPT_LOOP. |
+| L6 | NOT_STARTED. Working V1.0 deployment/validation/release after separate authorisation. |
+| L7-L8 | CR-01 waitlist impact/change, new/regression tests, validation and justified pre-merge decision. |
+| L9 | Approved merge, deployment/release and final submission/defence evidence. |
 
 ## GitHub Actions
 
-[quality-checks.yml](.github/workflows/quality-checks.yml) remains byte-identical to accepted L3: one quality-checks job, Ubuntu 24.04/Python 3.12.14, isolated runtime installation/import, locked development installation, Ruff/format, pip check, Bandit, complete audits of both locks and all pytest cases with JUnit/booking branch coverage.
+[quality-checks.yml](.github/workflows/quality-checks.yml) is byte-identical to L4: one job, Ubuntu 24.04/Python 3.12.14, isolated runtime installation/imports, locked development installation, Ruff/format, pip check, Bandit, complete audits and all tests with JUnit/booking branch coverage. Coverage is diagnostic, not a grade threshold.
 
-Triggers remain main/codex pushes and PRs to main, with dispatch when available on default branch. SHA-pinned Actions, read-only permissions, recorded tested/head/base commits, Bash/pipefail and no bypassed failed checks are retained. Reports upload even after failures and expire after 14 days. Coverage is diagnostic, not a grade threshold. A quality report artifact is distinct from the personal project ZIP, which stays local.
+Main/codex pushes and PRs to main trigger checks. Immutable Action pins, read-only permissions, tested/head/base identities, Bash/pipefail and failure reports remain. Reports expire after 14 days and are separate from the personal source ZIP. Current code/run evidence is in the L5 review.
 
 ## Version and submission evidence
 
-Establish this project's functioning V1.0 before CR-01; retain meaningful commits, review/merge decisions, deployments and v1.0/v1.1 evidence. A code rollback cannot recover temporary booking data. The final assessment still needs repository/deployment URLs, PPTX, the specified submission document, change/review/merge/release links, AI disclosure and oral defence. This is an L4 development candidate, not a completed final submission.
+L5 builds V1.0; it is not CR-01 or a release approval. Working V1.0 deployment/validation must precede the meaningful waitlist change/review/merge/release. Final repository/deployment URLs, PPTX, submission document, AI disclosure and oral defence remain required assessment work. Technical success here does not complete those obligations or guarantee an HD grade.
