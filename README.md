@@ -1,8 +1,8 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Accepted: L0 revision 3 and L1-L3. Current: L4-F08, HUMAN_REVIEW_PENDING. L5: NOT_STARTED.**
+**Accepted: L0 revision 3 and L1-L4. Current: L4-F08, ACCEPT_LOOP confirmed 17 November 2026. L5: NOT_STARTED.**
 
-This classroom prototype manages fictional workshops and registrations in one browser session. L4 starts from accepted L3 commit 74f9281f420755a42141d9792c023cec5d53bf34. The author's explicit L4 instruction supersedes the earlier L4 hold, without accepting this new work. The three-file architecture remains Streamlit app.py -> pure Python booking.py -> dataclasses/lists, verified by test_booking.py and one Actions job.
+This classroom prototype manages fictional workshops and registrations in one browser session. L4 starts from accepted L3 commit 74f9281f420755a42141d9792c023cec5d53bf34. The author's subsequent declaration accepts the updated L4 UI and H01-H07 for candidate 7bbbeabb223538d5827a0249116a7f640334add4. The three supplied feedback items and evidence boundaries are recorded in the L4 review. The three-file architecture remains Streamlit app.py -> pure Python booking.py -> dataclasses/lists, verified by test_booking.py and one Actions job.
 
 ## L4 development
 
@@ -49,7 +49,7 @@ py -3.12 -m venv .venv
 
 Reuse an existing environment when available. Linux/macOS use .venv/bin/python. Runtime-only installation uses --require-hashes -r requirements.txt. Keep both input/lock pairs unchanged until a deliberate dependency revision.
 
-The L4 personal preview is [http://127.0.0.1:8514](http://127.0.0.1:8514). Its temporary service is for human checking; the command is for a later restart. Earlier loop previews are separate. Tests/browser smoke runs are AI executions, not the author's acceptance.
+The temporary L4 preview at http://127.0.0.1:8514 was closed at the author's request after acceptance; port 8514 is released and its health endpoint is unreachable. The command above can restart it later. Earlier loop previews are separate. Automated browser/controlled-fault executions remain AI evidence; the author's UI/H01-H07 declaration and independent CI verification are recorded separately.
 
 ## Design baseline documents
 
@@ -61,7 +61,7 @@ The L4 personal preview is [http://127.0.0.1:8514](http://127.0.0.1:8514). Its t
 | [AI use](docs/ai-use.md) | Significant tasks, assumptions, actual AI work and distinct human responsibility. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical accepted design. |
 | [L1 review](docs/reviews/L1-human-review.md), [L2 review](docs/reviews/L2-human-review.md), [L3 review](docs/reviews/L3-human-review.md) | Unchanged historical evidence/acceptance, including L3 H01-H07 and HF-01-HF-03. |
-| [L4 review](docs/reviews/L4-human-review.md) | Current intent, evidence, findings, residual risks and unchecked H01-H07. |
+| [L4 review](docs/reviews/L4-human-review.md) | Accepted candidate, technical evidence, completed author-declared H01-H07, three feedback items, residual limits and the L5 hold. |
 
 Historical next-loop holds describe the decision at that time. The new instruction authorises L4 development only. Current gate status is in the L4 review.
 
@@ -78,7 +78,7 @@ The author sets intent/rules and evaluates independent expected results. AI impl
 | ACCEPT_RELEASE | Approve a verified release/deployment with required validation. |
 | CHANGES_REQUIRED / SPECIALIST_ADVICE_REQUIRED | Correct findings or obtain appropriate advice before dependent work. |
 
-L3 ACCEPT_LOOP remains historical. L4 H01-H07, actual personal observations, justified risk disposition, reviewer/date and ACCEPT_LOOP are pending. Do not copy L3 checkmarks into L4. No PR, merge, release, L5 work or user validation is inferred from this delivery.
+On 17 November 2026 (UTC+08:00), the author explicitly declared updated L4 UI/H01-H07 complete and supplied ACCEPT_LOOP for 7bbbeabb223538d5827a0249116a7f640334add4. Their feedback accepts the tested booking/history contracts for serial execution, retains cancellation for L5, requires isolated refusal reasons, and distinguishes independently verified CI from AI browser/fault evidence. No individual personal command log, additional code edit or separate formal risk category was supplied. L5 remains NOT_STARTED under the explicit hold; READY_TO_MERGE, ACCEPT_RELEASE and full VAL/R-08 remain separate.
 
 ## Record for each loop
 
@@ -89,7 +89,7 @@ Record intended/preserved behaviour, FR/BR/QR/risk/test mapping, AI task/assumpt
 | Loop | Work and exit |
 |---|---|
 | L0-L3 | Accepted design, foundations, fixed identities/navigation, workshop creation/browsing/owned rosters. Historical records unchanged. |
-| L4 | Participant booking and personal history; technical checks and personal H01-H07, then stop pending ACCEPT_LOOP. |
+| L4 | ACCEPT_LOOP: updated UI/H01-H07 declared complete; serial booking/history and F08 evidence accepted for the stated scope. Preview closed; L5 held. |
 | L5 | Own cancellation, retained history, repeat safety and relevant regression/deadline/permission tests; not started. |
 | L6 | Working V1.0, required deployment/validation and ACCEPT_RELEASE. |
 | L7-L8 | CR-01 waitlist impact/implementation, regression/new tests, validation and justified pre-merge decision. |
