@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. L1: ACCEPT_LOOP. Earlier L2 foundations: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current L2 navigation revision: HUMAN_REVIEW_PENDING. L3: NOT_STARTED.**
+**Design: accepted L0 revision 3. L1: ACCEPT_LOOP. Earlier L2 foundations: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current L2 navigation revision: deep-reviewed; HUMAN_REVIEW_PENDING. L3: NOT_STARTED.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 
@@ -10,7 +10,7 @@ A classroom prototype for one outdoor workshop provider. The application uses St
 |---|---|
 | [app.py](app.py) | Fixed demo identity selection, role-specific menus, independent preview access checks, safe view reset, refresh and once-per-session initialisation. |
 | [booking.py](booking.py) | Existing models/time contracts plus resolve_actor and check_permission. No Streamlit dependency. |
-| [test_booking.py](test_booking.py) | 42 L1 cases plus 44 L2 cases: 86 total. Two L1 UI functions now select the appropriate identity before private navigation; their original assertions remain. New cases challenge menu bypass and view changes. |
+| [test_booking.py](test_booking.py) | 42 L1 cases plus 45 L2 cases: 87 total. Two L1 UI functions retain role-appropriate identity preconditions and their original assertions. Deep review consolidates duplicate no-identity cases and strengthens public-content/transition checks. |
 
 | Fixed ID | Demo name | Fixed role |
 |---|---|---|
@@ -57,7 +57,7 @@ Keep both pairs of dependency files: requirements.in/requirements.txt and requir
 | [AI use](docs/ai-use.md) | Significant tasks and actual AI/human contributions. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical author decision and seven recorded checks. |
 | [L1 review](docs/reviews/L1-human-review.md) | Historical findings/results and author-confirmed ACCEPT_LOOP. |
-| [L2 review](docs/reviews/L2-human-review.md) | Current navigation revision, AI evidence, pending checklist and link to the earlier accepted L2 record. |
+| [L2 review](docs/reviews/L2-human-review.md) | Current deep-review findings, course alignment, actual evidence, pending checklist and earlier acceptance. |
 
 For GitHub delivery, the contents of L2_develop belong at the repository root, including the hidden .github directory. Use codex/l2-identities for L2 verification. The [L2 review](docs/reviews/L2-human-review.md#verification-results) identifies actual results/commit/run. Local L0_develop, L1_develop and the original working copy remain unchanged.
 

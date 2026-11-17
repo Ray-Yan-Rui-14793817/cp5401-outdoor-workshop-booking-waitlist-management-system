@@ -24,6 +24,11 @@ from booking import (
 )
 
 APP_PATH = Path(__file__).with_name("app.py")
+PREVIEW_MESSAGES = {
+    "Workshops": "Workshop browsing is not yet available in this preview.",
+    "My Bookings": "Booking actions and personal history will be added in later loops.",
+    "Organiser": "Workshop creation and organiser rosters are not yet available.",
+}
 
 
 @pytest.fixture
@@ -437,12 +442,7 @@ def test_fixed_roles_show_only_allowed_menu_and_preview(
         assert not app.exception
         assert not app.warning
         assert not app.error
-        expected_message = {
-            "Workshops": "Workshop browsing is not yet available in this preview.",
-            "My Bookings": "Booking actions and personal history will be added in later loops.",
-            "Organiser": "Workshop creation and organiser rosters are not yet available.",
-        }[view]
-        assert expected_message in [item.value for item in app.info]
+        assert PREVIEW_MESSAGES[view] in [item.value for item in app.info]
 
 
 def test_identity_switch_clear_refresh_and_navigation_preserve_complete_state(
@@ -470,13 +470,13 @@ def test_identity_switch_clear_refresh_and_navigation_preserve_complete_state(
     assert app.sidebar.selectbox(key="selected_user_id").value is None
 
 
-@pytest.mark.parametrize("view", ["My Bookings", "Organiser"])
-def test_unselected_identity_hides_restricted_menu(view: str) -> None:
+def test_unselected_identity_shows_public_preview_and_only_public_menu() -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
     assert not app.exception
     assert app.sidebar.radio(key="current_view").options == ["Workshops"]
-    assert view not in app.sidebar.radio(key="current_view").options
     assert app.subheader[0].value == "Workshops"
+    assert PREVIEW_MESSAGES["Workshops"] in [item.value for item in app.info]
+    assert not app.warning and not app.error
 
 
 def test_separate_sessions_do_not_share_selected_identity() -> None:
@@ -585,6 +585,8 @@ def test_bypassing_hidden_menu_still_rejects_access_without_mutation(
         ("participant-1", "My Bookings", None, "Workshops"),
         ("organiser-1", "Organiser", "organiser-2", "Organiser"),
         ("participant-1", "My Bookings", "participant-2", "My Bookings"),
+        ("organiser-1", "Workshops", "participant-1", "Workshops"),
+        ("participant-1", "Workshops", "organiser-1", "Workshops"),
     ],
 )
 def test_identity_change_resets_only_disallowed_current_view(
@@ -600,11 +602,18 @@ def test_identity_change_resets_only_disallowed_current_view(
     app.run()
     app.sidebar.selectbox(key="selected_user_id").set_value(first_id).run()
     app.sidebar.radio(key="current_view").set_value(first_view).run()
+    assert not app.exception
+    assert app.sidebar.radio(key="current_view").value == first_view
+    assert app.subheader[0].value == first_view
+    assert PREVIEW_MESSAGES[first_view] in [item.value for item in app.info]
+    assert app.session_state.demo_state is populated_state
+    assert app.session_state.demo_state == expected
     app.sidebar.selectbox(key="selected_user_id").set_value(next_id).run()
 
     assert not app.exception
     assert app.sidebar.radio(key="current_view").value == expected_view
     assert app.subheader[0].value == expected_view
+    assert PREVIEW_MESSAGES[expected_view] in [item.value for item in app.info]
     assert not app.warning and not app.error
     assert app.session_state.demo_state is populated_state
     assert app.session_state.demo_state == expected
@@ -625,6 +634,7 @@ def test_stale_or_unknown_saved_view_resets_before_widget_creation(
     assert app.sidebar.radio(key="current_view").options == ["Workshops", "My Bookings"]
     assert app.sidebar.radio(key="current_view").value == "Workshops"
     assert app.subheader[0].value == "Workshops"
+    assert PREVIEW_MESSAGES["Workshops"] in [item.value for item in app.info]
     assert not app.warning and not app.error
     assert app.session_state.demo_state is populated_state
     assert app.session_state.demo_state == expected
