@@ -1,14 +1,16 @@
 # L2 Work and Human Review
 
-**Current revision: role-specific navigation, deep review on 17 November 2026 (Asia/Singapore). Human decision: HUMAN_REVIEW_PENDING. L3: NOT_STARTED.**
+**Current revision: role-specific navigation, deep-reviewed and accepted on 17 November 2026 (Asia/Singapore). Human decision: ACCEPT_LOOP. UI/H01-H07: AUTHOR_CONFIRMED_COMPLETE. L3: NOT_STARTED, held at the author's explicit request.**
 
 ## Intake and earlier acceptance
 
 On 17 November 2026 (Asia/Singapore), the author declared the UI and H01-H07 complete and supplied ACCEPT_LOOP for candidate 99627424ad05fcbe83196cc454dbccb772a776fc. The [historical author-confirmed checklist](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/feb7b740ba7a35535a0b41ac673b6572f4aeb628/docs/reviews/L2-human-review.md#human-acceptance-checklist) preserves that statement, its declared completion and its limits. Commit feb7b740ba7a35535a0b41ac673b6572f4aeb628 records the acceptance without code/test changes.
 
-The author subsequently requested hidden navigation combined with independent access rejection. That implementation was delivered as candidate bdbca42a6442479ab9550e6ef155005f9e00203e. The present task is a fresh deep review of that candidate against accepted L0/L1, the original assessment/HD rubric, lecture transcripts and decks, including fixes, English deliverables and a running preview. Executor/review tool: Codex. Earlier acceptance does not approve the later navigation revision. Stop before L3 pending renewed human acceptance.
+The author subsequently requested hidden navigation combined with independent access rejection, delivered as candidate bdbca42a6442479ab9550e6ef155005f9e00203e. The technical-review task was a fresh check against accepted L0/L1, the original assessment/HD rubric, lecture transcripts and decks, including fixes, English deliverables and a running preview. Executor/review tool: Codex. Its revised delivery was candidate 2e014b273f555af2f011968a1352a77c833c634d. The author has now separately declared its UI/H01-H07 complete and supplied ACCEPT_LOOP. This statement is recorded below; earlier acceptance is not reused for the navigation change. L3 remains stopped at the author's explicit request.
 
 ## Scope and preserved behaviour
+
+The table describes the completed technical review. This subsequent acceptance update changes five existing English records only: README, requirements status, Demo reuse, AI use and this review. It changes no executable file, test, workflow, dependency or business rule.
 
 | File/surface | Current revision |
 |---|---|
@@ -41,7 +43,7 @@ The business helper resolves the canonical ID and checks role consistency plus a
 |---|---|
 | R-03: hidden menu mistaken for access control | Keep booking.py checks and explicit-OK rendering. L2-07 forces hidden/unknown views past the menu and checks denial, absent private content and unchanged populated state. Direct role/owner/forged-actor tests remain. |
 | R-04: identity change resets data | Change only current_view when needed. L2-04/L2-08/L2-09 compare complete state, object identity and counters. |
-| R-06: AI expands scope or supplies human approval | Limit this review's changes to test_booking.py and five existing documents. Preserve the earlier acceptance separately and leave the current checklist pending. No future business operation is added. |
+| R-06: AI expands scope or supplies human approval | Limit the technical-review changes to test_booking.py and five existing documents. Preserve earlier acceptance separately and require the author's decision for this revision, now recorded below. The subsequent acceptance update changes records only; no future business operation is added. |
 | R-07: tests disappear when menus hide options | Replace normal navigation to forbidden views with exact visibility assertions plus independent fault-injection rejection. Keep permitted-content assertions and the two abnormal-permission regressions. Record the two L1 UI precondition adaptations explicitly. |
 | R-08: usability and policy suitability | Check understandable menus in the preview, but retain VALIDATION_PENDING. Actual VAL-01/02/03, including near-C promotion suitability, require later task feedback. |
 | Proportionate architecture | One local role-to-view mapping, a short menu filter/reset and the existing guard. No new router, service, authentication framework, dependency or application file. Tests do not add an exposed route. |
@@ -56,7 +58,7 @@ AI recommends HIGH review depth for the role/permission boundary: menu hiding co
 | ND-02 / Medium | Transition tests checked the final heading/state without first proving the private starting view had rendered. An always-reset fault therefore passed four of six old transition cases; only same-role final-view cases detected it. | CORRECTED by AI: assert starting view/content and complete state, then resulting view/content/state. Add two cases retaining public Workshops across role changes. The faulty eight-case group now fails all six private-start cases; its two public-start cases correctly pass. |
 | ND-03 / Low | This document called the historical checklist signed. The actual evidence is an author statement transcribed from the conversation; no signature or independent approval was supplied. | CORRECTED to author-confirmed, preserving the original ACCEPT_LOOP and its stated limits. Do not invent personal commands, observations, a separate risk rationale or a second reviewer. |
 
-All corrections above are technical AI work on 17 November 2026. The project author still owns their assessment and acceptance. No unresolved blocking runtime finding was identified in this bounded review; full business-operation permissions and validation remain deferred, not passed.
+All corrections above are technical AI work on 17 November 2026. The project author owns their assessment and has now declared H01-H07 complete and supplied ACCEPT_LOOP. No individual finding commentary was included in that acceptance message. No unresolved blocking runtime finding was identified in this bounded review; full business-operation permissions and validation remain deferred, not passed.
 
 ### Simplicity decisions
 
@@ -129,23 +131,27 @@ Hosted environment: Ubuntu 24.04/Python 3.12.14. Artifact quality-checks-4402070
 
 ## Human acceptance checklist
 
-These items apply to the new navigation revision and are intentionally unchecked. Do not copy the earlier acceptance into this revision.
+On 17 November 2026 (Asia/Singapore), the author explicitly declared that the updated L2 UI checks and H01-H07 human acceptance were complete, supplied ACCEPT_LOOP, requested the GitHub and AI/human-record updates, and instructed that L3 must not start. Checked items below record that author statement, not AI inference, independent approval or a personal execution log generated by AI. This is the confirmation date; individual check execution dates were not supplied.
 
-- [ ] **H01 Identity and menus:** Confirm no identity shows only Workshops; Xingjian/Sam show Workshops and My Bookings; Rui Yan/Alex show Workshops and Organiser. Confirm the fixed labels/roles and absence of a role editor.
-- [ ] **H02 Switch and clear:** From Organiser switch to a participant; from My Bookings switch to an organiser; clear either selection. Confirm Workshops is selected. Same-role switches retain a permitted view; refresh retains identity/view.
-- [ ] **H03 Independent rejection:** Explain why hiding is insufficient. Inspect direct role/owner tests and L2-07/L2-09. Distinguish safe stale-state reset from rejection of a forced private view; explain INVALID_ACTOR, FORBIDDEN, unknown-result denial and later trusted owner lookup.
-- [ ] **H04 State and limits:** Review full populated-state assertions and separate sessions. Confirm navigation does not change business data/counters. Explain that selection is not authentication and data is not durable/shared.
-- [ ] **H05 Evidence:** Inspect 87 tests, mapping and fresh single-job Actions results. Explain why the old 86 passed missing public content, why transition preconditions matter, and why one stronger no-identity case replaces two duplicates. Distinguish controlled faults from delivered defects and verification from validation. Record actual personal checks separately.
-- [ ] **H06 Diff and AI:** Review the navigation implementation against the earlier accepted snapshot, then this test_booking.py/five-document review diff against bdbca42. Confirm app.py/booking.py, rules, locks, workflow and L0/L1 are unchanged in this review. Record human edits or rejected suggestions.
-- [ ] **H07 Decision:** Record reviewed commit, reviewer/date, finding dispositions, actual risk classification/rationale and ACCEPT_LOOP or CHANGES_REQUIRED. Use SPECIALIST_ADVICE_REQUIRED if understanding or suitable review is unresolved; never label AI/CI as approval. Keep L3 stopped until the decision and subsequent instruction.
+English translation of the author's message: "I have completed the updated L2 UI checks and H01-H07 human acceptance. ACCEPT_LOOP. Update my L2, GitHub and AI/human acceptance records; do not enter L3 yet." This is a translation, not a verbatim English quote. The accepted candidate is the most recently delivered L2, commit 2e014b273f555af2f011968a1352a77c833c634d on codex/l2-identities. Its [run 44020965704](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44020965704) passed one quality-checks job, all 18 steps and all 87 tests. That existing CI evidence is distinct from personal tests executed by the author.
+
+- [x] **H01 Identity and menus:** Confirm no identity shows only Workshops; Xingjian/Sam show Workshops and My Bookings; Rui Yan/Alex show Workshops and Organiser. Confirm the fixed labels/roles and absence of a role editor.
+- [x] **H02 Switch and clear:** From Organiser switch to a participant; from My Bookings switch to an organiser; clear either selection. Confirm Workshops is selected. Same-role switches retain a permitted view; refresh retains identity/view.
+- [x] **H03 Independent rejection:** Explain why hiding is insufficient. Inspect direct role/owner tests and L2-07/L2-09. Distinguish safe stale-state reset from rejection of a forced private view; explain INVALID_ACTOR, FORBIDDEN, unknown-result denial and later trusted owner lookup.
+- [x] **H04 State and limits:** Review full populated-state assertions and separate sessions. Confirm navigation does not change business data/counters. Explain that selection is not authentication and data is not durable/shared.
+- [x] **H05 Evidence:** Inspect 87 tests, mapping and fresh single-job Actions results. Explain why the old 86 passed missing public content, why transition preconditions matter, and why one stronger no-identity case replaces two duplicates. Distinguish controlled faults from delivered defects and verification from validation. Record actual personal checks separately.
+- [x] **H06 Diff and AI:** Review the navigation implementation against the earlier accepted snapshot, then this test_booking.py/five-document review diff against bdbca42. Confirm app.py/booking.py, rules, locks, workflow and L0/L1 are unchanged in this review. Record human edits or rejected suggestions.
+- [x] **H07 Decision:** Record reviewed commit, reviewer/date, finding dispositions, actual risk classification/rationale and ACCEPT_LOOP or CHANGES_REQUIRED. Use SPECIALIST_ADVICE_REQUIRED if understanding or suitable review is unresolved; never label AI/CI as approval. Keep L3 stopped until the decision and subsequent instruction.
 
 | Current human record | Actual value |
 |---|---|
 | Earlier acceptance | Supplied for candidate 9962742; preserved in commit feb7b74 and the linked historical checklist. |
-| Personal checks of this revision | NOT_YET_RECORDED. AI browser/tests are not personal human execution. |
-| Reviewer/date/reviewed commit | TO_BE_RECORDED by the author for this revision. |
-| Human edits/rejected suggestions | NOT_YET_RECORDED. |
-| Risk classification/rationale and finding dispositions | TO_BE_RECORDED by the author; AI recommendations above are separate. |
-| Current decision | HUMAN_REVIEW_PENDING. |
+| Personal checks of this revision | Updated L2 UI checks and H01-H07 completion explicitly declared by the author. Individual commands, environment details and step-by-step observations were not supplied in the message. |
+| Reviewer/date/reviewed commit | Project author, identified by the user role in this conversation. Confirmation date: 17 November 2026, Asia/Singapore. Accepted candidate: 2e014b273f555af2f011968a1352a77c833c634d, identified from the preceding delivery. |
+| AI/CI evidence versus personal execution | H05 completion declared. Run 44020965704 is existing Actions evidence; no separate personal pytest execution log was supplied or generated by AI. |
+| Code understanding and independent expected outcomes | H03-H06 completion declared. Individual explanations were not transcribed in this acceptance message. |
+| Human edits/rejected suggestions | H06 completion declared. No additional human code edits or rejected suggestions were reported in this message. |
+| Risk classification/rationale and finding dispositions | H07 completion and ACCEPT_LOOP explicitly declared. A separate written classification/rationale and individual finding assessments were not supplied. AI HIGH review-depth triage and technical corrections remain labelled AI work; no specialist approval is invented. |
+| Current decision | ACCEPT_LOOP, supplied by the author and transcribed by AI. |
 
-The author must understand the change, assess expected outcomes and actual evidence, and supply renewed ACCEPT_LOOP. L3 is NOT_STARTED. READY_TO_MERGE and ACCEPT_RELEASE remain separate under the [development workflow](../../README.md#development-workflow).
+The updated L2 human loop gate is SATISFIED by the explicit ACCEPT_LOOP. This records-only update changes no code, tests, workflow, locks or business rules. It does not relabel UI acceptance as VAL-01/02/03 or close R-08. The preview remains running. L3 is NOT_STARTED and explicitly held until the author's next instruction. READY_TO_MERGE and ACCEPT_RELEASE remain separate under the [development workflow](../../README.md#development-workflow); no PR, main merge or release is authorised by this loop acceptance.

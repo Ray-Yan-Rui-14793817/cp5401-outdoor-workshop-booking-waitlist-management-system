@@ -1,6 +1,6 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 and earlier L2 foundations accepted on 17 November 2026 (Asia/Singapore). Current L2 navigation revision: HUMAN_REVIEW_PENDING. L3: NOT_STARTED. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 and earlier L2 foundations accepted on 17 November 2026 (Asia/Singapore). Updated L2 navigation/deep-review revision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore); UI/H01-H07 completion declared by the author. L3: NOT_STARTED, held at the author's request. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
 ## L2 implementation scope
 

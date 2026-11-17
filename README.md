@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. L1: ACCEPT_LOOP. Earlier L2 foundations: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current L2 navigation revision: deep-reviewed; HUMAN_REVIEW_PENDING. L3: NOT_STARTED.**
+**Design: accepted L0 revision 3. L1: ACCEPT_LOOP. Current L2 navigation revision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). UI/H01-H07: AUTHOR_CONFIRMED_COMPLETE. L3: NOT_STARTED, held at the author's explicit request.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 
@@ -57,7 +57,7 @@ Keep both pairs of dependency files: requirements.in/requirements.txt and requir
 | [AI use](docs/ai-use.md) | Significant tasks and actual AI/human contributions. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical author decision and seven recorded checks. |
 | [L1 review](docs/reviews/L1-human-review.md) | Historical findings/results and author-confirmed ACCEPT_LOOP. |
-| [L2 review](docs/reviews/L2-human-review.md) | Current deep-review findings, course alignment, actual evidence, pending checklist and earlier acceptance. |
+| [L2 review](docs/reviews/L2-human-review.md) | Deep-review findings, course alignment, AI/CI evidence and author-confirmed UI/H01-H07 completion with ACCEPT_LOOP. |
 
 For GitHub delivery, the contents of L2_develop belong at the repository root, including the hidden .github directory. Use codex/l2-identities for L2 verification. The [L2 review](docs/reviews/L2-human-review.md#verification-results) identifies actual results/commit/run. Local L0_develop, L1_develop and the original working copy remain unchanged.
 
@@ -85,7 +85,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 |---|---|---|---|
 | L0 | Requirements, rules, risks, reuse and test plan. | Review scope/policies and explain the design. | ACCEPT_LOOP recorded in the historical L0 record. |
 | L1 | Three-file foundation, real tests, locks and CI; current simplified documents. | Reproduce setup, understand boundaries and assess the L1 checklist. | SATISFIED: author declared H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026; see the L1 review. |
-| L2 | Fixed-ID selection, role-specific menus and independent role/owner checks. | Check visible menus, switch/reset behaviour, access rejection and identity limits. | Earlier foundations accepted on 17 November 2026. Current navigation revision requires renewed ACCEPT_LOOP; complete B10/B12/B13 through actual operations in L3-L5. |
+| L2 | Fixed-ID selection, role-specific menus and independent role/owner checks. | Check visible menus, switch/reset behaviour, access rejection and identity limits. | SATISFIED: author declared updated UI/H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026. L3 remains NOT_STARTED at the author's request; complete B10/B12/B13 through later actual operations. |
 | L3 | Creation, browsing, rosters and valid demo fixtures. | Check >24h/=24h/<24h, input types, S/C and ownership. | B03-B06, unchanged-input rejection and CI pass; ACCEPT_LOOP. |
 | L4 | Booking and own history using latest serial state. | Check last place, duplicates, actor changes and stale submission. | B07-B10 and relevant I01/I02/I10 pass; ACCEPT_LOOP. |
 | L5 | Cancellation, history, repeats and failure safety. | Check owner denial, cutoff, no-op and full-state preservation. | B11-B17 and relevant I05/I10/regression pass; ACCEPT_LOOP. |
@@ -96,7 +96,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 
 Loop-level foundation evidence is partial support for later scenarios. Complete business scenarios remain required before V1.0/V1.1 release; permission-helper tests alone do not complete B10/B12/B13. L2 does not fulfil the assessment's functioning-application, validation or release criteria yet.
 
-The author's earlier L2 acceptance is preserved in Git history. The subsequent navigation instruction changes app behaviour and requires renewed review of this revision. L3 remains NOT_STARTED. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions. The local preview remains running as requested.
+The earlier L2 acceptance remains in Git history. The author has now accepted the updated navigation/deep-review candidate 2e014b273f555af2f011968a1352a77c833c634d and declared its UI/H01-H07 complete. This update records that human statement without changing code or tests. L3 remains NOT_STARTED at the author's explicit request. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions. The local preview remains running as requested.
 
 ## GitHub Actions
 
