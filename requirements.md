@@ -1,6 +1,6 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 accepted on 17 November 2026 (Asia/Singapore). L2 identity and permission foundations accepted with ACCEPT_LOOP on 17 November 2026 (Asia/Singapore); the author declared UI/H01-H07 complete. L3: NOT_STARTED. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 and earlier L2 foundations accepted on 17 November 2026 (Asia/Singapore). Current L2 navigation revision: HUMAN_REVIEW_PENDING. L3: NOT_STARTED. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
 ## L2 implementation scope
 
@@ -16,6 +16,16 @@ The author's L2 instruction fixes the demonstration identities below. Stable IDs
 resolve_actor maps a selected ID to the canonical session DemoUser, or None. check_permission returns INVALID_ACTOR for an absent/unknown actor or inconsistent role claim; FORBIDDEN for a valid actor with the wrong operation role or optional owner; otherwise OK. Both functions leave all input state unchanged. The UI displays an allowed restricted preview only for explicit OK; an absent or unrecognised permission result denies the view without changing business state. Names are display labels, not permission keys.
 
 The role requested by an operation is an application constant, not a user role editor. Future operations must obtain owner_id from the actual looked-up target record; the helper alone does not establish target existence or implement cancellation/roster access. B01/B02 receive L2 identity/preview checks. B10/B12/B13 and complete QR-03 business enforcement remain later work. Switching or clearing the selector never reseeds business state. Selection is freely switchable and does not authenticate a real person.
+
+The author's navigation update combines menu visibility with independent access rejection:
+
+| Actor | Visible views |
+|---|---|
+| None | Workshops |
+| PARTICIPANT | Workshops, My Bookings |
+| ORGANISER | Workshops, Organiser |
+
+Before rendering the menu, reset a disallowed/unknown saved view to Workshops; retain a permitted current view. Independently recheck a private view's role through check_permission even if menu selection is bypassed. Unknown returned views/results must not display private preview content. These UI refinements support FR-01, BR-01 and QR-03/QR-04; they do not change the accepted business rules or claim real authentication.
 
 ## Problem and purpose
 

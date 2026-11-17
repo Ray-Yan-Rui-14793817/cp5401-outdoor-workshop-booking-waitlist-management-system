@@ -1,4 +1,4 @@
-"""L2 demo identity selection and role-gated preview views."""
+"""L2 demo identity selection, role-specific menus and guarded preview views."""
 
 import streamlit as st
 
@@ -14,6 +14,7 @@ def main() -> None:
 
     st.title("Outdoor Workshop Booking and Waitlist Management System")
     st.caption("Development preview: workshop and booking actions will be added later.")
+    required_roles = {"My Bookings": Role.PARTICIPANT, "Organiser": Role.ORGANISER}
 
     with st.sidebar:
         st.header("Demo identity")
@@ -31,7 +32,14 @@ def main() -> None:
         if actor is not None:
             st.caption(f"Selected: {actor.display_name} | Role: {actor.role}")
         st.header("Explore")
-        view = st.radio("View", ("Workshops", "My Bookings", "Organiser"), key="current_view")
+        visible_views = ["Workshops"]
+        if actor is not None:
+            visible_views.extend(
+                view for view, role in required_roles.items() if actor.role == role
+            )
+        if st.session_state.get("current_view") not in visible_views:
+            st.session_state.current_view = "Workshops"
+        view = st.radio("View", visible_views, key="current_view")
         st.button("Refresh view", key="refresh_view")
         st.info(
             "This teaching prototype uses temporary data in one browser session. "
@@ -52,10 +60,12 @@ def main() -> None:
         "My Bookings": "Booking actions and personal history will be added in later loops.",
         "Organiser": "Workshop creation and organiser rosters are not yet available.",
     }
-    required_role = {"My Bookings": Role.PARTICIPANT, "Organiser": Role.ORGANISER}.get(view)
-    if required_role is None:
+    if view not in messages:
+        st.error("This view is unavailable. Please refresh and try again.")
+    elif view == "Workshops":
         st.info(messages[view])
     else:
+        required_role = required_roles[view]
         permission = check_permission(state, actor, required_role)
         if permission == "INVALID_ACTOR":
             st.warning("Select a demo identity to use this view.")

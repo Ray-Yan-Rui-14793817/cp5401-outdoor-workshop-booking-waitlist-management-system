@@ -7,6 +7,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
+import streamlit as st
 from streamlit.testing.v1 import AppTest
 
 from booking import (
@@ -209,6 +210,9 @@ def test_registration_rejects_update_before_creation() -> None:
 @pytest.mark.parametrize("view", ["Workshops", "My Bookings", "Organiser"])
 def test_app_views_start_without_exception(view: str) -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    if view != "Workshops":
+        user_id = "participant-1" if view == "My Bookings" else "organiser-1"
+        app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
     app.sidebar.radio(key="current_view").set_value(view).run()
     assert not app.exception
     assert app.subheader[0].value == view
@@ -245,6 +249,7 @@ def test_app_refresh_and_navigation_preserve_session_state(workshop: Workshop) -
     state.next_registration_id = 3
     expected = deepcopy(state)
     app.sidebar.button(key="refresh_view").click().run()
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
     app.sidebar.radio(key="current_view").set_value("My Bookings").run()
 
     assert not app.exception
@@ -417,7 +422,7 @@ def test_identity_selector_has_only_the_fixed_demo_options() -> None:
         ("participant-2", "Sam", Role.PARTICIPANT),
     ],
 )
-def test_selected_fixed_role_controls_both_restricted_preview_views(
+def test_fixed_roles_show_only_allowed_menu_and_preview(
     user_id: str, display_name: str, role: Role
 ) -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
@@ -425,22 +430,19 @@ def test_selected_fixed_role_controls_both_restricted_preview_views(
     assert f"Selected: {display_name} | Role: {role}" in [
         item.value for item in app.sidebar.caption
     ]
-    for view, required_role in [("My Bookings", Role.PARTICIPANT), ("Organiser", Role.ORGANISER)]:
+    allowed_view = "My Bookings" if role == Role.PARTICIPANT else "Organiser"
+    assert app.sidebar.radio(key="current_view").options == ["Workshops", allowed_view]
+    for view in ["Workshops", allowed_view]:
         app.sidebar.radio(key="current_view").set_value(view).run()
         assert not app.exception
-        if role == required_role:
-            assert not app.warning
-            assert not app.error
-            expected_message = (
-                "Booking actions and personal history will be added in later loops."
-                if view == "My Bookings"
-                else "Workshop creation and organiser rosters are not yet available."
-            )
-            assert expected_message in [item.value for item in app.info]
-        else:
-            assert [item.value for item in app.warning] == [
-                f"This view is available to {required_role.value.lower()}s only."
-            ]
+        assert not app.warning
+        assert not app.error
+        expected_message = {
+            "Workshops": "Workshop browsing is not yet available in this preview.",
+            "My Bookings": "Booking actions and personal history will be added in later loops.",
+            "Organiser": "Workshop creation and organiser rosters are not yet available.",
+        }[view]
+        assert expected_message in [item.value for item in app.info]
 
 
 def test_identity_switch_clear_refresh_and_navigation_preserve_complete_state(
@@ -449,9 +451,16 @@ def test_identity_switch_clear_refresh_and_navigation_preserve_complete_state(
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
     app.session_state.demo_state = populated_state
     expected = deepcopy(populated_state)
-    for user_id in ["organiser-1", "participant-1", "organiser-2", "participant-2", None]:
+    for user_id, views in [
+        ("organiser-1", ["Workshops", "Organiser"]),
+        ("participant-1", ["Workshops", "My Bookings"]),
+        ("organiser-2", ["Workshops", "Organiser"]),
+        ("participant-2", ["Workshops", "My Bookings"]),
+        (None, ["Workshops"]),
+    ]:
         app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
-        for view in ["Workshops", "My Bookings", "Organiser"]:
+        assert app.sidebar.radio(key="current_view").options == views
+        for view in views:
             app.sidebar.radio(key="current_view").set_value(view).run()
             app.sidebar.button(key="refresh_view").click().run()
             assert not app.exception
@@ -462,11 +471,12 @@ def test_identity_switch_clear_refresh_and_navigation_preserve_complete_state(
 
 
 @pytest.mark.parametrize("view", ["My Bookings", "Organiser"])
-def test_unselected_identity_cannot_use_restricted_preview(view: str) -> None:
+def test_unselected_identity_hides_restricted_menu(view: str) -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
-    app.sidebar.radio(key="current_view").set_value(view).run()
     assert not app.exception
-    assert [item.value for item in app.warning] == ["Select a demo identity to use this view."]
+    assert app.sidebar.radio(key="current_view").options == ["Workshops"]
+    assert view not in app.sidebar.radio(key="current_view").options
+    assert app.subheader[0].value == "Workshops"
 
 
 def test_separate_sessions_do_not_share_selected_identity() -> None:
@@ -512,5 +522,109 @@ def test_permission_failure_does_not_render_allowed_preview_or_change_state(
         }
         for item in app.info
     )
+    assert app.session_state.demo_state is populated_state
+    assert app.session_state.demo_state == expected
+
+
+@pytest.mark.parametrize(
+    ("user_id", "forced_view", "expected_warning"),
+    [
+        ("participant-1", "Organiser", "This view is available to organisers only."),
+        ("organiser-1", "My Bookings", "This view is available to participants only."),
+        (None, "Organiser", "Select a demo identity to use this view."),
+        (None, "My Bookings", "Select a demo identity to use this view."),
+        ("organiser-1", "Unknown view", None),
+    ],
+)
+def test_bypassing_hidden_menu_still_rejects_access_without_mutation(
+    populated_state: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    user_id: str | None,
+    forced_view: str,
+    expected_warning: str | None,
+) -> None:
+    real_radio = st.radio
+
+    def bypass_menu(*args, **kwargs):
+        real_radio(*args, **kwargs)
+        return forced_view
+
+    monkeypatch.setattr(st, "radio", bypass_menu)
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30)
+    app.session_state.demo_state = populated_state
+    app.session_state.selected_user_id = user_id
+    expected = deepcopy(populated_state)
+    app.run()
+
+    assert not app.exception
+    assert forced_view not in app.sidebar.radio(key="current_view").options
+    if expected_warning is None:
+        assert [item.value for item in app.error] == [
+            "This view is unavailable. Please refresh and try again."
+        ]
+    else:
+        assert [item.value for item in app.warning] == [expected_warning]
+    assert all(
+        item.value
+        not in {
+            "Booking actions and personal history will be added in later loops.",
+            "Workshop creation and organiser rosters are not yet available.",
+        }
+        for item in app.info
+    )
+    assert app.session_state.demo_state is populated_state
+    assert app.session_state.demo_state == expected
+
+
+@pytest.mark.parametrize(
+    ("first_id", "first_view", "next_id", "expected_view"),
+    [
+        ("organiser-1", "Organiser", "participant-1", "Workshops"),
+        ("participant-1", "My Bookings", "organiser-1", "Workshops"),
+        ("organiser-1", "Organiser", None, "Workshops"),
+        ("participant-1", "My Bookings", None, "Workshops"),
+        ("organiser-1", "Organiser", "organiser-2", "Organiser"),
+        ("participant-1", "My Bookings", "participant-2", "My Bookings"),
+    ],
+)
+def test_identity_change_resets_only_disallowed_current_view(
+    populated_state: DemoState,
+    first_id: str,
+    first_view: str,
+    next_id: str | None,
+    expected_view: str,
+) -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30)
+    app.session_state.demo_state = populated_state
+    expected = deepcopy(populated_state)
+    app.run()
+    app.sidebar.selectbox(key="selected_user_id").set_value(first_id).run()
+    app.sidebar.radio(key="current_view").set_value(first_view).run()
+    app.sidebar.selectbox(key="selected_user_id").set_value(next_id).run()
+
+    assert not app.exception
+    assert app.sidebar.radio(key="current_view").value == expected_view
+    assert app.subheader[0].value == expected_view
+    assert not app.warning and not app.error
+    assert app.session_state.demo_state is populated_state
+    assert app.session_state.demo_state == expected
+
+
+@pytest.mark.parametrize("stale_view", ["Organiser", "Unknown view"])
+def test_stale_or_unknown_saved_view_resets_before_widget_creation(
+    populated_state: DemoState, stale_view: str
+) -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30)
+    app.session_state.demo_state = populated_state
+    app.session_state.selected_user_id = "participant-1"
+    app.session_state.current_view = stale_view
+    expected = deepcopy(populated_state)
+    app.run()
+
+    assert not app.exception
+    assert app.sidebar.radio(key="current_view").options == ["Workshops", "My Bookings"]
+    assert app.sidebar.radio(key="current_view").value == "Workshops"
+    assert app.subheader[0].value == "Workshops"
+    assert not app.warning and not app.error
     assert app.session_state.demo_state is populated_state
     assert app.session_state.demo_state == expected

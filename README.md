@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. L1: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current loop: L2 identity and permission foundations, accepted. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). UI/H01-H07: AUTHOR_CONFIRMED_COMPLETE. L3: NOT_STARTED.**
+**Design: accepted L0 revision 3. L1: ACCEPT_LOOP. Earlier L2 foundations: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current L2 navigation revision: HUMAN_REVIEW_PENDING. L3: NOT_STARTED.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 
@@ -8,9 +8,9 @@ A classroom prototype for one outdoor workshop provider. The application uses St
 
 | File | Responsibility |
 |---|---|
-| [app.py](app.py) | Fixed demo identity selection, role-gated previews, refresh and once-per-session initialisation. |
+| [app.py](app.py) | Fixed demo identity selection, role-specific menus, independent preview access checks, safe view reset, refresh and once-per-session initialisation. |
 | [booking.py](booking.py) | Existing models/time contracts plus resolve_actor and check_permission. No Streamlit dependency. |
-| [test_booking.py](test_booking.py) | All 42 L1 cases retained, plus 31 L2 cases: 73 total. Four allowed-view assertions were strengthened; two failure regressions were added in deep review. |
+| [test_booking.py](test_booking.py) | 42 L1 cases plus 44 L2 cases: 86 total. Two L1 UI functions now select the appropriate identity before private navigation; their original assertions remain. New cases challenge menu bypass and view changes. |
 
 | Fixed ID | Demo name | Fixed role |
 |---|---|---|
@@ -19,7 +19,15 @@ A classroom prototype for one outdoor workshop provider. The application uses St
 | participant-1 | Xingjian | PARTICIPANT |
 | participant-2 | Sam | PARTICIPANT |
 
-The selector starts with no identity and supports clearing. Roles come from the fixed ID records; there is no separate role editor. Workshops remains a public preview. My Bookings requires PARTICIPANT; Organiser requires ORGANISER. Anyone may select another demo identity, so these checks are not authentication or impersonation protection.
+The selector starts with no identity and supports clearing. Roles come from the fixed ID records; there is no separate role editor.
+
+| Selected identity | Visible menu |
+|---|---|
+| None | Workshops |
+| PARTICIPANT | Workshops, My Bookings |
+| ORGANISER | Workshops, Organiser |
+
+Switching or clearing an identity resets a no-longer-permitted view to Workshops before rendering the menu. A permitted view remains selected on a same-role switch. Invalid saved views also reset safely. Menu filtering improves navigation; independent UI and booking.py permission checks still reject unauthorised access. Only explicit OK admits a private preview; unknown view/results are denied. Anyone may select another demo identity, so these checks are not authentication or impersonation protection.
 
 L2 starts with no workshops or registrations. Creation, booking/cancellation and roster operations follow later loops. check_permission compares a valid actor's role and an optional trusted owner ID; it does not look up or modify a target. Complete B10/B12/B13 require actual operations in L3-L5. The accepted timing/capacity policies remain in [requirements.md](requirements.md); L2 is not application V1.0.
 
@@ -49,7 +57,7 @@ Keep both pairs of dependency files: requirements.in/requirements.txt and requir
 | [AI use](docs/ai-use.md) | Significant tasks and actual AI/human contributions. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical author decision and seven recorded checks. |
 | [L1 review](docs/reviews/L1-human-review.md) | Historical findings/results and author-confirmed ACCEPT_LOOP. |
-| [L2 review](docs/reviews/L2-human-review.md) | Current scope, AI evidence, author-confirmed UI/H01-H07 completion and ACCEPT_LOOP. |
+| [L2 review](docs/reviews/L2-human-review.md) | Current navigation revision, AI evidence, pending checklist and link to the earlier accepted L2 record. |
 
 For GitHub delivery, the contents of L2_develop belong at the repository root, including the hidden .github directory. Use codex/l2-identities for L2 verification. The [L2 review](docs/reviews/L2-human-review.md#verification-results) identifies actual results/commit/run. Local L0_develop, L1_develop and the original working copy remain unchanged.
 
@@ -77,7 +85,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 |---|---|---|---|
 | L0 | Requirements, rules, risks, reuse and test plan. | Review scope/policies and explain the design. | ACCEPT_LOOP recorded in the historical L0 record. |
 | L1 | Three-file foundation, real tests, locks and CI; current simplified documents. | Reproduce setup, understand boundaries and assess the L1 checklist. | SATISFIED: author declared H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026; see the L1 review. |
-| L2 | Fixed-ID actor selection and selected-role/owner checks. | Challenge role resolution, reusable permission checks and identity limits. | SATISFIED: author declared UI/H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026. Complete B10/B12/B13 through actual operations in L3-L5. |
+| L2 | Fixed-ID selection, role-specific menus and independent role/owner checks. | Check visible menus, switch/reset behaviour, access rejection and identity limits. | Earlier foundations accepted on 17 November 2026. Current navigation revision requires renewed ACCEPT_LOOP; complete B10/B12/B13 through actual operations in L3-L5. |
 | L3 | Creation, browsing, rosters and valid demo fixtures. | Check >24h/=24h/<24h, input types, S/C and ownership. | B03-B06, unchanged-input rejection and CI pass; ACCEPT_LOOP. |
 | L4 | Booking and own history using latest serial state. | Check last place, duplicates, actor changes and stale submission. | B07-B10 and relevant I01/I02/I10 pass; ACCEPT_LOOP. |
 | L5 | Cancellation, history, repeats and failure safety. | Check owner denial, cutoff, no-op and full-state preservation. | B11-B17 and relevant I05/I10/regression pass; ACCEPT_LOOP. |
@@ -88,7 +96,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 
 Loop-level foundation evidence is partial support for later scenarios. Complete business scenarios remain required before V1.0/V1.1 release; permission-helper tests alone do not complete B10/B12/B13. L2 does not fulfil the assessment's functioning-application, validation or release criteria yet.
 
-The author explicitly requested L2 after accepting L1 and has now accepted L2. L3 is eligible but NOT_STARTED, awaiting the author's next instruction. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions. The local preview remains running as requested.
+The author's earlier L2 acceptance is preserved in Git history. The subsequent navigation instruction changes app behaviour and requires renewed review of this revision. L3 remains NOT_STARTED. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions. The local preview remains running as requested.
 
 ## GitHub Actions
 
