@@ -15,7 +15,7 @@ The [later main snapshot](https://github.com/Georgegiri/CampusConnect-Demo/tree/
 | Name matching and overlap checks | Replace names as keys with fixed fictional IDs. Cross-workshop overlap rejection is excluded. Selection remains a demo mechanism, not authentication. |
 | can_book/add_booking and later request_booking | Business-operation adoption remains planned. This project's full Book request must return FULL; explicit Join is V1.1 only after this project's working V1.0. The later Demo's automatic waitlisting is not the oracle. |
 | cancel_booking/cancel_and_promote | Future project cancellation retains history, applies C/S deadlines and uses the project's active FIFO. Do not inherit record deletion or calendar-overlap skipping. |
-| Five baseline test functions | Use their testing idea, not source pass history or overlap/deletion expectations. Retain all 87 accepted L2 parameter cases with declared L3 UI-context/message adaptations and stronger denial assertions; add 85 L3 cases for 172 total. These are project tests, not the source Demo's pass history. The remaining B/W/I plan is still required. |
+| Five baseline test functions | Use their testing idea, not source pass history or overlap/deletion expectations. Retain all 87 accepted L2 parameter cases with declared L3 UI-context/message adaptations and stronger denial assertions; add 90 L3 cases for 177 total. These are project tests, not the source Demo's pass history. The remaining B/W/I plan is still required. |
 | Checkout/setup/install/pytest workflow | Adapt to one job with the project checks, immutable Action pins, dependency locks and failure reports. |
 
 The five source tests are test_first_booking_is_accepted, test_overlapping_booking_is_rejected, test_non_overlapping_booking_is_accepted, test_capacity_is_enforced and test_cancellation_releases_booking. They do not establish this project's working baseline.
@@ -52,6 +52,7 @@ Course originals and screenshots are not redistributed. The following reference 
 | **S19** | Author's L3 instruction after L2 acceptance, 17 November 2026 | Workshop creation/browsing, owned lists/rosters, valid demo data, >24h/1-30/permission rules, unchanged simple architecture/single-job CI, English delivery plus ZIP and a retained manual preview. Stop at L3 pending ACCEPT_LOOP. |
 | **S20** | Author's L3 deep-review instruction, 17 November 2026 | Check accepted baselines and course requirements, inspect code/test/CI simplicity and evidence, correct findings, update English files/ZIP and retain the service. Stop at L3 pending ACCEPT_LOOP; no human acceptance is supplied by this request. |
 | **S21** | Author's bounded L3 Workshop Creation Form request and illustrative screenshots, 17 November 2026 | Preserve all failed input, show field errors, allow correction, reset only on success, retain rules/identity/business data, add regression evidence and stop pending personal acceptance. Screenshots illustrate desired feedback, not an existing application result. |
+| **S22** | Author's updated-L3 form deep-review request, 17 November 2026 | Review retention, feedback/retry/reset, identity/data/counters, shared validation, simplicity, tests and single-job CI; fix findings and update English files/ZIP and AI/human records. Retain the preview and stop at L3 pending ACCEPT_LOOP. |
 
 ### Technical references
 

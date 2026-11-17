@@ -10,7 +10,7 @@ A small classroom application for one outdoor workshop provider. It manages fict
 |---|---|
 | [app.py](app.py) | Role-specific navigation, workshop cards, creation form, current-time submission, owned roster selection and complete successful-state adoption. |
 | [booking.py](booking.py) | Retained models/identity checks; creation, public ordering/counts, owned list/roster access, trusted clock and valid relative demo fixtures. No Streamlit import. |
-| [test_booking.py](test_booking.py) | 172 parameter cases in 55 functions: all 87 L2 cases retained with documented UI-context/message adaptations and stronger denial assertions, plus 85 L3 cases. |
+| [test_booking.py](test_booking.py) | 177 parameter cases in 58 functions: all 87 L2 cases retained with documented UI-context/message adaptations and stronger denial assertions, plus 90 L3 cases. |
 
 | Fixed ID | Demo name | Role | Visible menu |
 |---|---|---|---|
@@ -26,7 +26,11 @@ L3 implements creation only when S-t>24 elapsed hours, integer capacity 1-30, va
 
 Failed creation keeps all eight submitted form values, including invalid entries, and shows specific errors beside the relevant fields. Feedback comes from the shared booking.py validation, using the same submission time as the attempted operation. The integer capacity control permits an out-of-range entry to remain visible for correction; the business rule still rejects anything outside 1-30.
 
+Keep the last rejected submission separately from widget keys so it survives leaving the form or switching demo roles within the same session. Restore only missing creation-widget keys; retry ownership comes from the currently selected organiser. A new rejection replaces the prior errors and snapshot. Success removes that snapshot, so reopening the form retains clean defaults. This does not save later unsubmitted edits or provide durable storage.
+
 Successful creation shows the new workshop ID/title and resets only the eight form inputs: empty title/meeting point/notes, start/end dates three days ahead in Asia/Singapore, times 09:00/12:00 and capacity 10. It preserves the selected identity, prior business records and other session data; the owned selector opens the newly created workshop as before. A subsequent empty submit cannot create a duplicate.
+
+Workshop construction performs the shared field check once. A small shared creation-policy helper checks trusted time, the strict lead and notes; detailed error feedback composes those same checks. Model validation and the outcome/state interface remain intact.
 
 ## Demo data and limits
 

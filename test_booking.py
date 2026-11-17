@@ -36,6 +36,10 @@ PREVIEW_MESSAGES = {
     "Organiser": "Create workshops and view confirmed rosters for your own workshops.",
 }
 NOW = datetime(2026, 12, 1, 9, tzinfo=WORKSHOP_TIMEZONE)
+CREATION_REJECTED = (
+    "Workshop not created. Your entries have been kept. "
+    "Correct the highlighted fields and submit again."
+)
 
 
 def app_with_state(state: DemoState) -> AppTest:
@@ -1014,8 +1018,7 @@ def test_creation_failure_keeps_all_fields_and_identifies_the_error(
     app.button(key="create_workshop").click().run()
 
     assert not app.exception and not app.success
-    assert message in [item.value for item in app.error]
-    assert any("Your entries have been kept" in item.value for item in app.error)
+    assert [item.value for item in app.error] == [CREATION_REJECTED, message]
     assert creation_form_values(app) == expected_fields
     assert app.session_state.demo_state is demo_data
     assert demo_data == before
@@ -1107,7 +1110,151 @@ def test_creation_shows_all_field_errors_without_discarding_invalid_values(
         "Capacity must be a whole number from 1 to 30.",
         "Start must be more than 24 hours from submission.",
         "End date and time must be after the start.",
-    } <= {item.value for item in app.error}
+        CREATION_REJECTED,
+    } == {item.value for item in app.error}
+    assert len(app.error) == 6
+    assert creation_form_values(app) == expected_fields
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+@pytest.mark.parametrize("route", ["public", "role-switch"])
+def test_failed_creation_survives_leaving_the_form_and_retry_uses_current_owner(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, route: str
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.session_state.review_marker = {"keep": ["human draft"]}
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_location").set_value("  ")
+    app.button(key="create_workshop").click().run()
+    failed_values = creation_form_values(app)
+    before = deepcopy(demo_data)
+
+    if route == "public":
+        app.sidebar.radio(key="current_view").set_value("Workshops").run()
+        app.sidebar.button(key="refresh_view").click().run()
+        expected_owner = "organiser-1"
+    else:
+        app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+        app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+        app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+        expected_owner = "organiser-2"
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+
+    assert not app.exception and not app.warning
+    assert creation_form_values(app) == failed_values
+    assert [item.value for item in app.error] == [CREATION_REJECTED, "Meeting point is required."]
+    assert app.session_state.demo_state is demo_data and demo_data == before
+    assert app.sidebar.selectbox(key="selected_user_id").value == expected_owner
+    assert app.session_state.review_marker == {"keep": ["human draft"]}
+
+    app.text_input(key="new_location").set_value("East Trail Entrance")
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.error
+    candidate = app.session_state.demo_state
+    assert candidate.workshops[:-1] == before.workshops
+    assert len(candidate.workshops) == 5 and candidate.next_workshop_id == 6
+    assert candidate.workshops[-1].owner_id == expected_owner
+    assert candidate.workshops[-1].title == "Human Check Workshop"
+    assert candidate.registrations == before.registrations
+    assert candidate.users == before.users
+    assert candidate.next_registration_id == before.next_registration_id
+    assert demo_data == before
+
+    reset_values = creation_form_values(app)
+    assert (reset_values["title"], reset_values["location"], reset_values["notes"]) == ("", "", "")
+    assert reset_values["capacity"] == 10
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    assert not app.exception and not app.error
+    assert creation_form_values(app) == reset_values
+    assert app.session_state.demo_state is candidate
+    assert len(candidate.workshops) == 5 and candidate.next_workshop_id == 6
+
+
+@pytest.mark.parametrize(
+    ("widget", "key", "invalid", "corrected", "message"),
+    [
+        ("number_input", "new_capacity", 31, 1, "Capacity must be a whole number from 1 to 30."),
+        (
+            "time_input",
+            "new_end_time",
+            time(8),
+            time(11),
+            "End date and time must be after the start.",
+        ),
+    ],
+)
+def test_retry_replaces_previous_errors_and_allocates_only_after_correction(
+    demo_data: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    widget: str,
+    key: str,
+    invalid: object,
+    corrected: object,
+    message: str,
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_location").set_value("")
+    before = deepcopy(demo_data)
+    app.button(key="create_workshop").click().run()
+    assert [item.value for item in app.error] == [CREATION_REJECTED, "Meeting point is required."]
+
+    app.text_input(key="new_location").set_value("East Trail Entrance")
+    getattr(app, widget)(key=key).set_value(invalid)
+    retry_values = creation_form_values(app)
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.success
+    assert [item.value for item in app.error] == [CREATION_REJECTED, message]
+    assert creation_form_values(app) == retry_values
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+    getattr(app, widget)(key=key).set_value(corrected)
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.error
+    candidate = app.session_state.demo_state
+    assert len(candidate.workshops) == 5 and candidate.next_workshop_id == 6
+    assert candidate.workshops[:-1] == before.workshops
+    assert candidate.workshops[-1].owner_id == "organiser-2"
+    assert candidate.registrations == before.registrations
+    assert candidate.users == before.users
+    assert candidate.next_registration_id == before.next_registration_id
+    assert demo_data == before
+
+
+def test_creation_feedback_uses_the_attempt_time_when_the_clock_advances(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    clock = {"now": NOW}
+    monkeypatch.setattr("booking.server_now", lambda: clock["now"])
+
+    def create_then_advance(*args, **kwargs):
+        result = create_workshop(*args, **kwargs)
+        clock["now"] += timedelta(hours=2)
+        return result
+
+    monkeypatch.setattr("booking.create_workshop", create_then_advance)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=25))
+    app.number_input(key="new_capacity").set_value(31)
+    expected_fields = creation_form_values(app)
+    before = deepcopy(demo_data)
+    app.button(key="create_workshop").click().run()
+
+    assert not app.exception and not app.success
+    assert clock["now"] == NOW + timedelta(hours=2)
+    assert [item.value for item in app.error] == [
+        CREATION_REJECTED,
+        "Capacity must be a whole number from 1 to 30.",
+    ]
     assert creation_form_values(app) == expected_fields
     assert app.session_state.demo_state is demo_data and demo_data == before
 

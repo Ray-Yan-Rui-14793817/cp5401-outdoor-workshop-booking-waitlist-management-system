@@ -57,6 +57,26 @@ def _workshop_field_errors(
     return errors
 
 
+def _workshop_creation_policy_errors(
+    *, starts_at: datetime | None, now: datetime, preparation_notes: str
+) -> dict[str, str]:
+    """Check creation-only rules; starts_at is already validated or absent."""
+    errors = {}
+    try:
+        _require_aware(now, "now")
+    except ValueError:
+        errors["now"] = "The current server time is unavailable. Please try again."
+    if (
+        starts_at is not None
+        and "now" not in errors
+        and starts_at.astimezone(UTC) - now.astimezone(UTC) <= REGISTRATION_LEAD
+    ):
+        errors["starts_at"] = "Start must be more than 24 hours from submission."
+    if not isinstance(preparation_notes, str):
+        errors["preparation_notes"] = "Preparation notes must be text."
+    return errors
+
+
 def workshop_creation_errors(
     *,
     title: str,
@@ -82,18 +102,13 @@ def workshop_creation_errors(
             title=title, starts_at=starts_at, ends_at=ends_at, location=location, capacity=capacity
         ).items()
     }
-    try:
-        _require_aware(now, "now")
-    except ValueError:
-        errors["now"] = "The current server time is unavailable. Please try again."
-    if (
-        "starts_at" not in errors
-        and "now" not in errors
-        and starts_at.astimezone(UTC) - now.astimezone(UTC) <= REGISTRATION_LEAD
-    ):
-        errors["starts_at"] = "Start must be more than 24 hours from submission."
-    if not isinstance(preparation_notes, str):
-        errors["preparation_notes"] = "Preparation notes must be text."
+    errors.update(
+        _workshop_creation_policy_errors(
+            starts_at=starts_at if "starts_at" not in errors else None,
+            now=now,
+            preparation_notes=preparation_notes,
+        )
+    )
     return errors
 
 
@@ -216,26 +231,27 @@ def create_workshop(
     permission = check_permission(state, actor, Role.ORGANISER)
     if permission != "OK":
         return permission, state
-    if workshop_creation_errors(
-        title=title,
-        starts_at=starts_at,
-        ends_at=ends_at,
-        location=location,
-        capacity=capacity,
-        now=now,
-        preparation_notes=preparation_notes,
+    try:
+        workshop = Workshop(
+            workshop_id=f"workshop-{state.next_workshop_id}",
+            owner_id=actor.user_id,
+            title=title.strip() if isinstance(title, str) else title,
+            starts_at=starts_at,
+            ends_at=ends_at,
+            location=location.strip() if isinstance(location, str) else location,
+            capacity=capacity,
+            preparation_notes=(
+                preparation_notes.strip()
+                if isinstance(preparation_notes, str)
+                else preparation_notes
+            ),
+        )
+    except ValueError:
+        return "INVALID_INPUT", state
+    if _workshop_creation_policy_errors(
+        starts_at=workshop.starts_at, now=now, preparation_notes=preparation_notes
     ):
         return "INVALID_INPUT", state
-    workshop = Workshop(
-        workshop_id=f"workshop-{state.next_workshop_id}",
-        owner_id=actor.user_id,
-        title=title.strip(),
-        starts_at=starts_at,
-        ends_at=ends_at,
-        location=location.strip(),
-        capacity=capacity,
-        preparation_notes=preparation_notes.strip(),
-    )
     return "OK", replace(
         state,
         users=state.users.copy(),

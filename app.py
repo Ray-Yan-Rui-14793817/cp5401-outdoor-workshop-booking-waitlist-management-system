@@ -72,6 +72,9 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
         }
         for key, value in defaults.items():
             st.session_state[key] = value
+    for key, value in st.session_state.get("creation_draft", {}).items():
+        if key not in st.session_state:
+            st.session_state[key] = value
     errors = st.session_state.get("creation_errors", {})
 
     def show_field_error(field: str) -> None:
@@ -151,10 +154,21 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                     f"Created {created.workshop_id}: {created.title}."
                 )
                 st.session_state.reset_creation_form = True
+                st.session_state.pop("creation_draft", None)
                 st.session_state.pop("creation_errors", None)
                 st.session_state.pop("creation_feedback", None)
                 st.rerun()
             else:
+                st.session_state.creation_draft = {
+                    "new_title": title,
+                    "new_start_date": starts_date,
+                    "new_start_time": starts_time,
+                    "new_end_date": ends_date,
+                    "new_end_time": ends_time,
+                    "new_location": location,
+                    "new_capacity": capacity,
+                    "new_notes": notes,
+                }
                 st.session_state.creation_errors = (
                     workshop_creation_errors(**fields) if outcome == "INVALID_INPUT" else {}
                 )
