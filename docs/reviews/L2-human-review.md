@@ -1,10 +1,10 @@
 # L2 Work and Human Review
 
-**L2 identity and permission foundations, deep review, 17 November 2026 (Asia/Singapore). Human decision: PENDING. L3: NOT_STARTED.**
+**L2 identity and permission foundations, deep review. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). UI/H01-H07: AUTHOR_CONFIRMED_COMPLETE. L3: NOT_STARTED.**
 
 ## Intake and scope
 
-The author accepted L1 and declared its H01-H07 complete, then explicitly requested L2 with Rui Yan/Alex as ORGANISER and Xingjian/Sam as PARTICIPANT. Start point: accepted GitHub L1 commit 19b5cb58e689247dd70cfb7363fdc6923a8e3d4b. Tool/executor: Codex. L2 personal verification and ACCEPT_LOOP have not been supplied.
+The author accepted L1 and declared its H01-H07 complete, then explicitly requested L2 with Rui Yan/Alex as ORGANISER and Xingjian/Sam as PARTICIPANT. Start point: accepted GitHub L1 commit 19b5cb58e689247dd70cfb7363fdc6923a8e3d4b. Tool/executor: Codex. On 17 November 2026 (Asia/Singapore), the author subsequently declared the L2 UI and H01-H07 checks complete and supplied ACCEPT_LOOP. That human statement is recorded separately below.
 
 | Scope | Delivered treatment |
 |---|---|
@@ -32,7 +32,7 @@ Deep-review task: check L2 candidate b5dfe6dd5d1bf7e912c83c4ce553886786063aff ag
 
 AI proposes HIGH review depth for the role/owner-check code, following the permission-related focus in the course risk triage. Prototype exposure is limited by fictional, temporary session data, but that does not prove the checks correct. Review expected outcomes, role claims, owner provenance, state preservation and UI wiring. No dependency, credential or authentication change is introduced.
 
-The author owns the actual risk classification/rationale and acceptance. Do not invent an independent or specialist approval. Escalate unresolved policy/security questions rather than inferring new permissions. R-03/R-06/R-07 receive the foundation evidence below; R-08 remains VALIDATION_PENDING. Freely selecting another identity is a disclosed prototype limit.
+The author owns the actual risk classification/rationale and acceptance. H07 completion and ACCEPT_LOOP are now explicitly declared; a separate written classification/rationale was not included in that message. HIGH remains the AI review-depth recommendation, not reasoning attributed to the author. No independent or specialist approval is invented. Escalate unresolved policy/security questions rather than inferring new permissions. R-03/R-06/R-07 receive the foundation evidence below; R-08 remains VALIDATION_PENDING. Freely selecting another identity is a disclosed prototype limit.
 
 ## Test oracles and review findings
 
@@ -109,7 +109,7 @@ Executor: AI, using the existing Python 3.12.14 environment. No additional appli
 | Browser route | Browser plugin not available. Used the existing bundled Playwright and Chrome; no browser dependency was added to the project. Temporary scripts, DOM snapshots and screenshots are outside the repository. |
 | Mobile smoke | PASS at 390x844 after the sidebar collapse completed: main content renders without horizontal page overflow. This is not full mobile or cross-browser acceptance. |
 | Hosted CI | PASS for this revision on codex/l2-identities. The single quality-checks job executed every configured step successfully: isolated runtime/imports, development install, Ruff/format, pip check, Bandit, complete lock audits, 73 tests and report upload. No checks were skipped. The workflow is unchanged. |
-| Preservation | PASS: L0/L1/original working-copy hashes unchanged; all 16 original L1 test functions and their parameters retained (42 cases); accepted FR/BR/QR/risk bodies, historical decisions, four dependency files and workflow unchanged. English documents, local links and seven pending L2 checks verified. |
+| Preservation | PASS at technical-review time: L0/L1/original working-copy hashes unchanged; all 16 original L1 test functions and their parameters retained (42 cases); accepted FR/BR/QR/risk definitions, historical decisions, four dependency files and workflow unchanged. English documents and local links verified. The human checklist was pending when those checks ran; subsequent author completion is recorded below. |
 
 Earlier L2 snapshot b5dfe6dd5d1bf7e912c83c4ce553886786063aff passed [run 44004517662](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44004517662) with 71 cases. That historical run does not verify these changes. Current deep-review code [864ab69e7028af80621f5334cc74cd25dfaba542](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/864ab69e7028af80621f5334cc74cd25dfaba542) passed [run 44008568183](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44008568183), job 133789755491, on Ubuntu 24.04/Python 3.12.14. Logs confirm 73 passed, zero skipped and complete audits. Artifact quality-checks-44008568183-1 expires 1 December 2026; retain selected evidence before expiry. The documentation-only follow-up preserves the executable hashes below; inspect the latest branch run when accepting.
 
@@ -126,24 +126,26 @@ Executable snapshot (SHA-256):
 
 ## Human acceptance checklist
 
-These are L2 checks. The accepted L1 checklist remains historical and does not accept L2. Record actual personal actions separately from AI/CI results; no item is pre-completed by AI.
+On 17 November 2026 (Asia/Singapore), the project author explicitly declared that the UI and H01-H07 checks were complete and supplied ACCEPT_LOOP. Checked items below record that author statement, not an AI inference or independent approval. This is the confirmation/acceptance date; individual execution dates were not supplied.
 
-- [ ] **H01 Fixed identities:** Open a fresh L2 preview. Verify all four exact names, IDs/roles in the code, no identity selected initially and no free role editor.
-- [ ] **H02 UI decisions:** Check both roles in My Bookings/Organiser; clear the selection and verify both restricted previews are denied. Workshops remains a public preview.
-- [ ] **H03 Backend contract:** Explain canonical ID resolution, INVALID_ACTOR versus FORBIDDEN, optional owner comparison and why owner_id must come from an actual target later. Predict selected negative cases before reading results, including why an unrecognised permission result must not admit the preview.
-- [ ] **H04 State and limits:** Inspect or rerun populated-state tests; switch/clear/refresh without reseeding. Explain independent sessions, reset limits and why identity selection is not secure login.
-- [ ] **H05 Evidence:** Inspect the 73-case run, retained L1 tests, controlled-fault results and single-job Actions. Distinguish private faulty copies from delivered code and verification from validation; explain why no warning alone did not prove allowed content.
-- [ ] **H06 Scope and AI:** Review the three core files, author-requested label changes, mappings and AI contributions. Confirm unchanged timing/capacity rules, locks and L0/L1. Record human edits or rejected suggestions.
-- [ ] **H07 Decision:** Record reviewer/date/code identity, actual risk rationale, finding dispositions and ACCEPT_LOOP or CHANGES_REQUIRED. Keep L3 stopped until the loop decision.
+English translation of the author's statement: "I have completed the UI checks and H01-H07. ACCEPT_LOOP. Update my L2." This is a translation, not a verbatim English quote. The accepted candidate is the most recently delivered L2, commit 99627424ad05fcbe83196cc454dbccb772a776fc on codex/l2-identities. Its [run 44009220422](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44009220422) passed the single job and all 73 tests. That is existing CI evidence, not a fresh personal test execution attributed to the author.
+
+- [x] **H01 Fixed identities:** Open a fresh L2 preview. Verify all four exact names, IDs/roles in the code, no identity selected initially and no free role editor.
+- [x] **H02 UI decisions:** Check both roles in My Bookings/Organiser; clear the selection and verify both restricted previews are denied. Workshops remains a public preview.
+- [x] **H03 Backend contract:** Explain canonical ID resolution, INVALID_ACTOR versus FORBIDDEN, optional owner comparison and why owner_id must come from an actual target later. Predict selected negative cases before reading results, including why an unrecognised permission result must not admit the preview.
+- [x] **H04 State and limits:** Inspect or rerun populated-state tests; switch/clear/refresh without reseeding. Explain independent sessions, reset limits and why identity selection is not secure login.
+- [x] **H05 Evidence:** Inspect the 73-case run, retained L1 tests, controlled-fault results and single-job Actions. Distinguish private faulty copies from delivered code and verification from validation; explain why no warning alone did not prove allowed content.
+- [x] **H06 Scope and AI:** Review the three core files, author-requested label changes, mappings and AI contributions. Confirm unchanged timing/capacity rules, locks and L0/L1. Record human edits or rejected suggestions.
+- [x] **H07 Decision:** Record reviewer/date/code identity, actual risk rationale, finding dispositions and ACCEPT_LOOP or CHANGES_REQUIRED. Keep L3 stopped until the loop decision.
 
 | Human record | Actual value |
 |---|---|
-| Reviewer/date and reviewed code identity | NOT_RECORDED |
-| Personally executed checks and observations | NOT_RECORDED |
-| AI/CI results reviewed rather than personally executed | NOT_RECORDED |
-| Code understanding and independent expected outcomes | NOT_RECORDED |
-| Human edits, rejected suggestions and finding dispositions | NOT_RECORDED |
-| Actual risk classification/rationale and residual limits | NOT_RECORDED |
-| Decision | PENDING |
+| Reviewer/date and reviewed code identity | Project author, identified by the user role in the project conversation. Confirmation date: 17 November 2026, Asia/Singapore. Accepted candidate: 99627424ad05fcbe83196cc454dbccb772a776fc, identified from the preceding delivery. |
+| Personally executed checks and observations | UI checks and H01-H07 completion explicitly declared. Individual commands, environment details and step-by-step observations were not included in the acceptance message. |
+| AI/CI results reviewed rather than personally executed | H05 completion declared. Run 44009220422 is linked as existing CI evidence; no separate personal execution log was supplied. |
+| Code understanding and independent expected outcomes | H03-H06 completion declared. Individual explanations were not transcribed in this message. |
+| Human edits, rejected suggestions and finding dispositions | H06 completion declared; technical DR-01/DR-02 corrections remain recorded above. No additional human edits or rejected suggestions were reported in this message. |
+| Actual risk classification/rationale and residual limits | H07 completion and ACCEPT_LOOP declared. A separate written classification/rationale was not supplied. AI HIGH review-depth triage remains AI analysis; R-08 and later business validation remain open. |
+| Decision | ACCEPT_LOOP, supplied by the author and transcribed by AI. |
 
-L2 stops here for the author's ACCEPT_LOOP. L3 is NOT_STARTED. READY_TO_MERGE and ACCEPT_RELEASE remain separate under the [workflow](../../README.md#development-workflow).
+The L2 human gate is SATISFIED by the explicit ACCEPT_LOOP. This record-only update changes no code, tests, workflow, dependency locks or business rules. It does not relabel UI acceptance as VAL-01/02/03 or close R-08. The preview remains running as previously requested. L3 is eligible but NOT_STARTED, awaiting the author's next instruction. READY_TO_MERGE and ACCEPT_RELEASE remain separate under the [workflow](../../README.md#development-workflow).

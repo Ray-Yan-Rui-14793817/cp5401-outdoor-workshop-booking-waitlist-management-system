@@ -1,6 +1,6 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 accepted on 17 November 2026 (Asia/Singapore). Current loop: L2 identity and permission foundations; human decision PENDING. L3: NOT_STARTED. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 accepted on 17 November 2026 (Asia/Singapore). L2 identity and permission foundations accepted with ACCEPT_LOOP on 17 November 2026 (Asia/Singapore); the author declared UI/H01-H07 complete. L3: NOT_STARTED. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
 ## L2 implementation scope
 
@@ -213,7 +213,7 @@ Selection is not identity security. Early allocation without notification does n
 
 ## Risk controls
 
-The following is the accepted risk-control plan. Full business-control execution remains pending; foundation evidence and the current human decision are recorded in the [L1 review](docs/reviews/L1-human-review.md). The project author owns the risks. Initial ratings are qualitative planning judgements; R-08 remains VALIDATION_PENDING.
+The following is the accepted risk-control plan. Full business-control execution remains pending; foundation evidence and the current human decision are recorded in the [L2 review](docs/reviews/L2-human-review.md). The project author owns the risks. Initial ratings are qualitative planning judgements; R-08 remains VALIDATION_PENDING.
 
 ### Controls and planned acceptance
 

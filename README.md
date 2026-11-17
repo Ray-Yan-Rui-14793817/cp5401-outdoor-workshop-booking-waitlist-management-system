@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Design: accepted L0 revision 3. L1: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current loop: L2 identity and permission foundations. Human decision: PENDING. L3: NOT_STARTED.**
+**Design: accepted L0 revision 3. L1: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). Current loop: L2 identity and permission foundations, accepted. Human decision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore). UI/H01-H07: AUTHOR_CONFIRMED_COMPLETE. L3: NOT_STARTED.**
 
 A classroom prototype for one outdoor workshop provider. The application uses Streamlit, Python dataclasses/lists and temporary data in one browser session. Independent sessions do not share bookings; reload or restart may reset data. Fictional identity selection is not secure login.
 
@@ -49,7 +49,7 @@ Keep both pairs of dependency files: requirements.in/requirements.txt and requir
 | [AI use](docs/ai-use.md) | Significant tasks and actual AI/human contributions. |
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical author decision and seven recorded checks. |
 | [L1 review](docs/reviews/L1-human-review.md) | Historical findings/results and author-confirmed ACCEPT_LOOP. |
-| [L2 review](docs/reviews/L2-human-review.md) | Current scope, AI review/evidence, test oracles and pending human checklist. |
+| [L2 review](docs/reviews/L2-human-review.md) | Current scope, AI evidence, author-confirmed UI/H01-H07 completion and ACCEPT_LOOP. |
 
 For GitHub delivery, the contents of L2_develop belong at the repository root, including the hidden .github directory. Use codex/l2-identities for L2 verification. The [L2 review](docs/reviews/L2-human-review.md#verification-results) identifies actual results/commit/run. Local L0_develop, L1_develop and the original working copy remain unchanged.
 
@@ -77,7 +77,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 |---|---|---|---|
 | L0 | Requirements, rules, risks, reuse and test plan. | Review scope/policies and explain the design. | ACCEPT_LOOP recorded in the historical L0 record. |
 | L1 | Three-file foundation, real tests, locks and CI; current simplified documents. | Reproduce setup, understand boundaries and assess the L1 checklist. | SATISFIED: author declared H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026; see the L1 review. |
-| L2 | Fixed-ID actor selection and selected-role/owner checks; current task. | Challenge role resolution, reusable permission checks and identity limits. | B01/B02 and permission-foundation tests plus current CI pass; ACCEPT_LOOP required. Complete B10/B12/B13 through actual operations in L3-L5. |
+| L2 | Fixed-ID actor selection and selected-role/owner checks. | Challenge role resolution, reusable permission checks and identity limits. | SATISFIED: author declared UI/H01-H07 complete and supplied ACCEPT_LOOP on 17 November 2026. Complete B10/B12/B13 through actual operations in L3-L5. |
 | L3 | Creation, browsing, rosters and valid demo fixtures. | Check >24h/=24h/<24h, input types, S/C and ownership. | B03-B06, unchanged-input rejection and CI pass; ACCEPT_LOOP. |
 | L4 | Booking and own history using latest serial state. | Check last place, duplicates, actor changes and stale submission. | B07-B10 and relevant I01/I02/I10 pass; ACCEPT_LOOP. |
 | L5 | Cancellation, history, repeats and failure safety. | Check owner denial, cutoff, no-op and full-state preservation. | B11-B17 and relevant I05/I10/regression pass; ACCEPT_LOOP. |
@@ -88,7 +88,7 @@ Use a short record in docs/reviews/ containing the task/FR/BR/risk scope, preser
 
 Loop-level foundation evidence is partial support for later scenarios. Complete business scenarios remain required before V1.0/V1.1 release; permission-helper tests alone do not complete B10/B12/B13. L2 does not fulfil the assessment's functioning-application, validation or release criteria yet.
 
-The author explicitly requested L2 after accepting L1. L2 stops for its own ACCEPT_LOOP; L3 remains NOT_STARTED. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions.
+The author explicitly requested L2 after accepting L1 and has now accepted L2. L3 is eligible but NOT_STARTED, awaiting the author's next instruction. READY_TO_MERGE and ACCEPT_RELEASE are separate decisions. The local preview remains running as requested.
 
 ## GitHub Actions
 
