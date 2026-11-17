@@ -2250,3 +2250,87 @@ def test_l4_booking_ui_never_adopts_a_rejected_candidate(
     assert not app.exception and not app.success
     assert any(outcome in item.value for item in app.error)
     assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+@pytest.mark.parametrize("route", ["public", "other-organiser"])
+@pytest.mark.parametrize(
+    ("widget", "key", "invalid", "message"),
+    [
+        ("number_input", "new_capacity", 0, "Capacity must be a whole number from 1 to 30."),
+        ("date_input", "new_start_date", None, "Choose a valid start date and time."),
+        ("date_input", "new_end_date", None, "Choose a valid end date and time."),
+        ("time_input", "new_start_time", None, "Choose a valid start date and time."),
+        ("time_input", "new_end_time", None, "Choose a valid end date and time."),
+    ],
+)
+def test_l4_f08_review_restores_invalid_values_without_substitution(
+    demo_data: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    route: str,
+    widget: str,
+    key: str,
+    invalid: object,
+    message: str,
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    getattr(app, widget)(key=key).set_value(invalid)
+    app.button(key="create_workshop").click().run()
+    rejected_values = creation_form_values(app)
+    assert {e.value for e in app.error} == {CREATION_REJECTED, message}
+    assert app.session_state.creation_forms["organiser-1"]["draft"][key] == invalid
+    if route == "public":
+        app.sidebar.radio(key="current_view").set_value("Workshops").run()
+        app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    else:
+        app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+        assert not app.error
+        fill_creation_form(app, NOW + timedelta(hours=72))
+        app.text_input(key="new_title").set_value("Alex's separate failure")
+        app.text_input(key="new_location").set_value("")
+        app.button(key="create_workshop").click().run()
+        other_before = deepcopy(app.session_state.creation_forms["organiser-2"])
+        app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+        assert app.session_state.creation_forms["organiser-2"] == other_before
+    assert not app.exception and not app.success
+    assert creation_form_values(app) == rejected_values
+    assert {e.value for e in app.error} == {CREATION_REJECTED, message}
+    assert app.session_state.selected_user_id == "organiser-1"
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
+@pytest.mark.parametrize("outcome", ["INVALID_INPUT", "FORBIDDEN"])
+def test_l4_f08_review_creation_refusal_does_not_adopt_a_different_candidate(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, outcome: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    before = deepcopy(demo_data)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=72))
+    app.text_input(key="new_title").set_value("")
+    app.button(key="create_workshop").click().run()
+    other_before = deepcopy(app.session_state.creation_forms["organiser-2"])
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    submitted_values = creation_form_values(app)
+    refused = replace(
+        demo_data, workshops=[], registrations=[], next_workshop_id=900, next_registration_id=901
+    )
+    monkeypatch.setattr(booking, "create_workshop", lambda *args, **kwargs: (outcome, refused))
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.success
+    assert [e.value for e in app.error] == [
+        CREATION_REJECTED
+        if outcome == "INVALID_INPUT"
+        else "FORBIDDEN: Only organisers may create workshops."
+    ]
+    assert app.session_state.demo_state is demo_data and demo_data == before
+    assert creation_form_values(app) == submitted_values
+    assert app.session_state.creation_forms["organiser-2"] == other_before
+    assert len(app.session_state.creation_forms["organiser-1"]["draft"]) == 8

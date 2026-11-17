@@ -10,7 +10,7 @@ This classroom prototype manages fictional workshops and registrations in one br
 |---|---|
 | [app.py](app.py) | Existing fixed-role menus and creation form; participant Book controls, current-time submission, success/refusal feedback and personal current/history views. Adopt only an OK candidate. |
 | [booking.py](booking.py) | Existing validated models, permissions, creation, browse, owned rosters and fixtures; book_workshop and list_own_registrations. No Streamlit import. |
-| [test_booking.py](test_booking.py) | All 228 preceding parameter cases retained, with 10 F08 cases added: 238 total. Two UI test functions are explicitly adapted to the requested per-organiser state; business assertions remain. Requirements determine outcomes, not the teaching Demo's pass history. |
+| [test_booking.py](test_booking.py) | 250 cases in 92 functions: all 238 pre-review cases retained unchanged, plus 12 focused F08 review cases. Earlier F08 adaptations remain explicitly documented. Requirements determine outcomes, not the teaching Demo's pass history. |
 
 For a fresh session, select **Sam (PARTICIPANT)** and book **Outdoor Navigation Basics**. One new CONFIRMED record appears; the earlier CANCELLED record remains in History. My Bookings shows only Sam's records. Switch to Xingjian to inspect a different list, then Rui Yan's owned roster to see the updated participant list. A fresh Xingjian request for Outdoor Photography Walk returns FULL; a repeat request for Navigation returns DUPLICATE_ACTIVE. The final-24h and historical examples have disabled booking controls. There is no cancellation/Join action in L4.
 
@@ -27,6 +27,8 @@ The business read derives the participant ID from the selected validated actor; 
 Four fixed fictional identities, role menus, independent business checks, current-view reset, owned rosters, valid relative demo data, creation >24 hours ahead and capacity 1-30 are retained. Failed creation submissions retain all eight values/errors across navigation; only success clears the form. L4-F08 now keeps each organiser's latest failed eight values, errors and feedback under their fixed user_id. Switching organisers loads that organiser's saved failure or defaults; success clears only that organiser. Unsubmitted edits are not promised across navigation. Use fictional data only.
 
 L3 HF-02 accepted a shared rejected draft crossing demo roles. The explicit F08 request supersedes that current UI behaviour; the original L3 acceptance record and accepted folders remain unchanged. The freely selectable demo identities still provide no authentication or cross-session persistence. Existing unowned shared UI drafts are not attributed to whichever organiser happens to be selected after a code update.
+
+The F08 deep review found two oracle gaps, without a confirmed defect in the genuine runtime: invalid zero/empty values after form restoration, and adoption of a different candidate after rejected creation. Twelve new cases detect both isolated faults. All 90 pre-review test functions/parameter sets, app.py and booking.py remain unchanged. The current full local result is 250 passed; browser checks and hosted evidence are in the L4 review.
 
 L4-F05 is corrected: eight form defaults are initialised/restored in Session State before rendering, with no competing date/time/capacity widget defaults. Failed values remain intact; successful creation resets only those eight keys. Fresh-process tests and browser/server-log checks verify this without suppressing warnings.
 

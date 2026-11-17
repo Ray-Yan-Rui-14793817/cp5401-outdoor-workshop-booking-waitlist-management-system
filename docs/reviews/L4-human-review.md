@@ -10,7 +10,7 @@ Base: [accepted L3 74f9281f420755a42141d9792c023cec5d53bf34](https://github.com/
 
 Changed files: app.py, booking.py, test_booking.py, README.md, requirements.md, docs/test-plan.md, docs/demo-reuse.md, docs/ai-use.md and this new review. The other twelve files, including workflow, dependency inputs/locks, configuration and four historical reviews, retain their L3 bytes. Accepted local L0-L3 folders/archives and original tracked files are protected separately.
 
-## Current L4-F08 intake and scope
+## F08 implementation intake and scope (historical)
 
 Base candidate: a441bb6ae6ab6e5f350448db524e63ce7b05c3e9 on codex/l4-bookings. The author explicitly requested Per-organiser Workshop Creation Draft Isolation after the prior technical review, with eight functional goals and a stop at L4. This is a UI-state refinement during V1.0 development, not the later assessed CR-01 waitlist change. Human acceptance remains PENDING.
 
@@ -35,7 +35,7 @@ AI-proposed corrective-patch risk: Medium, because visible UI values/errors/rese
 | 7 | Participant/no identity sees no creation menu/form; business role/owner denials persist. | New direct/participant/cleared routes plus unchanged role-menu, bypass and business-denial regressions |
 | 8 | Only latest failed snapshots are saved; identity selection stays fictional, data stays session-only. | f08_latest_failure_replaces_only_its_own_values_and_errors; f08_unsubmitted_edits_are_not_shown_to_a_different_organiser; retained session-isolation tests and disclosed limits |
 
-### F08 verification
+### F08 implementation verification (historical)
 
 Actual executor: AI/local tools or Actions as labelled, not the author.
 
@@ -47,10 +47,36 @@ Actual executor: AI/local tools or Actions as labelled, not the author.
 | Regression adaptations | Two prior UI functions are explicitly adapted: shared-draft role route now returns to the original organiser, and Book's preserved UI-state fixture uses organiser-keyed storage. All parameter sets and business assertions remain; 82 prior bodies are identical. |
 | Static/dependency consistency | Ruff, format check, Bandit and pip check pass. Business module, dependency locks and workflow are byte-identical to the base. |
 | Browser | PASS: eight Chrome flows, desktop 1440x1400/mobile 390x844, fresh QA process on 8515. Correct title/URL/nonblank page; no framework exception, browser warning/error or page error. Both drafts restore, Rui success leaves Alex's failure, restricted menus hide, Alex success stays owned, and Book/history still work. Fresh server has no F05 warning. Primary human service remains on 8514 and a separate smoke check confirms it serves F08. The temporary 8515 QA process was stopped after verification. Browser plugin not available; existing bundled Playwright used. |
-| Current Actions | PASS: [run 44085569318](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44085569318), job 134046977451, tested F08 code candidate baa675ac7428a818e7202bf703bd3ef2ce5b290c. All 18 steps of the single quality-checks job succeeded, including 238 tests and complete audits of 34 runtime/71 development pins with no known vulnerabilities or omitted packages. Earlier 228-case Actions below are historical. A subsequent records-only commit records these results; its current Actions must also pass. |
+| F08 implementation Actions (historical) | PASS: [run 44085569318](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44085569318), job 134046977451, tested F08 code candidate baa675ac7428a818e7202bf703bd3ef2ce5b290c. All 18 steps of the single quality-checks job succeeded, including 238 tests and complete audits of 34 runtime/71 development pins with no known vulnerabilities or omitted packages. Earlier 228-case Actions below are historical. A subsequent records-only commit records these results; its current Actions must also pass. |
 | Packaging/baselines | All 21 source files are checked against the branch/archive by raw contents; 94 protected prior files/archive, historical reviews and canonical definitions remain unchanged. The personal ZIP stays local, includes the workflow at archive root and excludes private tools/reports/environments. Final comparison is repeated after this records-only update. |
 
 QA correction: early script assertions observed frontend hydration/rerendering before completion. Waiting for the approved default, completed render and target absence, and normalising equivalent time representations resolves the harness assumptions. No additional runtime workaround or rule change was needed. UI evidence is not human acceptance or R-08 validation.
+
+## Current F08 deep-review intake
+
+Review base: [801ec1162ab089aa9f5291b3cbfcd1e4b8fb49ed](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/801ec1162ab089aa9f5291b3cbfcd1e4b8fb49ed), codex/l4-bookings, 17 November 2026. The author requests a fresh check of isolation, identity restore/reset, ownership/permissions, complete state/counters, F05, tests/CI, accepted L0-L3 and course sources, with fixes and a stop pending personal acceptance. No ACCEPT_LOOP or personal execution results are supplied.
+
+Only test_booking.py changes executable behaviour in this corrective delivery. The genuine app.py/booking.py already satisfy the reviewed properties and retain their exact pre-review bytes. Six existing Markdown files are updated; seven existing files change in total, with no new delivery file. All 21 delivery paths, workflow/locks/configuration, 39 normative definition rows, 51 canonical scenario rows, accepted history and 94 protected prior files remain intact. All 90 prior test function ASTs and decorators remain unchanged; 12 new cases in two appended functions strengthen the oracles.
+
+Review findings L4-F08-R01/R02 below are test gaps, not confirmed runtime defects. Proposed corrective-patch risk is Medium because generated UI tests and injected-boundary assumptions need human examination. Existing high allocation/permission risks and prototype limitations remain. Risk ratings/dispositions are proposals; human H07 is pending.
+
+### F08 deep-review verification
+
+Executor: Codex assistant/local tools or GitHub Actions as labelled; none is a personal author execution.
+
+| Check | Actual evidence |
+|---|---|
+| Invalid-value oracle | A private truthy-fallback restoration fault passed all 238 old cases. Ten new cases clear real AppTest date/time controls or enter capacity 0, leave/return through public/other-organiser paths, and require exact eight-value/error/state restoration. The faulty copy fails all ten; genuine source passes. |
+| Rejected-creation oracle | A private copy adopting the candidate before checking OK passed all 238 old cases. Two new distinct-candidate INVALID_INPUT/FORBIDDEN injections detect it; genuine source retains the original object, complete records/counters, current raw values and the other organiser's failure, with no success. Internal injection is not a claim of a genuine valid-organiser denial or mutated domain refusal. |
+| Full local regression | 250 passed in 50.41s, zero failures/skips, Python 3.12.14; 92 test functions. All 238 prior parameter cases/90 function ASTs/decorators remain unchanged, including the 177 L1-L3 cases and F05 tests. Focused genuine run: 12 passed, 238 deselected. |
+| Static/consistency | Ruff check, Ruff format --check, Bandit and pip check PASS. Both runtime modules, locks, configuration and the single-job workflow are unchanged. Booking branch coverage is diagnostic (99%, one fixture-error line not executed), not a grade or completeness threshold. |
+| Fresh browser and F05 | PASS: ten Chrome flows through actual controls at 1440x1400 and 390x844 on a fresh 8515 QA service. Correct title/URL, meaningful content, no framework overlay/exception, browser warning/error or page error. Capacity 0 and a natively cleared start date restore exactly after Alex; Rui success leaves Alex's failure; Alex success remains owned; Participant/no-identity hides creation; Book/history and a separate session still work. Screenshots inspected. Fresh server log has no duplicate-default warning/traceback. QA service stopped; human preview 8514 remains running. Browser plugin not available; existing bundled Playwright used, with no dependency addition. |
+| Hosted Actions | PENDING_CURRENT_CI: the current test/document candidate must pass its own hosted run before delivery. Historical 238/228-case runs above/below are not relabelled as current. |
+| Provenance and integrity | Original assessment, three supplied transcript PDFs (09:40/10:45 are duplicate accounts) and Week1-9 archive retain verified hashes. Accepted L0-L3 definitions and HF-02 history are unchanged. Final local/GitHub/archive comparison is required after recording CI; the personal source ZIP stays local. |
+
+Source check for this review re-read S01 pp.3-4/8, S02 English pp.2/8-9, S03 English pp.3-4/6-7 and the relevant S05-S08/S13-S14 slide sections listed below. The assessment requires a working baseline before meaningful change, independent verification/regression evidence, explained AI/Demo contributions and justified human decisions. This bounded L4 evidence supports those expectations. It does not complete cancellation/V1.0, deployment, CR-01/PR/release, final submission/defence, human acceptance or R-08/VAL user validation, and cannot guarantee an HD grade.
+
+Browser-oracle correction: typing an empty string into the date text box did not commit an empty Streamlit widget value. AI inspected and clicked the native Clear date control, asserted the actual empty value, then reran the identical flow successfully. No production workaround or business-policy change was made to satisfy the QA script.
 
 ## Pre-F08 deep-review intake
 
@@ -96,7 +122,7 @@ The four original PDFs were re-extracted and their hashes match the L3 source re
 | Requirements/quality planning, 15%; S01 pp.3/10 | Accepted FR/BR/QR/risk/scenario rows unchanged; implemented subset and exact new test mapping remain explicit. H01/H07 review and R-08 suitability are pending. |
 | Functional application/deployment, 15%; S01 pp.3/10 | Booking, history, fixed roles, creation and owned rosters verified in the local preview. This is not the assessed hosted deployment or a completed V1.0; L5/L6 remain necessary. |
 | V&V/automated testing, 20%; S01 pp.3/10-11; S06/S13/S14 | Rule outcomes, complete state/counters, cutoff boundaries, negative cases and stronger independent oracles are verified. Real-user VAL/R-08 validation and the author's executions are separate and pending. A high test count or coverage value cannot close them. |
-| Change/regression/release, 20%; S01 pp.4/12 | Preserve all 221 existing tests and compare historical definitions; retain focused findings/corrections and branch evidence. L4 builds the initial baseline; it is not CR-01. Working V1.0 must precede waitlist impact analysis, Issue/CR, PR, justified merge and V1.1 deployment/release. |
+| Change/regression/release, 20%; S01 pp.4/12 | Preserve all 238 pre-review cases (including the 177 L1-L3 cases) and compare historical definitions; retain focused findings/corrections and branch evidence. L4 builds the initial baseline; it is not CR-01. Working V1.0 must precede waitlist impact analysis, Issue/CR, PR, justified merge and V1.1 deployment/release. |
 | GitHub/CI, 15%; S01 pp.5/12; S07 | Progressive branch commits, explicit code identities, one unchanged quality-checks job and reports support this stage. The assessed Issue/PR/release lifecycle remains later work; current hosted results must match the candidate. |
 | Presentation/defence/judgement, 15%; S01 pp.8/13; S02/S03/S08 | Specific AI tasks, real mistakes/corrections, Demo differences, findings and H01-H07 support explainability. The author's personal understanding, risk decision, PPTX, oral defence and final submission are not created by AI checks. |
 
@@ -108,7 +134,7 @@ Technical review conclusion: the reviewed genuine booking/history/capacity/dupli
 
 ## Verification results
 
-Historical pre-F08 execution results follow. The current 238-case candidate is recorded under F08 verification above.
+Historical pre-F08 execution results follow. The current 250-case candidate is recorded under F08 deep-review verification above; the 238-case F08 implementation table is historical.
 
 Actual executor is AI/local tooling or GitHub Actions as identified below. No result in this section is the author's personal execution.
 
@@ -141,6 +167,8 @@ Coverage is diagnostic. Test identities, clocks and injected failures are fixtur
 | L4-F06 | Oracle gap, not a genuine product defect: a private copy grouping personal history at workshop end passed all 221 old cases. Add S-1/S/S+1 checks on the actual table's section placement, ID/status and complete unchanged state. The faulty copy now fails at S/S+1; genuine source passes. Closed by stronger tests; no history rule or production logic change. |
 | L4-F07 | Oracle gap, not a genuine product defect: a private copy adopting rejected Book candidates passed all 221 old cases because normal refusals return the original state. Add FORBIDDEN/unrecognised-result injection with a distinct candidate and assert exact original object/state/counters plus no success. Both new checks detect the faulty copy; genuine explicit-OK code passes unchanged. Closed by stronger tests. |
 | L4-F08 | Explicitly requested refinement to the accepted L3 HF-02 UI behaviour: shared values/errors/feedback could mix across organisers. Correct app.py with one per-ID form-state map and a visible-form owner marker; scope failure/success/reset to the selected actor. Add 10 failing-before/passing-after cases, declare the two necessary regression adaptations, retain all 228 prior cases and preserve business ownership/counters. Technical verification is recorded above; personal acceptance remains PENDING. |
+| L4-F08-R01 | Test-oracle gap: truthy fallback during restoration passed all 238 old cases while silently replacing capacity 0 and cleared date/time values. Append ten route/control cases with exact raw-value/error/state assertions. The isolated copy fails all ten; the genuine source passes unchanged. Closed technically; human H06/H07 pending. |
+| L4-F08-R02 | Test-oracle gap: adopting a non-OK creation candidate passed all 238 old cases because ordinary refusals return the original state. Append two distinct-candidate injections and verify exact original object/records/counters, retained current form, unchanged other-owner draft and no success. The isolated copy fails both; genuine source passes unchanged. Closed technically; human judgement pending. |
 
 
 Browser flow: public Workshops -> Xingjian full/duplicate refusals -> Sam successful Book -> My Bookings/history -> identity switch -> Rui Yan's actual Navigation roster -> retained failed/corrected creation -> independent new page -> mobile view. Screenshots and temporary scripts stay outside the delivery. The personal page is independent of AI test sessions.
@@ -175,18 +203,19 @@ The author owns final risk dispositions. No new human-approved residual rating, 
 
 These are planned author checks. None is completed by AI or by historical L3 acceptance. Use the local preview; high-risk boundary cases can be inspected/re-executed with the supplied pytest names without adding a user clock editor.
 
-- [ ] **H01 - Candidate and evidence.** Confirm the L4 branch/code identity and current single-job Actions result. Inspect the cumulative nine-file L4 change and this eight-file corrective patch, retained test functions, mapping and findings. Confirm L0-L3 records are unchanged and the ZIP is local-only.
+- [ ] **H01 - Candidate and evidence.** Confirm the L4 branch/code identity and current single-job Actions result. Inspect the cumulative nine-file L4 change, historical F08 runtime change and this seven-file review patch (only test_booking.py changes executable source), retained 238 cases/90 unchanged test function ASTs, mapping and findings. Confirm L0-L3 records are unchanged and the ZIP is local-only.
 - [ ] **H02 - Booking and own history.** In a fresh L4 session, select Sam and book Outdoor Navigation Basics. Expect one new CONFIRMED registration-5, four confirmed records overall and the original CANCELLED registration-4 retained. My Bookings must show only Sam's current/history IDs. Refresh/navigation must not add another row. Inspect Rui Yan's Navigation roster for Sam plus Xingjian.
 - [ ] **H03 - Capacity and duplicates.** As Xingjian, a fresh Navigation request returns DUPLICATE_ACTIVE; a Photography request returns FULL, with no waitlist/record/counter change. Inspect or run the serial last-place and rebooking tests to verify latest-state use, one allocation and new-ID history retention. These are serial checks, not a concurrency claim.
 - [ ] **H04 - Time and denied-state safety.** Inspect S/C/zone and disabled locked/started controls. Inspect/re-execute the strict-cutoff and stale-submission tests: C-1 may succeed, C/C+1/S/after S reject with spare capacity. The actual Book must receive fresh trusted time. Check every refusal preserves records/counters and no success appears on failure.
 - [ ] **H05 - Roles and personal filtering.** No identity/organisers see no Book controls; participants see no Organiser menu. Switch Sam/Xingjian and inspect actual own record IDs. Inspect direct business denials, forged actor checks and stored-owner roster enforcement; menu hiding alone is insufficient. Explain that freely selecting another demo identity remains possible.
-- [ ] **H06 - Regression and session limits.** Check F08: Rui fails, Alex sees a clean form, Alex fails differently, Rui restores his own failure, Rui succeeds and Alex still restores his own failure; repeat success as Alex. Check same-owner public/participant/cleared round trips and unchanged failure-state counters. Recheck F05 with corrected success/reset to all eight defaults; inspect warning-enabled test and fresh-server evidence. Check selected identity/draft preservation, owned rosters, refresh and role/page reset. A new browser session starts independent demo data; reload/restart may reset it. Use fictional data. Inspect/re-execute the full regression suite as appropriate and record what you actually ran.
-- [ ] **H07 - Human judgement and AI disclosure.** Explain the Demo reuse/project-specific rules, two new domain functions, pure state contract and key test oracles. Review AI assumptions/corrections, proposed risk triage, F05 closure, F08 versus historical HF-02, the two declared regression adaptations, the isolated oracle challenges, HF-01-HF-03 and residual R-08/session/security limits. Record actual feedback/edits/rejected suggestions, risk rationale and reviewer/date, then choose ACCEPT_LOOP, CHANGES_REQUIRED or suitable escalation.
+- [ ] **H06 - Regression and session limits.** Check F08: Rui fails, Alex sees a clean form, Alex fails differently, Rui restores his own failure, Rui succeeds and Alex still restores his own failure; repeat success as Alex. Check same-owner public/participant/cleared round trips and unchanged failure-state counters. Include capacity 0 and the native Clear date control: return from Alex/public and require the exact invalid value with its own error, without silent default substitution. Recheck F05 with corrected success/reset to all eight defaults; inspect warning-enabled test and fresh-server evidence. Check selected identity/draft preservation, owned rosters, refresh and role/page reset. A new browser session starts independent demo data; reload/restart may reset it. Use fictional data. Inspect/re-execute the full regression suite as appropriate and record what you actually ran.
+- [ ] **H07 - Human judgement and AI disclosure.** Explain the Demo reuse/project-specific rules, two new domain functions, pure state contract and key test oracles. Review AI assumptions/corrections, proposed risk triage, F05 closure, F08 versus historical HF-02, the two declared regression adaptations, the two new F08 oracle gaps (invalid-value restoration and rejected-creation adoption), their private fault evidence, HF-01-HF-03 and residual R-08/session/security limits. Record actual feedback/edits/rejected suggestions, risk rationale and reviewer/date, then choose ACCEPT_LOOP, CHANGES_REQUIRED or suitable escalation.
 
 Example commands from the L4 repository root, using an existing Python environment:
 
 ```powershell
 python -m pytest test_booking.py -q
+python -m pytest test_booking.py -k "f08_review or creation_restoration_and_reset" -v
 python -m pytest test_booking.py -k "l4_booking_uses_strict_cutoff or l4_stale_booking or l4_serial_last_place" -v
 ```
 
