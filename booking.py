@@ -33,6 +33,70 @@ def _require_aware(value: datetime, field_name: str) -> None:
         raise ValueError(f"{field_name} must be a timezone-aware datetime.")
 
 
+def _workshop_field_errors(
+    *, title: str, starts_at: datetime, ends_at: datetime, location: str, capacity: int
+) -> dict[str, str]:
+    """Shared field rules; retain the data model's existing exception messages."""
+    errors = {}
+    for name, value in (("title", title), ("location", location)):
+        if not isinstance(value, str) or not value.strip():
+            errors[name] = f"{name} must be non-empty text."
+    if type(capacity) is not int or not 1 <= capacity <= 30:
+        errors["capacity"] = "capacity must be an integer from 1 to 30."
+    for name, value in (("starts_at", starts_at), ("ends_at", ends_at)):
+        try:
+            _require_aware(value, name)
+        except ValueError as error:
+            errors[name] = str(error)
+    if (
+        "starts_at" not in errors
+        and "ends_at" not in errors
+        and ends_at.astimezone(UTC) <= starts_at.astimezone(UTC)
+    ):
+        errors["ends_at"] = "ends_at must be later than starts_at."
+    return errors
+
+
+def workshop_creation_errors(
+    *,
+    title: str,
+    starts_at: datetime,
+    ends_at: datetime,
+    location: str,
+    capacity: int,
+    now: datetime,
+    preparation_notes: str = "",
+) -> dict[str, str]:
+    """Return field feedback using the same rules as the creation operation."""
+    messages = {
+        "title must be non-empty text.": "Title is required.",
+        "location must be non-empty text.": "Meeting point is required.",
+        "capacity must be an integer from 1 to 30.": "Capacity must be a whole number from 1 to 30.",
+        "starts_at must be a timezone-aware datetime.": "Choose a valid start date and time.",
+        "ends_at must be a timezone-aware datetime.": "Choose a valid end date and time.",
+        "ends_at must be later than starts_at.": "End date and time must be after the start.",
+    }
+    errors = {
+        name: messages[message]
+        for name, message in _workshop_field_errors(
+            title=title, starts_at=starts_at, ends_at=ends_at, location=location, capacity=capacity
+        ).items()
+    }
+    try:
+        _require_aware(now, "now")
+    except ValueError:
+        errors["now"] = "The current server time is unavailable. Please try again."
+    if (
+        "starts_at" not in errors
+        and "now" not in errors
+        and starts_at.astimezone(UTC) - now.astimezone(UTC) <= REGISTRATION_LEAD
+    ):
+        errors["starts_at"] = "Start must be more than 24 hours from submission."
+    if not isinstance(preparation_notes, str):
+        errors["preparation_notes"] = "Preparation notes must be text."
+    return errors
+
+
 @dataclass(frozen=True)
 class Workshop:
     workshop_id: str
@@ -45,16 +109,19 @@ class Workshop:
     preparation_notes: str = ""
 
     def __post_init__(self) -> None:
-        for name in ("workshop_id", "owner_id", "title", "location"):
+        for name in ("workshop_id", "owner_id"):
             value = getattr(self, name)
             if not isinstance(value, str) or not value.strip():
                 raise ValueError(f"{name} must be non-empty text.")
-        if type(self.capacity) is not int or not 1 <= self.capacity <= 30:
-            raise ValueError("capacity must be an integer from 1 to 30.")
-        _require_aware(self.starts_at, "starts_at")
-        _require_aware(self.ends_at, "ends_at")
-        if self.ends_at.astimezone(UTC) <= self.starts_at.astimezone(UTC):
-            raise ValueError("ends_at must be later than starts_at.")
+        errors = _workshop_field_errors(
+            title=self.title,
+            starts_at=self.starts_at,
+            ends_at=self.ends_at,
+            location=self.location,
+            capacity=self.capacity,
+        )
+        if errors:
+            raise ValueError(next(iter(errors.values())))
 
     @property
     def registration_cutoff(self) -> datetime:
@@ -149,24 +216,26 @@ def create_workshop(
     permission = check_permission(state, actor, Role.ORGANISER)
     if permission != "OK":
         return permission, state
-    if not isinstance(preparation_notes, str):
+    if workshop_creation_errors(
+        title=title,
+        starts_at=starts_at,
+        ends_at=ends_at,
+        location=location,
+        capacity=capacity,
+        now=now,
+        preparation_notes=preparation_notes,
+    ):
         return "INVALID_INPUT", state
-    try:
-        _require_aware(now, "now")
-        workshop = Workshop(
-            workshop_id=f"workshop-{state.next_workshop_id}",
-            owner_id=actor.user_id,
-            title=title.strip() if isinstance(title, str) else title,
-            starts_at=starts_at,
-            ends_at=ends_at,
-            location=location.strip() if isinstance(location, str) else location,
-            capacity=capacity,
-            preparation_notes=preparation_notes.strip(),
-        )
-    except ValueError:
-        return "INVALID_INPUT", state
-    if workshop.starts_at.astimezone(UTC) - now.astimezone(UTC) <= REGISTRATION_LEAD:
-        return "INVALID_INPUT", state
+    workshop = Workshop(
+        workshop_id=f"workshop-{state.next_workshop_id}",
+        owner_id=actor.user_id,
+        title=title.strip(),
+        starts_at=starts_at,
+        ends_at=ends_at,
+        location=location.strip(),
+        capacity=capacity,
+        preparation_notes=preparation_notes.strip(),
+    )
     return "OK", replace(
         state,
         users=state.users.copy(),

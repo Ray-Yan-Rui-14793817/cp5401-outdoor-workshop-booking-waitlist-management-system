@@ -19,6 +19,7 @@ from booking import (
     list_owned_workshops,
     resolve_actor,
     server_now,
+    workshop_creation_errors,
 )
 
 
@@ -57,15 +58,37 @@ def show_workshops(state: DemoState, now: datetime) -> None:
 
 def show_organiser(state: DemoState, actor: DemoUser) -> None:
     st.info("Create workshops and view confirmed rosters for your own workshops.")
+    default_day = server_now().astimezone(WORKSHOP_TIMEZONE).date() + timedelta(days=3)
+    if st.session_state.pop("reset_creation_form", False):
+        defaults = {
+            "new_title": "",
+            "new_start_date": default_day,
+            "new_start_time": time(9),
+            "new_end_date": default_day,
+            "new_end_time": time(12),
+            "new_location": "",
+            "new_capacity": 10,
+            "new_notes": "",
+        }
+        for key, value in defaults.items():
+            st.session_state[key] = value
+    errors = st.session_state.get("creation_errors", {})
+
+    def show_field_error(field: str) -> None:
+        if field in errors:
+            st.error(errors[field])
+
     message = st.session_state.pop("creation_message", None)
     if message:
         st.success(message)
     creation, rosters = st.columns(2)
     with creation:
         st.markdown("#### Create a workshop")
-        default_day = server_now().astimezone(WORKSHOP_TIMEZONE).date() + timedelta(days=3)
-        with st.form("create_workshop_form", clear_on_submit=True):
+        if st.session_state.get("creation_feedback"):
+            st.error(st.session_state.creation_feedback)
+        with st.form("create_workshop_form", clear_on_submit=False):
             title = st.text_input("Title", key="new_title")
+            show_field_error("title")
             starts_date = st.date_input(
                 "Start date (Asia/Singapore)",
                 value=default_day,
@@ -73,6 +96,7 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                 key="new_start_date",
             )
             starts_time = st.time_input("Start time", value=time(9), step=60, key="new_start_time")
+            show_field_error("starts_at")
             ends_date = st.date_input(
                 "End date (Asia/Singapore)",
                 value=default_day,
@@ -80,37 +104,45 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                 key="new_end_date",
             )
             ends_time = st.time_input("End time", value=time(12), step=60, key="new_end_time")
+            show_field_error("ends_at")
             location = st.text_input("Meeting point", key="new_location")
+            show_field_error("location")
             capacity = st.number_input(
-                "Capacity", min_value=1, max_value=30, value=10, step=1, key="new_capacity"
+                "Capacity",
+                value=10,
+                step=1,
+                key="new_capacity",
+                help="Enter a whole number from 1 to 30.",
             )
+            show_field_error("capacity")
             notes = st.text_area("Preparation notes (optional)", key="new_notes")
+            show_field_error("preparation_notes")
             submitted = st.form_submit_button(
                 "Create workshop", key="create_workshop", type="primary"
             )
         st.caption(
             "Creation requires more than 24 hours of notice at submission, including seconds."
         )
+        show_field_error("now")
         if submitted:
-            outcome, candidate = create_workshop(
-                state,
-                actor,
-                title=title,
-                starts_at=(
+            fields = {
+                "title": title,
+                "starts_at": (
                     datetime.combine(starts_date, starts_time, tzinfo=WORKSHOP_TIMEZONE)
                     if starts_date is not None and starts_time is not None
                     else None
                 ),
-                ends_at=(
+                "ends_at": (
                     datetime.combine(ends_date, ends_time, tzinfo=WORKSHOP_TIMEZONE)
                     if ends_date is not None and ends_time is not None
                     else None
                 ),
-                location=location,
-                capacity=capacity,
-                preparation_notes=notes,
-                now=server_now(),
-            )
+                "location": location,
+                "capacity": capacity,
+                "preparation_notes": notes,
+                "now": server_now(),
+            }
+            outcome, candidate = create_workshop(state, actor, **fields)
             if outcome == "OK":
                 created = candidate.workshops[-1]
                 st.session_state.demo_state = candidate
@@ -118,18 +150,23 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                 st.session_state.creation_message = (
                     f"Created {created.workshop_id}: {created.title}."
                 )
+                st.session_state.reset_creation_form = True
+                st.session_state.pop("creation_errors", None)
+                st.session_state.pop("creation_feedback", None)
                 st.rerun()
             else:
-                st.error(
-                    {
-                        "INVALID_INPUT": (
-                            "INVALID_INPUT: Use a title, meeting point, capacity 1-30, an end "
-                            "after the start, and a start more than 24 hours from submission."
-                        ),
-                        "INVALID_ACTOR": "INVALID_ACTOR: Select a valid demo identity.",
-                        "FORBIDDEN": "FORBIDDEN: Only organisers may create workshops.",
-                    }.get(outcome, "Workshop creation is unavailable. Refresh and try again.")
+                st.session_state.creation_errors = (
+                    workshop_creation_errors(**fields) if outcome == "INVALID_INPUT" else {}
                 )
+                st.session_state.creation_feedback = {
+                    "INVALID_INPUT": (
+                        "Workshop not created. Your entries have been kept. "
+                        "Correct the highlighted fields and submit again."
+                    ),
+                    "INVALID_ACTOR": "INVALID_ACTOR: Select a valid demo identity.",
+                    "FORBIDDEN": "FORBIDDEN: Only organisers may create workshops.",
+                }.get(outcome, "Workshop creation is unavailable. Your entries have been kept.")
+                st.rerun()
 
     with rosters:
         st.markdown("#### My workshops and confirmed rosters")

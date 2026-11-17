@@ -10,7 +10,7 @@ A small classroom application for one outdoor workshop provider. It manages fict
 |---|---|
 | [app.py](app.py) | Role-specific navigation, workshop cards, creation form, current-time submission, owned roster selection and complete successful-state adoption. |
 | [booking.py](booking.py) | Retained models/identity checks; creation, public ordering/counts, owned list/roster access, trusted clock and valid relative demo fixtures. No Streamlit import. |
-| [test_booking.py](test_booking.py) | 161 parameter cases in 52 functions: all 87 L2 cases retained with documented UI-context/message adaptations and stronger denial assertions, plus 74 L3 cases. |
+| [test_booking.py](test_booking.py) | 172 parameter cases in 55 functions: all 87 L2 cases retained with documented UI-context/message adaptations and stronger denial assertions, plus 85 L3 cases. |
 
 | Fixed ID | Demo name | Role | Visible menu |
 |---|---|---|---|
@@ -23,6 +23,10 @@ A small classroom application for one outdoor workshop provider. It manages fict
 Roles come from fixed canonical IDs. Hidden menus improve navigation; independent UI/business checks reject forbidden access. Same-role switches retain permitted views; disallowed views reset to Workshops. Organiser switches also reset obsolete roster selections to an owned target. Anyone may select a demo identity, so this is not authentication or impersonation protection.
 
 L3 implements creation only when S-t>24 elapsed hours, integer capacity 1-30, valid aware times/end>S and required text. IDs/ownership are assigned by the application. Creation normalises and validates one Workshop record, then returns an outcome and complete new state without mutating the input; the UI adopts only OK results. A roster lookup checks the actual stored owner and returns confirmed records only. Each owned roster displays its selected workshop's confirmed count, distinct from the session-wide metric.
+
+Failed creation keeps all eight submitted form values, including invalid entries, and shows specific errors beside the relevant fields. Feedback comes from the shared booking.py validation, using the same submission time as the attempted operation. The integer capacity control permits an out-of-range entry to remain visible for correction; the business rule still rejects anything outside 1-30.
+
+Successful creation shows the new workshop ID/title and resets only the eight form inputs: empty title/meeting point/notes, start/end dates three days ahead in Asia/Singapore, times 09:00/12:00 and capacity 10. It preserves the selected identity, prior business records and other session data; the owned selector opens the newly created workshop as before. A subsequent empty submit cannot create a duplicate.
 
 ## Demo data and limits
 

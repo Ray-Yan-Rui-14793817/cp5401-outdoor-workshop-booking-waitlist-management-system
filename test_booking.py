@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 from dataclasses import replace
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -956,6 +956,162 @@ def fill_creation_form(app: AppTest, start: datetime) -> None:
     app.text_area(key="new_notes").set_value("Bring water and closed-toe shoes.")
 
 
+def creation_form_values(app: AppTest) -> dict:
+    def date_value(key: str):
+        value = app.date_input(key=key).value
+        # AppTest stores a pending single-date edit as a tuple until the next run.
+        return (value[0] if value else None) if isinstance(value, tuple) else value
+
+    return {
+        "title": app.text_input(key="new_title").value,
+        "start_date": date_value("new_start_date"),
+        "start_time": app.time_input(key="new_start_time").value,
+        "end_date": date_value("new_end_date"),
+        "end_time": app.time_input(key="new_end_time").value,
+        "location": app.text_input(key="new_location").value,
+        "capacity": app.number_input(key="new_capacity").value,
+        "notes": app.text_area(key="new_notes").value,
+    }
+
+
+@pytest.mark.parametrize(
+    ("widget", "key", "invalid", "message"),
+    [
+        ("text_input", "new_title", "  ", "Title is required."),
+        ("text_input", "new_location", "  ", "Meeting point is required."),
+        ("time_input", "new_end_time", time(8), "End date and time must be after the start."),
+        (
+            "date_input",
+            "new_start_date",
+            (NOW + timedelta(days=1)).date(),
+            "Start must be more than 24 hours from submission.",
+        ),
+        ("number_input", "new_capacity", 0, "Capacity must be a whole number from 1 to 30."),
+        ("number_input", "new_capacity", 31, "Capacity must be a whole number from 1 to 30."),
+        ("date_input", "new_start_date", None, "Choose a valid start date and time."),
+        ("date_input", "new_end_date", None, "Choose a valid end date and time."),
+    ],
+)
+def test_creation_failure_keeps_all_fields_and_identifies_the_error(
+    demo_data: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    widget: str,
+    key: str,
+    invalid: object,
+    message: str,
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.selectbox(key="roster_workshop_id").set_value("workshop-2").run()
+    app.session_state.review_marker = {"keep": ["human draft"]}
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    getattr(app, widget)(key=key).set_value(invalid)
+    expected_fields = creation_form_values(app)
+    before = deepcopy(demo_data)
+
+    app.button(key="create_workshop").click().run()
+
+    assert not app.exception and not app.success
+    assert message in [item.value for item in app.error]
+    assert any("Your entries have been kept" in item.value for item in app.error)
+    assert creation_form_values(app) == expected_fields
+    assert app.session_state.demo_state is demo_data
+    assert demo_data == before
+    assert app.sidebar.selectbox(key="selected_user_id").value == "organiser-2"
+    assert app.sidebar.radio(key="current_view").value == "Organiser"
+    assert app.selectbox(key="roster_workshop_id").value == "workshop-2"
+    assert app.session_state.review_marker == {"keep": ["human draft"]}
+
+
+@pytest.mark.parametrize("owner_id", ["organiser-1", "organiser-2"])
+def test_corrected_creation_adds_one_workshop_and_resets_only_the_form(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch, owner_id: str
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value(owner_id).run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.session_state.review_marker = {"keep": ["human draft"]}
+    before = deepcopy(demo_data)
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_location").set_value("  ")
+    app.button(key="create_workshop").click().run()
+    assert "Meeting point is required." in [item.value for item in app.error]
+    assert demo_data == before
+
+    app.text_input(key="new_location").set_value("  East Trail Entrance  ")
+    app.button(key="create_workshop").click().run()
+
+    assert not app.exception and not app.error
+    candidate = app.session_state.demo_state
+    assert len(candidate.workshops) == len(before.workshops) + 1
+    assert candidate.workshops[:-1] == before.workshops
+    created = candidate.workshops[-1]
+    assert (created.workshop_id, created.owner_id, created.title, created.location) == (
+        "workshop-5",
+        owner_id,
+        "Human Check Workshop",
+        "East Trail Entrance",
+    )
+    assert created.starts_at == NOW + timedelta(hours=48)
+    assert created.capacity == 1
+    assert created.preparation_notes == "Bring water and closed-toe shoes."
+    assert candidate.next_workshop_id == before.next_workshop_id + 1
+    assert candidate.next_registration_id == before.next_registration_id
+    assert candidate.registrations == before.registrations
+    assert candidate.users == before.users
+    assert demo_data == before
+    assert [item.value for item in app.success] == ["Created workshop-5: Human Check Workshop."]
+    assert creation_form_values(app) == {
+        "title": "",
+        "start_date": (NOW + timedelta(days=3)).date(),
+        "start_time": time(9),
+        "end_date": (NOW + timedelta(days=3)).date(),
+        "end_time": time(12),
+        "location": "",
+        "capacity": 10,
+        "notes": "",
+    }
+    assert app.sidebar.selectbox(key="selected_user_id").value == owner_id
+    assert app.sidebar.radio(key="current_view").value == "Organiser"
+    assert app.selectbox(key="roster_workshop_id").value == "workshop-5"
+    assert app.session_state.review_marker == {"keep": ["human draft"]}
+
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.success
+    assert app.session_state.demo_state is candidate
+    assert len(candidate.workshops) == 5 and candidate.next_workshop_id == 6
+
+
+def test_creation_shows_all_field_errors_without_discarding_invalid_values(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=24))
+    app.text_input(key="new_title").set_value("")
+    app.text_input(key="new_location").set_value("  ")
+    app.number_input(key="new_capacity").set_value(31)
+    app.time_input(key="new_end_time").set_value(time(8))
+    expected_fields = creation_form_values(app)
+    before = deepcopy(demo_data)
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.success
+    assert {
+        "Title is required.",
+        "Meeting point is required.",
+        "Capacity must be a whole number from 1 to 30.",
+        "Start must be more than 24 hours from submission.",
+        "End date and time must be after the start.",
+    } <= {item.value for item in app.error}
+    assert creation_form_values(app) == expected_fields
+    assert app.session_state.demo_state is demo_data and demo_data == before
+
+
 def test_app_seeds_once_and_refresh_uses_current_time_without_reseeding(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1015,7 +1171,7 @@ def test_creation_form_checks_fresh_submission_time_and_preserves_rejection_stat
     clock["now"] = NOW + timedelta(hours=2)
     app.button(key="create_workshop").click().run()
     assert not app.exception
-    assert any("INVALID_INPUT" in row.value for row in app.error)
+    assert any("Your entries have been kept" in row.value for row in app.error)
     assert not app.success
     assert app.session_state.demo_state is state
     assert state == before
@@ -1123,7 +1279,7 @@ def test_cleared_creation_date_is_rejected_without_crashing(
     before = deepcopy(state)
     app.button(key="create_workshop").click().run()
     assert not app.exception
-    assert any("INVALID_INPUT" in item.value for item in app.error)
+    assert any("Your entries have been kept" in item.value for item in app.error)
     assert app.session_state.demo_state is state
     assert state == before
 
@@ -1148,7 +1304,7 @@ def test_missing_time_at_ui_boundary_is_rejected_without_mutation(
     before = deepcopy(state)
     app.button(key="create_workshop").click().run()
     assert not app.exception
-    assert any("INVALID_INPUT" in item.value for item in app.error)
+    assert any("Your entries have been kept" in item.value for item in app.error)
     assert app.session_state.demo_state is state
     assert state == before
 
