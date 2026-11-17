@@ -61,8 +61,10 @@ def main() -> None:
             st.warning("Select a demo identity to use this view.")
         elif permission == "FORBIDDEN":
             st.warning(f"This view is available to {required_role.value.lower()}s only.")
-        else:
+        elif permission == "OK":
             st.info(messages[view])
+        else:
+            st.error("This view is unavailable. Please refresh and try again.")
 
     st.markdown("**Planned registration policy**")
     st.write(

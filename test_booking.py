@@ -430,6 +430,13 @@ def test_selected_fixed_role_controls_both_restricted_preview_views(
         assert not app.exception
         if role == required_role:
             assert not app.warning
+            assert not app.error
+            expected_message = (
+                "Booking actions and personal history will be added in later loops."
+                if view == "My Bookings"
+                else "Workshop creation and organiser rosters are not yet available."
+            )
+            assert expected_message in [item.value for item in app.info]
         else:
             assert [item.value for item in app.warning] == [
                 f"This view is available to {required_role.value.lower()}s only."
@@ -473,3 +480,37 @@ def test_separate_sessions_do_not_share_selected_identity() -> None:
     assert not first.exception and not second.exception
     assert first.sidebar.selectbox(key="selected_user_id").value == "organiser-1"
     assert second.sidebar.selectbox(key="selected_user_id").value == "participant-1"
+
+
+@pytest.mark.parametrize(
+    ("view", "user_id", "outcome"),
+    [("Organiser", "organiser-1", None), ("My Bookings", "participant-1", "UNEXPECTED")],
+)
+def test_permission_failure_does_not_render_allowed_preview_or_change_state(
+    populated_state: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    view: str,
+    user_id: str,
+    outcome: str | None,
+) -> None:
+    monkeypatch.setattr("booking.check_permission", lambda *args, **kwargs: outcome)
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    app.session_state.demo_state = populated_state
+    expected = deepcopy(populated_state)
+    app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+    app.sidebar.radio(key="current_view").set_value(view).run()
+
+    assert not app.exception
+    assert [item.value for item in app.error] == [
+        "This view is unavailable. Please refresh and try again."
+    ]
+    assert all(
+        item.value
+        not in {
+            "Booking actions and personal history will be added in later loops.",
+            "Workshop creation and organiser rosters are not yet available.",
+        }
+        for item in app.info
+    )
+    assert app.session_state.demo_state is populated_state
+    assert app.session_state.demo_state == expected

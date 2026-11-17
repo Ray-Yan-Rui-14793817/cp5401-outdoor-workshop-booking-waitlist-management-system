@@ -10,7 +10,7 @@ A classroom prototype for one outdoor workshop provider. The application uses St
 |---|---|
 | [app.py](app.py) | Fixed demo identity selection, role-gated previews, refresh and once-per-session initialisation. |
 | [booking.py](booking.py) | Existing models/time contracts plus resolve_actor and check_permission. No Streamlit dependency. |
-| [test_booking.py](test_booking.py) | All 42 L1 cases retained, plus 29 L2 cases: 71 total. |
+| [test_booking.py](test_booking.py) | All 42 L1 cases retained, plus 31 L2 cases: 73 total. Four allowed-view assertions were strengthened; two failure regressions were added in deep review. |
 
 | Fixed ID | Demo name | Fixed role |
 |---|---|---|
@@ -30,10 +30,12 @@ Use Python 3.12.14. With an existing project environment on Windows:
 ```powershell
 .\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest test_booking.py
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1 --server.port 8512
 ```
 
 To create the environment with an installed Python 3.12 launcher, first run `py -3.12 -m venv .venv`. On Linux/macOS, use Python 3.12 to create it and use `.venv/bin/python`. Runtime-only installation uses `--require-hashes -r requirements.txt`. No secrets or database setup are required.
+
+Local manual-preview URL after startup: http://127.0.0.1:8512. The current review keeps this local service running for the author. It is a development preview, not the assessed deployed release.
 
 Keep both pairs of dependency files: requirements.in/requirements.txt and requirements-dev.in/requirements-dev.txt. The .in files specify inputs; the .txt files are generated version/hash locks. Dependency updates regenerate both locks using their recorded commands and rerun the checks. No dependency version or hash changed in L2.
 

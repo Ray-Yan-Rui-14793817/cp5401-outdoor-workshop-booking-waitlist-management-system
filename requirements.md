@@ -13,7 +13,7 @@ The author's L2 instruction fixes the demonstration identities below. Stable IDs
 | participant-1 | Xingjian | PARTICIPANT |
 | participant-2 | Sam | PARTICIPANT |
 
-resolve_actor maps a selected ID to the canonical session DemoUser, or None. check_permission returns INVALID_ACTOR for an absent/unknown actor or inconsistent role claim; FORBIDDEN for a valid actor with the wrong operation role or optional owner; otherwise OK. Both functions leave all input state unchanged. Names are display labels, not permission keys.
+resolve_actor maps a selected ID to the canonical session DemoUser, or None. check_permission returns INVALID_ACTOR for an absent/unknown actor or inconsistent role claim; FORBIDDEN for a valid actor with the wrong operation role or optional owner; otherwise OK. Both functions leave all input state unchanged. The UI displays an allowed restricted preview only for explicit OK; an absent or unrecognised permission result denies the view without changing business state. Names are display labels, not permission keys.
 
 The role requested by an operation is an application constant, not a user role editor. Future operations must obtain owner_id from the actual looked-up target record; the helper alone does not establish target existence or implement cancellation/roster access. B01/B02 receive L2 identity/preview checks. B10/B12/B13 and complete QR-03 business enforcement remain later work. Switching or clearing the selector never reseeds business state. Selection is freely switchable and does not authenticate a real person.
 

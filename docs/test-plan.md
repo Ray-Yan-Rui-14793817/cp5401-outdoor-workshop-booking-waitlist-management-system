@@ -6,17 +6,18 @@ L0 revision 3 scenario definitions are unchanged. The 42 L1 cases are retained. 
 
 ## L2 implemented test mapping
 
-Expected results come from FR-01, BR-01/BR-14, QR-03/QR-04 and the author's fixed-name/role instruction. The complete collected suite has 71 cases in 26 functions: 42 unchanged L1 cases plus 29 new L2 cases. Actual execution and the human gate are in the L2 record.
+Expected results come from FR-01, BR-01/BR-14, QR-03/QR-04 and the author's fixed-name/role instruction. The complete collected suite has 73 cases in 27 functions: 42 unchanged L1 cases plus 31 L2 cases. Actual execution and the human gate are in the L2 record.
 
 | Group | New cases | Exact tests | Requirement/risk and acceptance focus |
 |---|---|---|---|
 | L2-01 | 8 | test_fixed_identity_resolves_by_id_without_mutation; test_unselected_unknown_and_display_name_inputs_do_not_resolve | B01/B02; FR-01/BR-01; R-03/R-07. Four exact ID/name/role mappings; no identity, unknown IDs and display names do not resolve. |
 | L2-02 | 12 | test_role_and_owner_checks_return_explicit_outcomes_without_mutation; test_unknown_or_role_inconsistent_actor_is_invalid; test_equal_display_names_do_not_grant_another_organisers_permission | BR-01, QR-03; R-03/R-06/R-07. Correct role/owner gives OK; wrong role/owner gives FORBIDDEN; forged/unknown actors give INVALID_ACTOR. Compare complete populated state/counters. Partial B10/B12/B13 foundation only. |
-| L2-03 | 7 | test_identity_selector_has_only_the_fixed_demo_options; test_selected_fixed_role_controls_both_restricted_preview_views; test_unselected_identity_cannot_use_restricted_preview | B01/B02, partial I08; R-03/R-08. Fixed labels/roles, both preview permissions and no-selection denial. Not real authentication or real-user validation. |
+| L2-03 | 7 | test_identity_selector_has_only_the_fixed_demo_options; test_selected_fixed_role_controls_both_restricted_preview_views; test_unselected_identity_cannot_use_restricted_preview | B01/B02, partial I08; R-03/R-08. Fixed labels/roles, visible allowed-preview content without errors, both preview permissions and no-selection denial. Not real authentication or real-user validation. |
 | L2-04 | 1 | test_identity_switch_clear_refresh_and_navigation_preserve_complete_state | B01, QR-04; partial I06/I08; R-04. All four identities, clearing, navigation and refresh preserve complete populated state, object identity and counters. |
 | L2-05 | 1 | test_separate_sessions_do_not_share_selected_identity | QR-04; partial I09; R-04. Separate AppTest sessions retain different selections. Browser reload/restart lifecycle remains separately checked. |
+| L2-06 | 2 | test_permission_failure_does_not_render_allowed_preview_or_change_state | QR-03/QR-04; partial I08; R-03/R-07. Inject None/unrecognised helper results for valid selected actors. Show an access-unavailable error, hide allowed content and preserve complete populated state/counters. |
 
-Private controlled copies challenge role-claim validation and owner comparison. They are not changes to the delivered application or evidence of a defect that existed there. Helper and preview checks do not complete actual cancellation/roster scenarios. Human review and VAL-01/02/03 remain separate from these automated results.
+Private controlled copies challenge role-claim validation, owner comparison and missing allowed-view content. Four original UI cases passed the missing-content copy; strengthened assertions fail all four. Two abnormal-result cases failed before the explicit-OK UI guard and pass after it. They are not changes to the delivered application or evidence of a defect that existed there. Helper and preview checks do not complete actual cancellation/roster scenarios. Human review and VAL-01/02/03 remain separate from these automated results.
 
 ## Test design and independent oracles
 

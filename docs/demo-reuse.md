@@ -15,7 +15,7 @@ The [later main snapshot](https://github.com/Georgegiri/CampusConnect-Demo/tree/
 | Name matching and overlap checks | Replace names as keys with fixed fictional IDs. Cross-workshop overlap rejection is excluded. Selection remains a demo mechanism, not authentication. |
 | can_book/add_booking and later request_booking | Business-operation adoption remains planned. This project's full Book request must return FULL; explicit Join is V1.1 only after this project's working V1.0. The later Demo's automatic waitlisting is not the oracle. |
 | cancel_booking/cancel_and_promote | Future project cancellation retains history, applies C/S deadlines and uses the project's active FIFO. Do not inherit record deletion or calendar-overlap skipping. |
-| Five baseline test functions | Use their basic testing idea, not their pass history or overlap/deletion expectations. The project retains its own 42 L1 cases and adds 29 L2 cases, for 71 total, plus the later B/W/I plan. |
+| Five baseline test functions | Use their basic testing idea, not their pass history or overlap/deletion expectations. The project retains its own 42 L1 cases and adds 31 L2 cases, for 73 total (29 initial cases plus two deep-review failure regressions), plus the later B/W/I plan. |
 | Checkout/setup/install/pytest workflow | Adapt to one job with the project checks, immutable Action pins, dependency locks and failure reports. |
 
 The five source tests are test_first_booking_is_accepted, test_overlapping_booking_is_rejected, test_non_overlapping_booking_is_accepted, test_capacity_is_enforced and test_cancellation_releases_booking. They do not establish this project's working baseline.
