@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Accepted design: L0 revision 3. L1/L2: ACCEPT_LOOP. Current loop: L3 workshop creation, browsing and owned confirmed rosters. Human decision: HUMAN_REVIEW_PENDING. L4: NOT_STARTED.**
+**Accepted design: L0 revision 3. L1/L2/L3: ACCEPT_LOOP. Accepted L3 candidate: 3476b10bc916d1fb31ae236f8fd9e65907958712. L4: NOT_STARTED and explicitly held.**
 
 A small classroom application for one outdoor workshop provider. It manages fictional workshop details and selected demo identities in one browser session. The simplified architecture remains Streamlit app.py -> Python booking.py -> dataclasses and in-memory lists, checked by test_booking.py and one GitHub Actions job.
 
@@ -68,11 +68,11 @@ Keep requirements.in/requirements.txt and requirements-dev.in/requirements-dev.t
 | [L0 acceptance](docs/reviews/L0-human-acceptance.md) | Historical accepted design. |
 | [L1 review](docs/reviews/L1-human-review.md) | Historical foundation and acceptance. |
 | [L2 review](docs/reviews/L2-human-review.md) | Historical navigation/permission work, findings and author acceptance. |
-| [L3 review](docs/reviews/L3-human-review.md) | Current scope, findings, verification, risk judgement and pending H01-H07 checklist. |
+| [L3 review](docs/reviews/L3-human-review.md) | Scope, findings, verification and the author's completed H01-H07/ACCEPT_LOOP declaration with three feedback items. |
 
 Historical L0/L1/L2 records are unchanged and describe their decision dates, including then-current next-loop holds. The author's new L3 instruction supersedes that earlier hold for this loop. Current status belongs in the L3 review.
 
-L3_develop contents belong at the GitHub repository root on codex/l3-workshops, including .github. The delivery ZIP contains the same 20 files at its archive root. It excludes virtual environments, caches, generated reports, course originals and private checking tools. Accepted local L0/L1/L2 folders and the original working copy remain unchanged.
+L3_develop contents belong at the GitHub repository root on codex/l3-workshops, including .github. The personal delivery ZIP contains the same 20 files at its archive root and stays local; do not commit it or upload it as a release asset. .gitignore excludes ZIP extensions in any case. All five current branch trees and the release list were checked at acceptance: no tracked ZIP or uploaded release asset was present to delete. The local archive excludes environments, caches, generated reports, course originals and private tools. Accepted local L0/L1/L2 folders and the original working copy remain unchanged.
 
 ## Development workflow
 
@@ -85,7 +85,9 @@ The author sets intent, constraints and expected behaviour; AI implements the bo
 | ACCEPT_RELEASE | Approve a verified deployment/release with required validation. |
 | CHANGES_REQUIRED / SPECIALIST_ADVICE_REQUIRED | Correct or seek suitable advice before dependent work. |
 
-AI/CI are evidence rather than approval. L3 stops at HUMAN_REVIEW_PENDING; L4 is NOT_STARTED. No PR, merge or release is included. Use the [L3 checklist](docs/reviews/L3-human-review.md#human-acceptance-checklist) for actual reviewer/date/code identity, observations, human edits/rejected suggestions, risk rationale and the decision. Do not generate personal observations from AI tests.
+On 17 November 2026, the author declared the updated L3 UI checks and H01-H07 complete and supplied ACCEPT_LOOP for candidate 3476b10bc916d1fb31ae236f8fd9e65907958712. The [L3 record](docs/reviews/L3-human-review.md#human-acceptance-checklist) transcribes that declaration and feedback separately from AI/CI evidence. L3's human loop gate is satisfied. L4 remains NOT_STARTED under the author's explicit hold; no PR, main merge or release follows from this acceptance.
+
+The author accepted that a full workshop may still show Registration window open before its cutoff because the counts communicate fullness; wording can be refined later. Failed drafts can cross demo roles in one session, so fictional data remains mandatory. Existing business-layer ownership checks are retained; remaining registration operations await later authorised development. These observations do not complete the full release validation plan or close R-08.
 
 ## Record for each loop
 
@@ -96,7 +98,7 @@ Record the intended/unchanged behaviour, FR/BR/risk scope, significant AI task, 
 | Loop | Work and exit |
 |---|---|
 | L0-L2 | Accepted design, foundations and navigation/permission checks; historical decisions retained. |
-| L3 | Current workshop creation/browsing/owned rosters/demo data. Tests/CI plus H01-H07 and ACCEPT_LOOP required. |
+| L3 | ACCEPT_LOOP supplied by the author after updated UI and H01-H07 checks; feedback recorded. No further L3 functional change is included in this acceptance update. |
 | L4-L5 | Booking/own history, then cancellation/repeats; relevant baseline, permission, state and deadline tests. |
 | L6 | Working V1.0, deployment, required baseline validation and ACCEPT_RELEASE. |
 | L7-L8 | CR-01 waitlist intake/impact, implementation, new/regression tests, validation, findings and justified pre-merge decision. |

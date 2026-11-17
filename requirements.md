@@ -1,6 +1,6 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3 remains the accepted design. L1/L2 are accepted; L3 starts from GitHub e52dd74816fd89a0fad22e104caa68900d032da0 under the author's new instruction. L3 workshops/rosters: HUMAN_REVIEW_PENDING. L4: NOT_STARTED. Accepted FR/BR/QR/risk targets remain unchanged. [L3 review](docs/reviews/L3-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3 remains the accepted design. L1/L2/L3 are accepted. The author supplied L3 ACCEPT_LOOP after the updated UI and H01-H07 checks on 17 November 2026, accepting candidate 3476b10bc916d1fb31ae236f8fd9e65907958712. L4: NOT_STARTED and explicitly held. Accepted FR/BR/QR/risk targets remain unchanged; the three acceptance observations are recorded in the [L3 review](docs/reviews/L3-human-review.md#human-acceptance-checklist). [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
 ## Identity foundations retained from accepted L2
 

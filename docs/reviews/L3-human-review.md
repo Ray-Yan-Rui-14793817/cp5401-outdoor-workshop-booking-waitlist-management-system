@@ -1,6 +1,6 @@
 # L3 Work and Human Review
 
-**Workshop creation, browsing, owned confirmed rosters and valid demo data. Human decision: HUMAN_REVIEW_PENDING. L4: NOT_STARTED.**
+**Workshop creation, browsing, owned confirmed rosters and valid demo data. Human decision: ACCEPT_LOOP, supplied by the author. Accepted candidate: 3476b10bc916d1fb31ae236f8fd9e65907958712. L4: NOT_STARTED and explicitly held.**
 
 ## Intake and scope
 
@@ -10,7 +10,9 @@ On 17 November 2026 (Asia/Singapore), the author requested this deep review of L
 
 The subsequent bounded creation-form request starts from L3 candidate 9d3d2bb8fc855ed0ef0d5a68d87bb4cfcaf61eab. It requires retained failed input, field-specific feedback, correction/resubmission, success-only form reset, unchanged rules/identity/business data and a pending human gate. The same nine files are changed; no delivery file, dependency or workflow is added. All 161 prior cases remain, with only five UI-summary expectations adapted to the new wording; 11 form cases are added. This is still L3 baseline development, not CR-01 or a release approval.
 
-The current form deep review starts from 0dd2bd5953ebf686fcb75eb86f8d1977540b6003 under the author's next focused instruction. Review retention, feedback/retry/reset, identity/data/counters, shared validation, simplicity, regression and single-job Actions; fix findings and update English files/ZIP/records while retaining the preview and pending gate. The same nine files change. Retain all 172 cases, strengthen nine error cases and add five cases. No ACCEPT_LOOP, PR, merge, release or L4 is supplied by this review request.
+The preceding form deep review started from 0dd2bd5953ebf686fcb75eb86f8d1977540b6003 under the author's focused instruction. It reviewed retention, feedback/retry/reset, identity/data/counters, shared validation, simplicity, regression and single-job Actions, corrected findings and updated the same nine files. It retained all 172 cases, strengthened nine error cases and added five cases. That review request itself supplied no acceptance, PR, merge, release or L4 instruction.
+
+On 17 November 2026, the author subsequently declared the updated L3 UI and H01-H07 complete, supplied ACCEPT_LOOP and three feedback items, requested GitHub/English acceptance updates and a personal local-only ZIP, and explicitly held L4. This acceptance update changes README.md, requirements.md, docs/demo-reuse.md, docs/ai-use.md, this record and .gitignore only. Source code, tests, rules, dependencies and Actions retain their accepted hashes. The [human record](#human-acceptance-checklist) supersedes earlier pending-stage wording without relabelling AI/CI executions as personal checks.
 
 | Surface | Implemented work |
 |---|---|
@@ -61,7 +63,7 @@ AI recommends HIGH review depth for this input/ownership boundary, without attri
 | Failure safety | Compare all original rows/counters after rejection or injected construction failure. Use returned state for sequential successes. No persistent/shared/concurrent transaction claim. |
 | Proportionate design | Keep one model construction and one shared field check on successful creation. Separate only creation-specific policy checks, reusing them in detailed feedback. A failed-input snapshot holds eight UI values and restores missing keys only. Keep outcome/state tuples, frozen rows/lists and native controls. Menu hiding, UI role checks and target-owner checks serve separate boundaries; copied lists preserve input snapshots. No new module, router, authentication, dependency, broad exception wrapper or generic validation/draft framework. |
 | Regression | Keep 87 parameter cases; explicitly preserve empty fixture assumptions and update message expectations to actual L3 content. Do not weaken denial/state assertions. |
-| Human oversight | All H01-H07 below remain unchecked. AI/CI execution does not supply approval, personal observations or risk rationale. Seek suitable advice before dependent work if understanding, policy or review competence is unresolved. |
+| Human oversight | The author declared updated UI/H01-H07 completion and ACCEPT_LOOP, with three observations recorded below. AI/CI execution remains separately labelled. No separate formal human risk category or specialist approval was supplied. L4 remains held. |
 
 ## Findings and dispositions
 
@@ -106,7 +108,7 @@ B03-B05 and B13 have implemented verification. B06 presentation/counts and B14's
 
 ## Verification results
 
-Executor: AI in the existing Python 3.12.14 environment; no dependency change or installation. Temporary reports/scripts/screenshots remain outside the delivery.
+The technical executions below are the preceding AI/CI review evidence, retained at their actual versions. This acceptance update changes records and ZIP-ignore handling; source/test/dependency/workflow hashes are unchanged. Personal UI/H01-H07 completion and feedback are recorded separately below. Temporary reports/scripts/screenshots stay outside delivery.
 
 | Check | Actual result |
 |---|---|
@@ -132,23 +134,42 @@ Hosted environment: Ubuntu 24.04/Python 3.12.14. Artifact quality-checks-4405637
 
 ## Human acceptance checklist
 
-All items are pending the author's own review. Predict expected outcomes before reading AI results; record what you actually inspect or execute.
+On 17 November 2026 (UTC+08:00), the author explicitly declared the updated L3 UI checks and H01-H07 human acceptance complete and supplied ACCEPT_LOOP. Checked items below transcribe that statement; they are not AI-generated personal executions. This is the confirmation date, not an invented timestamp for each check. Individual commands, environment logs and execution timestamps were not supplied.
 
-- [ ] **H01 Demo and browsing:** In a fresh L3 session, inspect four workshop examples, full dates/S/C/time zone, meeting/preparation details and confirmed/remaining counts. Explain open/full/locked/historical states and cancelled-row exclusion.
-- [ ] **H02 Valid/corrected creation:** Fill all fields and submit with a missing meeting point. Leave/reopen the form and confirm all rejected values return. Correct the location but enter capacity 31; confirm only the new error remains. Correct/resubmit and verify one new owned workshop/ID advance, success feedback and eight reset defaults. Leave/reopen again: old invalid data/errors must not return. Retain capacity 1/30 checks.
-- [ ] **H03 Invalid/time boundaries:** Check title/meeting point, end<=start, exactly 24h, cleared dates and capacities 0/31 receive specific inline messages while all values, records and counters remain. Inspect 24h+1 second and fresh late-submission tests. Explain why retained invalid capacity is useful feedback, the model/business rules remain unchanged, and missing-time injection is not a real-browser claim.
-- [ ] **H04 Roles and ownership:** Compare Rui Yan's workshop-1/3 targets with Alex's workshop-2/4 targets, confirmed names and selected counts. Switch identities and inspect selector reset. Review wrong-role/non-owner/unknown-target outcomes and forced foreign-target tests. Private-view denial must hide both roster and creation controls; a valid organiser's refused roster target must return no roster while their creation permission remains valid. Confirm unchanged state and distinguish selected-roster counts from the session-wide metric.
-- [ ] **H05 State and limits:** Navigate/refresh/switch identities without reseeding business data. Check a rejected submission through a participant/organiser round trip, then verify retry ownership uses the current organiser. Explain that only the last rejected values are saved, not later unsent edits or durable data. Booking/cancellation/waitlist actions remain later work.
-- [ ] **H06 AI and evidence:** Read the three-file diff, L3-F01-F13, L3-09/L3-10 mapping, 177-case results and fresh single-job CI. Explain why both faults passed the old suite, how exact errors/captured-time tests detect them, how the rejected snapshot is cleared, and why shared field checks reduced from two to one without bypassing model validation. Record actual human checks, edits/rejected suggestions and remaining concerns separately from AI/CI executions.
-- [ ] **H07 Decision:** Record reviewer/date/reviewed commit, actual risk classification/rationale, finding assessment and ACCEPT_LOOP or CHANGES_REQUIRED. Use SPECIALIST_ADVICE_REQUIRED if necessary. Keep L4 stopped until your acceptance and a subsequent instruction.
+English translation of the declaration: "I have completed the updated L3 UI checks and H01-H07 human acceptance. ACCEPT_LOOP. Update L3, GitHub, the personal local-only ZIP and AI/human acceptance records; do not enter L4 development yet." This is a translation, not a verbatim English quote. The accepted candidate is the preceding delivery, commit 3476b10bc916d1fb31ae236f8fd9e65907958712 on codex/l3-workshops, with executable code from a34de71c827799bb5adeff442cdb88de77851bfe. Its [run 44056843696](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44056843696) passed one job, all 18 steps and 177 tests. That existing automated evidence is separate from the author's personal UI checks.
 
-| Human field | Actual value |
+- [x] **H01 Demo and browsing:** In a fresh L3 session, inspect four workshop examples, full dates/S/C/time zone, meeting/preparation details and confirmed/remaining counts. Explain open/full/locked/historical states and cancelled-row exclusion.
+- [x] **H02 Valid/corrected creation:** Fill all fields and submit with a missing meeting point. Leave/reopen the form and confirm all rejected values return. Correct the location but enter capacity 31; confirm only the new error remains. Correct/resubmit and verify one new owned workshop/ID advance, success feedback and eight reset defaults. Leave/reopen again: old invalid data/errors must not return. Retain capacity 1/30 checks.
+- [x] **H03 Invalid/time boundaries:** Check title/meeting point, end<=start, exactly 24h, cleared dates and capacities 0/31 receive specific inline messages while all values, records and counters remain. Inspect 24h+1 second and fresh late-submission tests. Explain why retained invalid capacity is useful feedback, the model/business rules remain unchanged, and missing-time injection is not a real-browser claim.
+- [x] **H04 Roles and ownership:** Compare Rui Yan's workshop-1/3 targets with Alex's workshop-2/4 targets, confirmed names and selected counts. Switch identities and inspect selector reset. Review wrong-role/non-owner/unknown-target outcomes and forced foreign-target tests. Private-view denial must hide both roster and creation controls; a valid organiser's refused roster target must return no roster while their creation permission remains valid. Confirm unchanged state and distinguish selected-roster counts from the session-wide metric.
+- [x] **H05 State and limits:** Navigate/refresh/switch identities without reseeding business data. Check a rejected submission through a participant/organiser round trip, then verify retry ownership uses the current organiser. Explain that only the last rejected values are saved, not later unsent edits or durable data. Booking/cancellation/waitlist actions remain later work.
+- [x] **H06 AI and evidence:** Read the three-file diff, L3-F01-F13, L3-09/L3-10 mapping, 177-case results and fresh single-job CI. Explain why both faults passed the old suite, how exact errors/captured-time tests detect them, how the rejected snapshot is cleared, and why shared field checks reduced from two to one without bypassing model validation. Record actual human checks, edits/rejected suggestions and remaining concerns separately from AI/CI executions.
+- [x] **H07 Decision:** Record reviewer/date/reviewed commit, actual risk classification/rationale, finding assessment and ACCEPT_LOOP or CHANGES_REQUIRED. Use SPECIALIST_ADVICE_REQUIRED if necessary. Keep L4 stopped until your acceptance and a subsequent instruction.
+
+### Author feedback and dispositions
+
+The following is an English translation/summary of the three supplied observations. These are actual author comments, distinct from AI technical findings L3-F01-F13.
+
+| ID | Author feedback | Disposition and scope |
+|---|---|---|
+| HF-01 | A full workshop can still show Registration window open before its cutoff. The displayed counts communicate that all places are taken; the wording could be distinguished more clearly later. | ACCEPTED_FOR_L3. Record a future wording refinement; no wording implementation or capacity/deadline rule change is authorised by this acceptance update. |
+| HF-02 | Failed drafts can be restored across roles in the same fictional demonstration session, so the system must continue to use fictional data and must not receive real private information. | ACCEPTED_PROTOTYPE_LIMIT, conditional on fictional-data-only use. The snapshot is session UI state and provides no real-person authentication or role-isolated confidentiality. |
+| HF-03 | Ownership checks run in the business layer, beyond hidden menus; the project awaits later complete development. | L3 ownership-check foundation acknowledged. Preserve it when later booking/cancellation operations are authorised. Those operations remain deferred; L4 is NOT_STARTED. |
+
+| Current human record | Actual value |
 |---|---|
-| Reviewer/date/reviewed code | TO_BE_RECORDED by the author. |
-| Personally executed checks/observations | NOT_YET_RECORDED. |
-| Code understanding/independent outcomes | TO_BE_RECORDED by the author. |
-| Human edits/rejected suggestions/finding assessment | NOT_YET_RECORDED. |
-| Risk classification/rationale/residual limits | TO_BE_RECORDED by the author; AI HIGH review-depth recommendation is separate. |
-| Decision | HUMAN_REVIEW_PENDING. |
+| Reviewer/confirmation date | Project author, identified by the user role in this conversation. Confirmed 17 November 2026 (UTC+08:00). Individual execution dates/times were not supplied. |
+| Reviewed candidate | 3476b10bc916d1fb31ae236f8fd9e65907958712, identified from the immediately preceding L3 delivery. |
+| Personal checks | Updated L3 UI checks and H01-H07 completion explicitly declared. The three observations above are the supplied feedback; no individual command/environment log was provided. |
+| Code understanding/independent expected outcomes | H01-H07 completion declared; HF-03 confirms awareness of business-layer ownership enforcement. No additional step-by-step explanation was supplied. |
+| AI/CI versus personal execution | The linked 177-test CI result is existing automated evidence. It is not relabelled as a personal pytest execution. Any CI on this acceptance-record update is separately automated. |
+| Human edits/rejected suggestions/finding assessment | No additional human code edits or per-finding assessments were supplied. HF-01 requests a possible later wording refinement; HF-02 retains a usage constraint; HF-03 retains the architectural control and development boundary. |
+| Risk judgement/residual limits | ACCEPT_LOOP and the three residual-limit observations were explicitly supplied. A separate formal risk category was not. The earlier AI HIGH review-depth recommendation remains AI triage; no specialist approval is inferred. |
+| Current decision | ACCEPT_LOOP, supplied by the author and transcribed by AI. |
+| Next-loop boundary | L4 NOT_STARTED and explicitly held until a later author instruction. |
 
-L3 stops at this human loop gate. L4 is NOT_STARTED. ACCEPT_LOOP, READY_TO_MERGE and ACCEPT_RELEASE remain separate under the [workflow](../../README.md#development-workflow). No personal checks, approval or final user validation are inferred from AI/CI results.
+### Personal archive handling
+
+The author requires the delivery ZIP for personal local use only. All five current repository branch trees and the release list were checked: no tracked ZIP or uploaded release asset existed to delete. Add a case-insensitive ZIP-extension rule to .gitignore and keep L3_develop.zip outside the source delivery/repository. The local archive contains the same 20 source files at its root; it is not committed or uploaded as a release asset. Existing Actions quality-report handling remains unchanged.
+
+L3's human loop gate is SATISFIED by the explicit ACCEPT_LOOP. This records-and-ignore update changes no application code, tests, business rules, dependencies, tool configuration or workflow, and leaves the preview running. L3 UI acceptance and the stated feedback do not complete full VAL-01/02/03 or close R-08. L4 remains NOT_STARTED under the explicit hold. READY_TO_MERGE and ACCEPT_RELEASE remain separate under the [development workflow](../../README.md#development-workflow); no PR, main merge or release follows from this acceptance.
