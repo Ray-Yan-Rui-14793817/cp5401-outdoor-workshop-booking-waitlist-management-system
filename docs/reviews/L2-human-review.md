@@ -69,13 +69,17 @@ Executor: AI, using the existing Python 3.12.14 environment. No additional appli
 | Check | Observed result |
 |---|---|
 | Local suite | 71/71 passed. booking.py: 79/79 statements and 20/20 branches covered. Coverage describes current foundations only. |
-| Static/security | Ruff clean; formatting corrected and checked; pip check clean; Bandit reports zero findings/errors. Hosted lock audits remain pending. |
+| Static/security | Ruff clean; formatting corrected and checked; pip check clean; Bandit reports zero findings/errors. Hosted strict audits found no known vulnerabilities and reconciled every locked name/version: 34 runtime and 71 development packages, with no omissions. This is a point-in-time result. |
 | Controlled faults | Role-claim fault: 2 failed/1 passed. Owner fault: 3 failed/6 passed. Both focused genuine-code groups pass within the complete suite. |
 | Browser desktop | PASS at http://127.0.0.1:8512, headless Chrome/Playwright 1.62.1, 1280x900. Correct URL/title, nonblank page, no error overlay, all four role/view paths, clear and refresh verified. No console/page errors. The temporary QA server is stopped; start the app as described in README for human review. |
 | Browser route | Browser plugin not available. Used the existing bundled Playwright and Chrome; no browser dependency was added to the project. Temporary scripts, DOM snapshots and screenshots are outside the repository. |
 | Mobile smoke | PASS at 390x844 after the sidebar collapse completed: main content renders without horizontal page overflow. This is not full mobile or cross-browser acceptance. |
-| Hosted CI | PENDING on codex/l2-identities. Workflow remains byte-identical to accepted L1: one quality-checks job, hash installs, isolated runtime, static/security/audits, tests and reports. |
-| Preservation | PASS: L0/L1/original working-copy hashes unchanged; all 42 L1 test functions/parameters retained; accepted FR/BR/QR/risk bodies, historical decisions, four dependency files and workflow unchanged. English documents, local links and seven pending L2 checks verified. |
+| Hosted CI | PASS on codex/l2-identities: one quality-checks job. All configured steps succeeded, with no skipped checks: runtime-only install/imports, development install, Ruff/format, pip check, Bandit, both audits/reconciliation, 71 tests and report upload. The workflow is byte-identical to accepted L1. |
+| Preservation | PASS: L0/L1/original working-copy hashes unchanged; all 16 original L1 test functions and their parameters retained (42 cases); accepted FR/BR/QR/risk bodies, historical decisions, four dependency files and workflow unchanged. English documents, local links and seven pending L2 checks verified. |
+
+Hosted executable snapshot: [08dade1268bf9545b9910549e003c16335b0c3c8](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/08dade1268bf9545b9910549e003c16335b0c3c8), [run 44003872734](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44003872734), job 133774319029, Ubuntu 24.04/Python 3.12.14. Logs confirm 71 passed, zero skipped and complete audits. Artifact quality-checks-44003872734-1 expires 1 December 2026; preserve selected evidence before expiry. The documentation-only follow-up retains the executable hashes below; inspect the latest branch run when accepting.
+
+Reproduction: run `python -m pytest test_booking.py` in the project environment, with the Ruff/Bandit/audit commands in quality-checks.yml. Private browser verification used page.goto, the fixed combobox options, visible View labels, clear/Refresh, DOM assertions, console events and screenshots. Mobile screenshots wait for the sidebar transition to complete. Browser evidence remains outside the GitHub source tree.
 
 Executable snapshot (SHA-256):
 
