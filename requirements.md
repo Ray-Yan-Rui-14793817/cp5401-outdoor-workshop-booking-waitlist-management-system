@@ -1,8 +1,8 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. L1 and earlier L2 foundations accepted on 17 November 2026 (Asia/Singapore). Updated L2 navigation/deep-review revision: ACCEPT_LOOP, 17 November 2026 (Asia/Singapore); UI/H01-H07 completion declared by the author. L3: NOT_STARTED, held at the author's request. Requirement acceptance targets remain unchanged; L2 implements only the stated subset below. [L2 review](docs/reviews/L2-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3 remains the accepted design. L1/L2 are accepted; L3 starts from GitHub e52dd74816fd89a0fad22e104caa68900d032da0 under the author's new instruction. L3 workshops/rosters: HUMAN_REVIEW_PENDING. L4: NOT_STARTED. Accepted FR/BR/QR/risk targets remain unchanged. [L3 review](docs/reviews/L3-human-review.md) | [Rules](#business-rules) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
 
-## L2 implementation scope
+## Identity foundations retained from accepted L2
 
 The author's L2 instruction fixes the demonstration identities below. Stable IDs and their roles are retained from L1; display names are updated. No account editor or real login is introduced.
 
@@ -15,7 +15,7 @@ The author's L2 instruction fixes the demonstration identities below. Stable IDs
 
 resolve_actor maps a selected ID to the canonical session DemoUser, or None. check_permission returns INVALID_ACTOR for an absent/unknown actor or inconsistent role claim; FORBIDDEN for a valid actor with the wrong operation role or optional owner; otherwise OK. Both functions leave all input state unchanged. The UI displays an allowed restricted preview only for explicit OK; an absent or unrecognised permission result denies the view without changing business state. Names are display labels, not permission keys.
 
-The role requested by an operation is an application constant, not a user role editor. Future operations must obtain owner_id from the actual looked-up target record; the helper alone does not establish target existence or implement cancellation/roster access. B01/B02 receive L2 identity/preview checks. B10/B12/B13 and complete QR-03 business enforcement remain later work. Switching or clearing the selector never reseeds business state. Selection is freely switchable and does not authenticate a real person.
+The role requested by an operation is an application constant, not a user role editor. The helper alone does not establish target existence. L3 now binds roster ownership to the actual looked-up target and implements B13; B10/B12 and registration-operation enforcement remain later work. B01/B02 retain their identity checks. Switching or clearing the selector never reseeds business state. Selection is freely switchable and does not authenticate a real person.
 
 The author's navigation update combines menu visibility with independent access rejection:
 
@@ -26,6 +26,18 @@ The author's navigation update combines menu visibility with independent access 
 | ORGANISER | Workshops, Organiser |
 
 Before rendering the menu, reset a disallowed/unknown saved view to Workshops; retain a permitted current view. Independently recheck a private view's role through check_permission even if menu selection is bypassed. Unknown returned views/results must not display private preview content. These UI refinements support FR-01, BR-01 and QR-03/QR-04; they do not change the accepted business rules or claim real authentication.
+
+## L3 implementation scope
+
+L3 implements workshop creation, public browsing and selected-organiser access to owned workshop lists and confirmed rosters. It implements FR-06, the workshop-information portion of FR-02 and the baseline confirmed-roster portion of FR-07. It retains the FR-01 identity/menu foundation. Booking, own registration history, cancellation and waitlist operations remain later work.
+
+- create_workshop assigns the ID and current actor's ownership. It returns (outcome, candidate_state). Only an organiser may create; required text, aware start/end/time, integer capacity 1-30 and S-t>24 elapsed hours are enforced in booking.py. Exactly 24 hours is INVALID_INPUT. Rejection/exception preserves every input record/counter. Success copies the mutable lists and advances only the workshop ID counter.
+- The UI reads server_now again at submission, combines intended dates/times in Asia/Singapore and adopts only an OK candidate. Empty date/time components become invalid input instead of a conversion exception. The trusted clock has no user-editable control. Select the intended demo organiser before filling the form; unsubmitted drafts are not promised across identity/navigation reruns.
+- browse_workshops returns public Workshop rows in start/ID order. The UI shows full start/end/C with seconds, time zone, meeting point, preparation, capacity and confirmed/remaining counts. Only CONFIRMED records consume places. Locked/started labels describe the accepted policy; booking and confirmed-cancellation enforcement remain later operations.
+- list_owned_workshops filters by the valid selected organiser ID. get_workshop_roster looks up the actual target and passes its stored owner to check_permission before returning confirmed records. Wrong-role/non-owner access returns no records; a valid organiser's unknown target returns UNKNOWN_WORKSHOP. Switching organisers resets an obsolete roster selection to an owned target. These are fictional selected-identity checks, not real authentication.
+- create_demo_state remains an independent empty factory. The web UI calls create_demo_data once on a new session: four relative workshops, two organisers, three confirmed records and one cancelled history record. Two open workshops start at least 48 hours ahead, including a full capacity-one example; one is in the final 24 hours and one is historical. The factory reconstructs legal creations seven days earlier through create_workshop, and registrations before their cutoffs. It does not permit late user creation or implement booking actions. Reruns never regenerate the fixtures.
+
+Implemented automated scenarios: B03-B05 and B13; retained identity checks B01/B02; B06 presentation/counts and B14's unknown-workshop roster path are partial. B06's closed-booking behaviour, other registration operations, complete I06/I09/I10 lifecycle checks and all W scenarios remain deferred. AI testing/UI smoke checks do not complete VAL-01/02/03 or R-08 suitability validation.
 
 ## Problem and purpose
 
@@ -223,7 +235,7 @@ Selection is not identity security. Early allocation without notification does n
 
 ## Risk controls
 
-The following is the accepted risk-control plan. Full business-control execution remains pending; foundation evidence and the current human decision are recorded in the [L2 review](docs/reviews/L2-human-review.md). The project author owns the risks. Initial ratings are qualitative planning judgements; R-08 remains VALIDATION_PENDING.
+The following is the accepted risk-control plan. Full business-control execution remains pending; implemented scope, evidence and the current human gate are recorded in the [L3 review](docs/reviews/L3-human-review.md). The project author owns the risks. Initial ratings are qualitative planning judgements; R-08 remains VALIDATION_PENDING.
 
 ### Controls and planned acceptance
 

@@ -1,4 +1,4 @@
-"""Retained L1 regressions and L2 identity/permission foundation checks."""
+"""L1/L2 regressions and L3 workshop, roster and demo-data checks."""
 
 from copy import deepcopy
 from dataclasses import replace
@@ -18,17 +18,30 @@ from booking import (
     RegistrationStatus,
     Role,
     Workshop,
+    browse_workshops,
     check_permission,
+    confirmed_count,
+    create_demo_data,
     create_demo_state,
+    create_workshop,
+    get_workshop_roster,
+    list_owned_workshops,
     resolve_actor,
 )
 
 APP_PATH = Path(__file__).with_name("app.py")
 PREVIEW_MESSAGES = {
-    "Workshops": "Workshop browsing is not yet available in this preview.",
+    "Workshops": "Browse workshops below. Times are shown in Asia/Singapore.",
     "My Bookings": "Booking actions and personal history will be added in later loops.",
-    "Organiser": "Workshop creation and organiser rosters are not yet available.",
+    "Organiser": "Create workshops and view confirmed rosters for your own workshops.",
 }
+NOW = datetime(2026, 12, 1, 9, tzinfo=WORKSHOP_TIMEZONE)
+
+
+def app_with_state(state: DemoState) -> AppTest:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30)
+    app.session_state.demo_state = state
+    return app.run()
 
 
 @pytest.fixture
@@ -214,7 +227,7 @@ def test_registration_rejects_update_before_creation() -> None:
 
 @pytest.mark.parametrize("view", ["Workshops", "My Bookings", "Organiser"])
 def test_app_views_start_without_exception(view: str) -> None:
-    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    app = app_with_state(create_demo_state())
     if view != "Workshops":
         user_id = "participant-1" if view == "My Bookings" else "organiser-1"
         app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
@@ -226,7 +239,7 @@ def test_app_views_start_without_exception(view: str) -> None:
 
 
 def test_app_refresh_and_navigation_preserve_session_state(workshop: Workshop) -> None:
-    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    app = app_with_state(create_demo_state())
     state = app.session_state.demo_state
     created = datetime(2026, 12, 1, tzinfo=UTC)
     state.workshops.append(workshop)
@@ -265,8 +278,8 @@ def test_app_refresh_and_navigation_preserve_session_state(workshop: Workshop) -
 
 
 def test_independent_app_sessions_do_not_share_state(workshop: Workshop) -> None:
-    first = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
-    second = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    first = app_with_state(create_demo_state())
+    second = app_with_state(create_demo_state())
     first.session_state.demo_state.workshops.append(workshop)
     first.session_state.demo_state.next_workshop_id = 2
     first.run()
@@ -504,8 +517,7 @@ def test_permission_failure_does_not_render_allowed_preview_or_change_state(
     outcome: str | None,
 ) -> None:
     monkeypatch.setattr("booking.check_permission", lambda *args, **kwargs: outcome)
-    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
-    app.session_state.demo_state = populated_state
+    app = app_with_state(populated_state)
     expected = deepcopy(populated_state)
     app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
     app.sidebar.radio(key="current_view").set_value(view).run()
@@ -517,8 +529,8 @@ def test_permission_failure_does_not_render_allowed_preview_or_change_state(
     assert all(
         item.value
         not in {
-            "Booking actions and personal history will be added in later loops.",
-            "Workshop creation and organiser rosters are not yet available.",
+            PREVIEW_MESSAGES["My Bookings"],
+            PREVIEW_MESSAGES["Organiser"],
         }
         for item in app.info
     )
@@ -567,13 +579,530 @@ def test_bypassing_hidden_menu_still_rejects_access_without_mutation(
     assert all(
         item.value
         not in {
-            "Booking actions and personal history will be added in later loops.",
-            "Workshop creation and organiser rosters are not yet available.",
+            PREVIEW_MESSAGES["My Bookings"],
+            PREVIEW_MESSAGES["Organiser"],
         }
         for item in app.info
     )
     assert app.session_state.demo_state is populated_state
     assert app.session_state.demo_state == expected
+
+
+@pytest.fixture
+def creation_input() -> dict:
+    return {
+        "title": "  Trail Planning  ",
+        "starts_at": NOW + timedelta(hours=48),
+        "ends_at": NOW + timedelta(hours=51),
+        "location": "  North Trail Meeting Point  ",
+        "capacity": 10,
+        "preparation_notes": "  Bring water.  ",
+        "now": NOW,
+    }
+
+
+@pytest.fixture
+def demo_data() -> DemoState:
+    return create_demo_data(NOW)
+
+
+@pytest.mark.parametrize("owner_id", ["organiser-1", "organiser-2"])
+@pytest.mark.parametrize("capacity", [1, 30])
+def test_create_assigns_id_owner_and_normalised_fields_without_input_mutation(
+    populated_state: DemoState, creation_input: dict, owner_id: str, capacity: int
+) -> None:
+    expected = deepcopy(populated_state)
+    outcome, candidate = create_workshop(
+        populated_state,
+        resolve_actor(populated_state, owner_id),
+        **{**creation_input, "capacity": capacity},
+    )
+    assert outcome == "OK"
+    assert candidate is not populated_state
+    assert populated_state == expected
+    assert candidate.workshops[:-1] == expected.workshops
+    created = candidate.workshops[-1]
+    assert (created.workshop_id, created.owner_id, created.capacity) == (
+        "workshop-2",
+        owner_id,
+        capacity,
+    )
+    assert (created.title, created.location, created.preparation_notes) == (
+        "Trail Planning",
+        "North Trail Meeting Point",
+        "Bring water.",
+    )
+    assert candidate.next_workshop_id == 3
+    assert candidate.next_registration_id == expected.next_registration_id
+    assert candidate.registrations == expected.registrations
+    assert candidate.users == expected.users
+    assert candidate.users is not populated_state.users
+    assert candidate.workshops is not populated_state.workshops
+    assert candidate.registrations is not populated_state.registrations
+
+
+@pytest.mark.parametrize(
+    ("lead", "expected_outcome"),
+    [
+        (timedelta(hours=24, seconds=1), "OK"),
+        (timedelta(hours=24), "INVALID_INPUT"),
+        (timedelta(hours=24) - timedelta(seconds=1), "INVALID_INPUT"),
+        (timedelta(seconds=-1), "INVALID_INPUT"),
+    ],
+)
+def test_creation_requires_strictly_more_than_twenty_four_hours(
+    populated_state: DemoState, creation_input: dict, lead: timedelta, expected_outcome: str
+) -> None:
+    before = deepcopy(populated_state)
+    start = NOW + lead
+    outcome, candidate = create_workshop(
+        populated_state,
+        resolve_actor(populated_state, "organiser-1"),
+        **{**creation_input, "starts_at": start, "ends_at": start + timedelta(hours=1)},
+    )
+    assert outcome == expected_outcome
+    assert populated_state == before
+    if outcome == "OK":
+        assert candidate.next_workshop_id == before.next_workshop_id + 1
+    else:
+        assert candidate is populated_state
+        assert candidate == before
+
+
+@pytest.mark.parametrize("capacity", [0, -1, 31, 1.5, True, False, "10", None])
+def test_creation_rejects_invalid_capacity_without_allocating_an_id(
+    populated_state: DemoState, creation_input: dict, capacity: object
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, candidate = create_workshop(
+        populated_state,
+        resolve_actor(populated_state, "organiser-1"),
+        **{**creation_input, "capacity": capacity},
+    )
+    assert outcome == "INVALID_INPUT"
+    assert candidate is populated_state
+    assert populated_state == before
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("title", ""),
+        ("title", "  "),
+        ("title", None),
+        ("location", ""),
+        ("location", "  "),
+        ("location", None),
+        ("preparation_notes", None),
+        ("starts_at", None),
+        ("starts_at", datetime(2026, 12, 3, 9)),
+        ("ends_at", None),
+        ("ends_at", datetime(2026, 12, 3, 12)),
+        ("now", None),
+        ("now", datetime(2026, 12, 1, 9)),
+        ("ends_at", NOW + timedelta(hours=48)),
+        ("ends_at", NOW + timedelta(hours=47)),
+    ],
+)
+def test_creation_rejects_invalid_fields_and_times_without_mutation(
+    populated_state: DemoState, creation_input: dict, field: str, value: object
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, candidate = create_workshop(
+        populated_state,
+        resolve_actor(populated_state, "organiser-1"),
+        **{**creation_input, field: value},
+    )
+    assert outcome == "INVALID_INPUT"
+    assert candidate is populated_state
+    assert populated_state == before
+
+
+@pytest.mark.parametrize(
+    ("actor", "expected_outcome"),
+    [
+        (None, "INVALID_ACTOR"),
+        (DemoUser("participant-1", "Xingjian", Role.PARTICIPANT), "FORBIDDEN"),
+        (DemoUser("participant-1", "Xingjian", Role.ORGANISER), "INVALID_ACTOR"),
+        (DemoUser("missing-user", "Unknown", Role.ORGANISER), "INVALID_ACTOR"),
+    ],
+)
+@pytest.mark.parametrize("capacity", [10, 0])
+def test_creation_enforces_actor_and_role_before_invalid_input(
+    populated_state: DemoState,
+    creation_input: dict,
+    actor: DemoUser | None,
+    expected_outcome: str,
+    capacity: int,
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, candidate = create_workshop(
+        populated_state, actor, **{**creation_input, "capacity": capacity}
+    )
+    assert outcome == expected_outcome
+    assert candidate is populated_state
+    assert populated_state == before
+
+
+def test_sequential_creation_uses_returned_state_and_preserves_older_snapshots(
+    populated_state: DemoState, creation_input: dict
+) -> None:
+    actor = resolve_actor(populated_state, "organiser-1")
+    creation_input.pop("preparation_notes")
+    original = deepcopy(populated_state)
+    first_outcome, first = create_workshop(populated_state, actor, **creation_input)
+    first_snapshot = deepcopy(first)
+    second_outcome, second = create_workshop(first, actor, **creation_input)
+    assert first_outcome == second_outcome == "OK"
+    assert [w.workshop_id for w in second.workshops] == ["workshop-1", "workshop-2", "workshop-3"]
+    assert second.next_workshop_id == 4
+    assert second.workshops[-1].preparation_notes == ""
+    assert first == first_snapshot
+    assert populated_state == original
+
+
+def test_creation_exception_preserves_all_input_records_and_counters(
+    populated_state: DemoState, creation_input: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    before = deepcopy(populated_state)
+
+    def fail_construction(*args, **kwargs):
+        raise RuntimeError("Injected construction failure")
+
+    monkeypatch.setattr("booking.Workshop", fail_construction)
+    with pytest.raises(RuntimeError, match="Injected construction failure"):
+        create_workshop(
+            populated_state, resolve_actor(populated_state, "organiser-1"), **creation_input
+        )
+    assert populated_state == before
+
+
+def test_public_browse_orders_instants_and_counts_only_matching_confirmed_records(
+    populated_state: DemoState, workshop: Workshop
+) -> None:
+    other = replace(
+        workshop, workshop_id="workshop-2", starts_at=workshop.starts_at - timedelta(days=1)
+    )
+    populated_state.workshops.append(other)
+    populated_state.registrations.append(
+        Registration(
+            "registration-3", "workshop-2", "participant-2", RegistrationStatus.CONFIRMED, NOW, NOW
+        )
+    )
+    before = deepcopy(populated_state)
+    assert [w.workshop_id for w in browse_workshops(populated_state)] == [
+        "workshop-2",
+        "workshop-1",
+    ]
+    assert confirmed_count(populated_state, "workshop-1") == 1
+    assert confirmed_count(populated_state, "workshop-2") == 1
+    assert confirmed_count(populated_state, "missing") == 0
+    assert populated_state == before
+
+
+@pytest.mark.parametrize(
+    ("user_id", "expected_outcome", "expected_ids"),
+    [
+        ("organiser-1", "OK", {"workshop-1", "workshop-3"}),
+        ("organiser-2", "OK", {"workshop-2", "workshop-4"}),
+        ("participant-1", "FORBIDDEN", set()),
+        (None, "INVALID_ACTOR", set()),
+    ],
+)
+def test_owned_workshop_list_enforces_role_and_filters_by_id_without_mutation(
+    demo_data: DemoState, user_id: str | None, expected_outcome: str, expected_ids: set[str]
+) -> None:
+    before = deepcopy(demo_data)
+    outcome, workshops = list_owned_workshops(demo_data, resolve_actor(demo_data, user_id))
+    assert outcome == expected_outcome
+    assert {w.workshop_id for w in workshops} == expected_ids
+    assert demo_data == before
+
+
+@pytest.mark.parametrize(
+    ("user_id", "target", "expected_outcome", "expected_ids"),
+    [
+        ("organiser-1", "workshop-1", "OK", ["registration-1"]),
+        ("organiser-1", "workshop-3", "OK", ["registration-3"]),
+        ("organiser-2", "workshop-2", "OK", ["registration-2"]),
+        ("organiser-2", "workshop-4", "OK", []),
+        ("organiser-1", "workshop-2", "FORBIDDEN", []),
+        ("organiser-2", "workshop-1", "FORBIDDEN", []),
+        ("participant-1", "workshop-1", "FORBIDDEN", []),
+        (None, "workshop-1", "INVALID_ACTOR", []),
+        ("organiser-1", "missing-workshop", "UNKNOWN_WORKSHOP", []),
+        ("participant-1", "missing-workshop", "FORBIDDEN", []),
+    ],
+)
+def test_roster_checks_actual_target_owner_and_returns_no_records_on_denial(
+    demo_data: DemoState,
+    user_id: str | None,
+    target: str,
+    expected_outcome: str,
+    expected_ids: list[str],
+) -> None:
+    before = deepcopy(demo_data)
+    outcome, records = get_workshop_roster(demo_data, resolve_actor(demo_data, user_id), target)
+    assert outcome == expected_outcome
+    assert [row.registration_id for row in records] == expected_ids
+    assert all(row.status == RegistrationStatus.CONFIRMED for row in records)
+    assert demo_data == before
+
+
+def test_roster_does_not_trust_a_previous_owner_selection(demo_data: DemoState) -> None:
+    demo_data.workshops[0] = replace(demo_data.workshops[0], owner_id="organiser-2")
+    before = deepcopy(demo_data)
+    outcome, records = get_workshop_roster(
+        demo_data, resolve_actor(demo_data, "organiser-1"), "workshop-1"
+    )
+    assert outcome == "FORBIDDEN"
+    assert records == ()
+    assert demo_data == before
+
+
+@pytest.mark.parametrize(
+    ("now", "start", "expected_outcome"),
+    [
+        (
+            datetime(2026, 10, 31, 9, tzinfo=ZoneInfo("America/New_York")),
+            datetime(2026, 11, 1, 9, tzinfo=ZoneInfo("America/New_York")),
+            "OK",
+        ),
+        (
+            datetime(2026, 3, 7, 9, tzinfo=ZoneInfo("America/New_York")),
+            datetime(2026, 3, 8, 9, tzinfo=ZoneInfo("America/New_York")),
+            "INVALID_INPUT",
+        ),
+        (
+            datetime(2026, 12, 1, 1, tzinfo=UTC),
+            datetime(2026, 12, 2, 9, tzinfo=WORKSHOP_TIMEZONE),
+            "INVALID_INPUT",
+        ),
+    ],
+)
+def test_creation_compares_elapsed_hours_between_aware_instants(
+    populated_state: DemoState,
+    creation_input: dict,
+    now: datetime,
+    start: datetime,
+    expected_outcome: str,
+) -> None:
+    before = deepcopy(populated_state)
+    outcome, candidate = create_workshop(
+        populated_state,
+        resolve_actor(populated_state, "organiser-1"),
+        **{**creation_input, "now": now, "starts_at": start, "ends_at": start + timedelta(hours=1)},
+    )
+    assert outcome == expected_outcome
+    assert populated_state == before
+    if outcome != "OK":
+        assert candidate is populated_state
+
+
+def test_demo_data_has_valid_relative_history_capacity_and_independent_collections(
+    demo_data: DemoState,
+) -> None:
+    second = create_demo_data(NOW)
+    assert (len(demo_data.workshops), len(demo_data.registrations)) == (4, 4)
+    assert demo_data.next_workshop_id == demo_data.next_registration_id == 5
+    assert demo_data.workshops[0].starts_at - NOW >= timedelta(hours=48)
+    assert demo_data.workshops[1].starts_at - NOW >= timedelta(hours=48)
+    assert demo_data.workshops[2].registration_cutoff <= NOW < demo_data.workshops[2].starts_at
+    assert demo_data.workshops[3].ends_at < NOW
+    for workshop in demo_data.workshops:
+        assert 0 <= confirmed_count(demo_data, workshop.workshop_id) <= workshop.capacity
+        assert workshop.starts_at - (NOW - timedelta(days=7)) > timedelta(hours=24)
+        for row in demo_data.registrations:
+            if row.workshop_id == workshop.workshop_id:
+                assert row.created_at <= row.updated_at < workshop.registration_cutoff
+                assert row.updated_at < NOW
+    assert confirmed_count(demo_data, "workshop-2") == 1
+    assert demo_data.users is not second.users
+    assert demo_data.workshops is not second.workshops
+    assert demo_data.registrations is not second.registrations
+
+
+def fill_creation_form(app: AppTest, start: datetime) -> None:
+    local = start.astimezone(WORKSHOP_TIMEZONE)
+    end = local + timedelta(hours=2)
+    app.text_input(key="new_title").set_value("Human Check Workshop")
+    app.text_input(key="new_location").set_value("East Trail Entrance")
+    app.date_input(key="new_start_date").set_value(local.date())
+    app.time_input(key="new_start_time").set_value(local.time())
+    app.date_input(key="new_end_date").set_value(end.date())
+    app.time_input(key="new_end_time").set_value(end.time())
+    app.number_input(key="new_capacity").set_value(1)
+    app.text_area(key="new_notes").set_value("Bring water and closed-toe shoes.")
+
+
+def test_app_seeds_once_and_refresh_uses_current_time_without_reseeding(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clock = {"now": NOW}
+    monkeypatch.setattr("booking.server_now", lambda: clock["now"])
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    state = app.session_state.demo_state
+    before = deepcopy(state)
+    assert [m.value for m in app.metric] == ["4", "3"]
+    assert any("Registration window open" in row.value for row in app.caption)
+    clock["now"] = NOW + timedelta(days=10)
+    app.sidebar.button(key="refresh_view").click().run()
+    assert not app.exception
+    assert app.session_state.demo_state is state
+    assert state == before
+    assert not any("Registration window open" in row.value for row in app.caption)
+
+
+def test_ui_creates_for_current_identity_then_browse_and_refresh_preserve_it(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(create_demo_state())
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.button(key="create_workshop").click().run()
+    assert not app.exception
+    assert not app.error
+    state = app.session_state.demo_state
+    assert len(state.workshops) == 1
+    assert state.workshops[0].owner_id == "organiser-2"
+    assert state.workshops[0].title == "Human Check Workshop"
+    assert state.workshops[0].capacity == 1
+    assert app.metric[0].value == "1"
+    assert any("Created workshop-1" in row.value for row in app.success)
+    before = deepcopy(state)
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    app.sidebar.button(key="refresh_view").click().run()
+    assert app.session_state.demo_state is state
+    assert state == before
+    assert any("Human Check Workshop" in row.value for row in app.markdown)
+
+
+def test_creation_form_checks_fresh_submission_time_and_preserves_rejection_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clock = {"now": NOW}
+    monkeypatch.setattr("booking.server_now", lambda: clock["now"])
+    app = app_with_state(create_demo_state())
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=25))
+    state = app.session_state.demo_state
+    before = deepcopy(state)
+    clock["now"] = NOW + timedelta(hours=2)
+    app.button(key="create_workshop").click().run()
+    assert not app.exception
+    assert any("INVALID_INPUT" in row.value for row in app.error)
+    assert not app.success
+    assert app.session_state.demo_state is state
+    assert state == before
+
+
+def test_organiser_identity_switch_resets_roster_to_owned_target(demo_data: DemoState) -> None:
+    app = app_with_state(demo_data)
+    before = deepcopy(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.selectbox(key="roster_workshop_id").set_value("workshop-1").run()
+    assert app.dataframe[0].value["Participant"].tolist() == ["Xingjian"]
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    assert not app.exception
+    assert set(app.selectbox(key="roster_workshop_id").options) == {
+        "Outdoor Photography Walk (workshop-2)",
+        "Past Nature Walk (workshop-4)",
+    }
+    app.selectbox(key="roster_workshop_id").set_value("workshop-2").run()
+    assert app.dataframe[0].value["Participant"].tolist() == ["Sam"]
+    assert demo_data == before
+
+
+def test_forced_foreign_roster_selection_is_denied_without_disclosure(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    real_selectbox = st.selectbox
+
+    def force_foreign_target(*args, **kwargs):
+        selected = real_selectbox(*args, **kwargs)
+        return "workshop-2" if kwargs.get("key") == "roster_workshop_id" else selected
+
+    monkeypatch.setattr(st, "selectbox", force_foreign_target)
+    app = app_with_state(demo_data)
+    before = deepcopy(demo_data)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    assert not app.exception
+    assert any("FORBIDDEN" in row.value for row in app.error)
+    assert not app.dataframe
+    assert demo_data == before
+
+
+def test_public_view_shows_full_details_counts_and_closed_policy(
+    demo_data: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(demo_data)
+    rendered = "\n".join(item.value for item in app.markdown)
+    for expected in [
+        "Outdoor Navigation Basics",
+        "North Trail Meeting Point",
+        "2026-12-04 09:00:00 (Asia/Singapore)",
+        "2026-12-03 09:00:00 (Asia/Singapore)",
+        "Registration cutoff:",
+        "Capacity: 10 | Confirmed: 1 | Remaining: 9",
+        "Capacity: 1 | Confirmed: 1 | Remaining: 0",
+        "Bring water",
+    ]:
+        assert expected in rendered
+    assert any("Confirmed roster locked" in item.value for item in app.caption)
+    assert any("Started - historical" in item.value for item in app.caption)
+    assert not app.dataframe
+    assert not app.exception
+
+
+@pytest.mark.parametrize("key", ["new_start_date", "new_end_date"])
+def test_cleared_creation_date_is_rejected_without_crashing(
+    monkeypatch: pytest.MonkeyPatch, key: str
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(create_demo_state())
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.date_input(key=key).set_value(None)
+    state = app.session_state.demo_state
+    before = deepcopy(state)
+    app.button(key="create_workshop").click().run()
+    assert not app.exception
+    assert any("INVALID_INPUT" in item.value for item in app.error)
+    assert app.session_state.demo_state is state
+    assert state == before
+
+
+@pytest.mark.parametrize("key", ["new_start_time", "new_end_time"])
+def test_missing_time_at_ui_boundary_is_rejected_without_mutation(
+    monkeypatch: pytest.MonkeyPatch, key: str
+) -> None:
+    monkeypatch.setattr("booking.server_now", lambda: NOW)
+    app = app_with_state(create_demo_state())
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    real_time_input = st.time_input
+
+    def missing_time(*args, **kwargs):
+        value = real_time_input(*args, **kwargs)
+        return None if kwargs.get("key") == key else value
+
+    monkeypatch.setattr(st, "time_input", missing_time)
+    state = app.session_state.demo_state
+    before = deepcopy(state)
+    app.button(key="create_workshop").click().run()
+    assert not app.exception
+    assert any("INVALID_INPUT" in item.value for item in app.error)
+    assert app.session_state.demo_state is state
+    assert state == before
 
 
 @pytest.mark.parametrize(
