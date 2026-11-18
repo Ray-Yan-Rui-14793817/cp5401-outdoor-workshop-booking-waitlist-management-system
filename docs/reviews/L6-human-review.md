@@ -27,8 +27,8 @@ app.py retains UI/session responsibilities and adds a bounded read-only deployme
 | L6-F07 (initial) | Full-plus-duplicate tests refusal precedence, not isolated B09. Exact-C disabled controls are not stale-submit I10. Correct mapping; keep spare-capacity duplicate and fresh-time tests unchanged. |
 | L6-F08 | A private Create counter mutation before final DemoState construction, undone on ordinary success, passes all 308 intake cases (53.97s). Add Create domain/UI final-construction failure checks; two new tests reject it. Genuine creation was correct. ORACLE_GAP_CORRECTED. |
 | L6-F09 | Equivalent private Book mutation passes all 308 old cases (53.58s). Add Book domain/UI final-construction checks; two new tests reject it. Genuine booking was correct. ORACLE_GAP_CORRECTED. |
-| L6-F10 | Initial deployment record only established branch/head-at-launch, not independently observed remote SHA/package parity. Add read-only root Git/source/Python/runtime-package log and five metadata tests. Close only against actual revised hosted observation below. |
-| L6-F11 | Real build installs locked Arrow 26.0.1 then replaces it with 24.0.0. Initial lock/runtime parity claim was incomplete. Author permits targeted correction; pip-tools regenerates consistent 24.0.0 locks with 50 generated Arrow hashes each and no unrelated pin/hash change. Installed Streamlit permits 24.0.0. Current deployment disposition is recorded below; CI alone cannot close it. |
+| L6-F10 | Initial deployment record only established branch/head-at-launch, not independently observed remote SHA/package parity. Add read-only root Git/source/Python/runtime-package log and five metadata tests. Resolved by actual revised hosted observation in the controlled-restart section: CLOSED_TECHNICAL_FOR_TESTED_TARGET. |
+| L6-F11 | Real build installs locked Arrow 26.0.1 then replaces it with 24.0.0. Initial lock/runtime parity claim was incomplete. Author permits targeted correction; pip-tools regenerates consistent 24.0.0 locks with 50 generated Arrow hashes each and no unrelated pin/hash change. Installed Streamlit permits 24.0.0. The authorised restart installs 24.0.0 directly and actual runtime metadata matches all 34 locked pins: CLOSED_TECHNICAL_FOR_TESTED_TARGET. CI alone is not the closure evidence. |
 | L6-F12 | Initial reset disclosure lacked an actual process-restart observation. Isolated revised-lock 8520 stop/start plus native reconnect/rerun confirms factory reset 4/2 -> 4/3, original registration-2 CONFIRMED. Existing 8518/cloud preserved. VERIFIED_RESET_SEMANTICS, not data recovery. |
 
 The fault copies exist only in private evidence. No genuine late mutation was found in booking.py; improving test oracles is the actual repair. No original assertion/function/parameter is weakened. New tests isolate valid actors/open clocks/capacity, inject only final State failure, assert exact original records/list identity/counters and check the UI retains actor/submitted fields with no false success. The four creation/booking paths supplement retained late cancellation/multiple-attendee/clicked-target tests. Coverage alone had not revealed these gaps.
@@ -42,8 +42,8 @@ The fault copies exist only in private evidence. No genuine late mutation was fo
 | Local quality/security | Ruff/format/Bandit/pip check PASS. Strict runtime/development pip-audit covers all 34/71 locked packages, no known vulnerabilities/skips/omissions at execution. Platform extras are outside this audit. |
 | Coverage | 99% booking diagnostic; 200 statements/one missing, 70 branches/one partial. Existing demo-fixture guard remains unexecuted. No grade/completeness claim. |
 | Private independent boundary matrix | 16 passing literal decisions: active Create/Book/Cancel x C-1/C/C+1/S plus separately owned-CANCELLED repeats at four instants. Check exact State/history/counters/input, active refusals and no-op identity. Separate from pytest count. |
-| Current source CI | PASS: source candidate cb9b1f6bc9883c3e3162a98209b4b0de6b4193df, [run 44252306874](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44252306874), job 134625664411, Python 3.12.16, 317 passed in 89.16s, no failures/errors/skips; one job/all 18 steps successful. Runtime-only hash install/imports and all 34 runtime versions match the revised lock (PyArrow 24.0.0/Streamlit 1.67.0/Pandas 3.1.1). Ruff/format/pip check/Bandit and strict 34/71-package dependency audits PASS, no known vulnerabilities/skips/omissions. Artifact 14403844500 was downloaded and verified for SHA256 d49f47bd29b05c251da58495051b8e1a6172bd630f03c0bc0719f3a23de600ca, CRC, tested SHA/JUnit317 and report contents; expires 2 December 2026. A later records-only HEAD still requires its own current-head check. |
-| Revised hosted browser | PASS for the currently served, source-unattested instance, executed by AI using connected CUA Chrome (1707x876); separate public/no-owner IAB (912x871) renders meaningful 4-workshop/3-confirmation data. Fresh Chrome Sam cancels registration-2 (confirmations 3->2), then rebooks Photography as registration-5 (2->3); History keeps cancelled 2/4. Rui's missing-meeting-point submission keeps title/capacity/notes/dates/times and consumes no workshop ID; Alex has blank title/no Rui error, and Rui's own failure restores. Correction creates only workshop-5 and resets his fields (title empty/capacity 10). Xingjian books it as registration-6; the freshly painted Rui roster shows registration-6/participant-1/Xingjian/CONFIRMED with totals 5/4. Refresh view retains 5/4; a separate unchanged Chrome session stays 4/3. Console error/warning collection is empty. These are technical observations, not current-source deployment proof, human validation or mobile-specific testing. |
+| Current source CI | PASS: observed deployed source 2cad4b53899f5827c0d51cfb298c49f704d77b6b, [run 44276124671](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44276124671), job 134704585509, Python 3.12.16, 317 passed in 55.48s, no failures/errors/skips; one job/all 18 steps successful. Its downloaded artifact 14415250708 verifies tested SHA/JUnit317, all 308 old case identities, all 34 installed runtime pins, complete strict 34/71-package audits and no known vulnerabilities/omissions. Ruff/format/Bandit/pip check/runtime-only imports pass; diagnostic booking coverage is 99%. This is the executed runtime candidate result; a later documentation-only HEAD receives its own Actions/artifact check before delivery. |
+| Revised hosted browser | PASS after the authorised controlled reboot, executed by AI in a fresh connected CUA Chrome session. Baseline 4 workshops/3 confirmations; eligible Xingjian receives FULL on Photography without allocation. Rui fails creation for missing meeting point, all eight submitted values remain exact; Alex has a blank title/no Rui error and switching back restores all eight. Correction creates workshop-5, then resets title/meeting point/notes and capacity to 10. Xingjian books the new capacity-2 workshop as registration-5; repeating with one place still free returns DUPLICATE_ACTIVE. Sam books registration-6. Cancel only Xingjian registration-5: total confirmations 5->4 and the freshly painted roster still contains Sam registration-6. Xingjian rebooks as registration-7: total 5, old registration-5 remains CANCELLED in History, and Rui's final roster contains exactly confirmed 6/Sam and 7/Xingjian. Alex's choices contain only his workshops 4/2. These are AI technical executions, not human validation. Final refresh/session/console observations are recorded in the controlled-restart section. |
 | Actual isolated restart | Verified target PID/path/start-time and unhealthy -> healthy transition for 8520 only. Native cancellation before restart is lost after reconnect/rerun; factory 4 workshops/3 confirmations and registration-2 CONFIRMED return. Sam selection can survive; main view/data reset. Existing 8518 stays healthy, cloud not stopped. |
 | Protection/delivery | Compare all 23 local/source-tree/archive raw bytes and CRC; preserve 139 earlier files/archives, six historical reviews and 39/51 canonical rows. Source ZIP remains local, private tools/evidence outside repository. Final head Actions and parity are checked after records update. |
 
@@ -70,10 +70,10 @@ Historical intake evidence, not this patch's result: run 44244879029/job 1346013
 | Managed Python | 3.12.16 observed in actual build logs. Workflow remains pinned to 3.12.16; local compatibility environment is 3.12.14. |
 | Revised local human preview | http://127.0.0.1:8520, isolated hash-installed Arrow 24.0.0. Kept running. |
 | Original preview | http://127.0.0.1:8518 kept running with earlier Arrow 26.0.1; explicitly not current-lock environment proof. |
-| Source/runtime proof | OPEN - L6-F10/L6-F11. Real manager logs confirm configured codex/l6-v1-integration/root app.py, Python 3.12.16/Streamlit 1.67.0 and the original installation's PyArrow 26.0.1 -> 24.0.0 replacement. After publication, fresh page/session checks still expose only that initial 05:09 UTC build log and no L6_RUNTIME_IDENTITY record. Therefore the exact current deployed SHA, three revised source digests and all 34 installed runtime pins have NOT been independently established. Hosted native workflows work, but they are not proof that cb9b1f6 or the revised requirements are deployed. Keep the existing service available; do not reboot/delete/recreate it or expand GitHub access as part of this preserved-service check. DEPLOYMENT_CONDITION_NOT_MET until an actual revised deployment and source/package match are observed. |
+| Source/runtime proof | VERIFIED - L6-F10/L6-F11 CLOSED_TECHNICAL_FOR_TESTED_TARGET. The author explicitly authorised one controlled reboot of the existing candidate. Actual cloud runtime logs observed at 18 November 2026 17:42:47 UTC+08:00 report Git SHA 2cad4b53899f5827c0d51cfb298c49f704d77b6b, exactly the codex/l6-v1-integration HEAD at execution; Python 3.12.16, Streamlit 1.67.0 and PyArrow 24.0.0. All 34 installed project runtime pins exactly match requirements.txt, with no missing packages or version differences; SHA256 of app.py, booking.py and requirements.txt exactly matches the local/GitHub source. The new 09:42 UTC build installs Arrow 24.0.0 directly and has no new Arrow replacement event. Hosted business workflows were rerun against this attested application. Subsequent evidence-only commits must be identified separately and their unchanged application/lock blobs compared; never relabel the actually logged deployment SHA. Human validation, ACCEPT_LOOP and release remain PENDING. |
 | Log scope | Once per Streamlit session: root Git SHA or explicit None, SHA256 of app.py/booking.py/requirements.txt, Python and installed runtime pin versions. Read-only; no user/session business data, arbitrary environment values or secrets. New/fresh session is required after a source update. |
 | Platform boundary | Provider installs logging/installer extras beyond project lock. Project pin parity is not a claim of bit-identical OS/Python patch across local/cloud or full platform vulnerability certification. |
-| Release state | LOCAL_AND_CI_VERIFIED_FOR_TESTED_SCOPE; CLOUD_SOURCE_AND_ENVIRONMENT_PROOF_UNRESOLVED; DEPLOYMENT_CONDITION_NOT_MET. L6-F10/F11 remain OPEN. V1.0 is not release-ready or approved; human validation/acceptance and release decisions remain PENDING. Human acceptance/validation and release remain separate. |
+| Release state | DEPLOYMENT_VERIFIED_FOR_OBSERVED_RUNTIME; L6-F10/F11 CLOSED_TECHNICAL_FOR_TESTED_TARGET. L6 remains HUMAN_REVIEW_PENDING; H01-H07, VAL-01/VAL-02, residual-risk judgement and ACCEPT_LOOP are PENDING. V1.0 release approval is NOT_AUTHORISED; L7 NOT_STARTED. Human acceptance/validation and release remain separate. |
 
 Community Cloud follows the review branch; verify a fresh runtime identity after each candidate/update. If the exact source, revised pins or real controls cannot be established, leave F10/F11 OPEN and deployment condition NOT_MET. Do not silently substitute historical CI/local smoke or claim source proof from a branch label alone. Code/config rollback requires a reviewed source revision and new CI/smoke; it does not recover temporary bookings. The actual isolated restart demonstrates reinitialisation only.
 
@@ -105,6 +105,99 @@ I05 now tests late construction for all V1.0 mutations, not future promotion rol
 Original Assessment 3, three transcript PDFs and Week3-9 archive were re-extracted; source hashes match and 22 teaching decks were inspected as relevant. The rubric weights requirements/planning 15%, functioning app/deployment 15%, V&V/testing 20%, change/regression/release 20%, GitHub CI 15% and presentation/defence 15%. This technical review supports scoped/testable/traceable requirements, a genuine browser candidate, independent tests and documented human control; it cannot confer a grade.
 
 The lecture permits explained adaptation of the three Demo core files and requires student understanding/ownership of AI/code/tests/acceptance. Verification versus actual user validation, risk-based tool findings, independent oracles, regression and justified human decisions are kept distinct. The assessed later CR-01 issue/impact/branch/PR/review/merge/V1.1 release, final document/PPTX/URLs and defence remain incomplete future work. A dependency alignment fix is not substituted for the assessed waitlist change. Earlier accepted reviews remain byte-identical. No rigid file count, test count or coverage percentage is represented as an HD requirement.
+
+## Controlled restart resolution
+
+### Authority, execution and lifecycle
+
+The author's next instruction explicitly authorises one controlled reboot to resolve F10/F11, retaining the same candidate URL/branch and all services afterward. It does not approve human acceptance, main merge, a tag or V1.0 release. AI submitted the native existing-app Reboot confirmation once; no second manual reboot, app deletion/recreation, alternate deployment, source/dependency edit or GitHub permission expansion was used.
+
+| Observed event | Actual cloud UTC time / result |
+|---|---|
+| Existing session before reboot | 5 workshops / 4 confirmations from the preceding AI walkthrough. |
+| Disconnect | 18 November 2026 09:42:02 UTC (17:42:02 UTC+08:00). |
+| Same repository/branch/entrypoint build | 09:42:07 UTC, codex/l6-v1-integration, root app.py. |
+| Dependencies processed | 09:42:19 UTC; requirements.txt selected with uv. |
+| Server started | 09:42:21 UTC; meaningful app becomes available at the original URL. |
+| Runtime identity independently compared | 18 November 2026 17:42:47 UTC+08:00; all checks below MATCH. |
+| Session after reboot | Factory 4 workshops / 3 confirmations, no selected identity. Earlier session data is not recovered. |
+
+Earlier 05:09 UTC logs remain in the manager alongside the new build. They are historical evidence, not the revised installation result. The 09:42 build directly installs pyarrow==24.0.0; its post-build runtime metadata independently confirms 24.0.0 and no new Arrow override. The requirements.txt versus tool-only pyproject.toml warning remains, but the actual selected input is explicitly requirements.txt. Platform logging/installer additions are outside the 34 project runtime pins.
+
+### Actual source and Python identity
+
+Observed Git SHA: [2cad4b53899f5827c0d51cfb298c49f704d77b6b](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/2cad4b53899f5827c0d51cfb298c49f704d77b6b), exactly the L6 branch HEAD at execution. Python 3.12.16 matches the unchanged single-job CI target; Streamlit 1.67.0 and PyArrow 24.0.0 match the lock. These values come from the executing cloud process's read-only metadata log, not the configured branch label or localhost.
+
+| File | Actual cloud SHA256, identical to local/GitHub | Comparison |
+|---|---|---|
+| app.py | `4578d6365fe6ca06499dee379b87a02c907d6ed03a604af896c3aba3b1d68b2b` | MATCH |
+| booking.py | `63711b39a2e21f04913ef0d9aa6b6b29a9eec5ee7c44f336aaa6d04963e79b91` | MATCH |
+| requirements.txt | `3c7ed09982005eafbdd15bad51cf8effb854a631d6b02f59712bd5f9ebf48e62` | MATCH |
+
+If a following commit contains only this evidence, record its GitHub HEAD separately and compare its unchanged application/lock blobs with these actual deployed digests. Never replace the observed deployment SHA with a later documentation SHA without a new runtime observation. No additional manual reboot is authorised by this record.
+
+### All 34 installed project runtime dependencies
+
+The exact expected/observed package-name sets both contain 34 entries. Missing packages: zero; version mismatches: zero. These are installed distribution versions reported after managed setup; they do not certify unlisted platform/OS packages.
+
+| Package | requirements.txt | Actual cloud version | Result |
+|---|---|---|---|
+| altair | 6.3.0 | 6.3.0 | MATCH |
+| anyio | 4.16.0 | 4.16.0 | MATCH |
+| attrs | 26.1.0 | 26.1.0 | MATCH |
+| certifi | 2026.10.23 | 2026.10.23 | MATCH |
+| charset-normalizer | 3.5.2 | 3.5.2 | MATCH |
+| click | 8.5.1 | 8.5.1 | MATCH |
+| h11 | 0.16.0 | 0.16.0 | MATCH |
+| idna | 3.20 | 3.20 | MATCH |
+| itsdangerous | 2.2.0 | 2.2.0 | MATCH |
+| jinja2 | 3.1.6 | 3.1.6 | MATCH |
+| jsonschema | 4.26.0 | 4.26.0 | MATCH |
+| jsonschema-specifications | 2025.9.1 | 2025.9.1 | MATCH |
+| markupsafe | 3.0.4 | 3.0.4 | MATCH |
+| narwhals | 2.28.0 | 2.28.0 | MATCH |
+| numpy | 2.5.5 | 2.5.5 | MATCH |
+| packaging | 26.3 | 26.3 | MATCH |
+| pandas | 3.1.1 | 3.1.1 | MATCH |
+| pillow | 13.0.0 | 13.0.0 | MATCH |
+| protobuf | 7.36.2 | 7.36.2 | MATCH |
+| pyarrow | 24.0.0 | 24.0.0 | MATCH |
+| pydeck | 0.9.3 | 0.9.3 | MATCH |
+| python-dateutil | 4.0.0 | 4.0.0 | MATCH |
+| python-multipart | 0.0.34 | 0.0.34 | MATCH |
+| referencing | 0.37.0 | 0.37.0 | MATCH |
+| requests | 2.34.2 | 2.34.2 | MATCH |
+| rpds-py | 2026.9.1 | 2026.9.1 | MATCH |
+| starlette | 1.10.0 | 1.10.0 | MATCH |
+| streamlit | 1.67.0 | 1.67.0 | MATCH |
+| typing-extensions | 4.16.0 | 4.16.0 | MATCH |
+| tzdata | 2026.6 | 2026.6 | MATCH |
+| urllib3 | 2.8.0 | 2.8.0 | MATCH |
+| uvicorn | 0.54.0 | 0.54.0 | MATCH |
+| watchdog | 7.1.0 | 7.1.0 | MATCH |
+| websockets | 17.4 | 17.4 | MATCH |
+
+### Post-reboot native business verification
+
+| Step | Actual observation and independent check |
+|---|---|
+| Eligible FULL refusal | Xingjian attempts the seeded full Photography workshop before C and receives FULL; no waiter/success. The next valid new registration is still registration-5. |
+| Invalid Create / organiser isolation | Missing meeting point rejects creation. All eight visible values match their pre-submit snapshot. Alex has a blank title/no Rui error; returning Rui restores all eight values/errors. |
+| Correct / success reset | Correction creates exactly workshop-5 owned by Rui, capacity 2, >24h away. Title/meeting point/notes reset empty and capacity resets to 10. The first failed attempt consumed no workshop ID. |
+| First Book / isolated duplicate | Xingjian gets registration-5. A repeat with one free place returns DUPLICATE_ACTIVE, isolating duplication from fullness. |
+| Second participant | Sam gets registration-6; the new workshop has two confirmations and total confirmations rise to 5. |
+| Target-only cancellation | Xingjian cancels registration-5, total falls 5->4; the freshly painted actual owner's roster still contains Sam registration-6 CONFIRMED. |
+| Rebook / History | Xingjian receives new registration-7; registration-5 remains CANCELLED in own History, unrelated registrations 1/3 stay confirmed, and the closed Trail Safety cancellation remains disabled. |
+| Final own roster | Rui's workshop-5 roster contains exactly registration-6/participant-2/Sam and registration-7/participant-1/Xingjian, both CONFIRMED; total 5 workshops/5 confirmations. |
+| Other organiser | Alex's actual workshop choices contain only Past Nature Walk/workshop-4 and Photography/workshop-2, excluding Rui's workshop-5. |
+| Refresh and independent public session | Native Refresh view keeps 5 workshops/5 confirmations and the two-person roster. A separate public/no-owner IAB session has factory 4/3, no Manage app control and meaningful app content. No cross-session sharing is claimed. |
+| Browser health | Fresh Chrome and public IAB URL/title match the target; meaningful app/no framework overlay and empty error/warning collections. Desktop/narrow-desktop only; no mobile-specific run or genuine user validation is inferred. |
+
+This is AI technical verification through actual controls/painted tables. Complete internal input/Counter assertions and C-1/C/C+1/S/failure oracles remain in the unchanged 317-case suite; the browser is not used to invent internal State visibility. Fresh session checks and final CI/delivery receipts are verified before handoff. The actual human H01-H07/VAL-01/02 observations remain PENDING.
+
+### Findings and release boundary
+
+L6-F10 and L6-F11 are CLOSED_TECHNICAL_FOR_TESTED_TARGET for the actually observed source/runtime and exercised workflows. Earlier open-stage findings and their causes remain in history. The dependency/source deployment proof condition is met for this candidate; the broader release gate is still PENDING because human validation/acceptance and explicit release approval have not been supplied. R-08 remains VALIDATION_PENDING, no main merge/tag/Release occurs and L7 stays NOT_STARTED.
 
 ## Validation record
 
@@ -142,11 +235,11 @@ All seven items remain unchecked until supplied by the author. Use fresh session
 
 ## Current technical candidate and gate
 
-LOCAL_AND_CI_VERIFIED_FOR_TESTED_SCOPE; CLOUD_SOURCE_AND_ENVIRONMENT_PROOF_UNRESOLVED; DEPLOYMENT_CONDITION_NOT_MET. L6-F10/F11 remain OPEN. V1.0 is not release-ready or approved; human validation/acceptance and release decisions remain PENDING.
+DEPLOYMENT_VERIFIED_FOR_OBSERVED_RUNTIME; L6-F10/F11 CLOSED_TECHNICAL_FOR_TESTED_TARGET. L6 remains HUMAN_REVIEW_PENDING; H01-H07, VAL-01/VAL-02, residual-risk judgement and ACCEPT_LOOP are PENDING. V1.0 release approval is NOT_AUTHORISED; L7 NOT_STARTED.
 
-PASS: source candidate cb9b1f6bc9883c3e3162a98209b4b0de6b4193df, [run 44252306874](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44252306874), job 134625664411, Python 3.12.16, 317 passed in 89.16s, no failures/errors/skips; one job/all 18 steps successful. Runtime-only hash install/imports and all 34 runtime versions match the revised lock (PyArrow 24.0.0/Streamlit 1.67.0/Pandas 3.1.1). Ruff/format/pip check/Bandit and strict 34/71-package dependency audits PASS, no known vulnerabilities/skips/omissions. Artifact 14403844500 was downloaded and verified for SHA256 d49f47bd29b05c251da58495051b8e1a6172bd630f03c0bc0719f3a23de600ca, CRC, tested SHA/JUnit317 and report contents; expires 2 December 2026. A later records-only HEAD still requires its own current-head check.
+PASS: observed deployed source 2cad4b53899f5827c0d51cfb298c49f704d77b6b, [run 44276124671](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44276124671), job 134704585509, Python 3.12.16, 317 passed in 55.48s, no failures/errors/skips; one job/all 18 steps successful. Its downloaded artifact 14415250708 verifies tested SHA/JUnit317, all 308 old case identities, all 34 installed runtime pins, complete strict 34/71-package audits and no known vulnerabilities/omissions. Ruff/format/Bandit/pip check/runtime-only imports pass; diagnostic booking coverage is 99%. This is the executed runtime candidate result; a later documentation-only HEAD receives its own Actions/artifact check before delivery.
 
-OPEN - L6-F10/L6-F11. Real manager logs confirm configured codex/l6-v1-integration/root app.py, Python 3.12.16/Streamlit 1.67.0 and the original installation's PyArrow 26.0.1 -> 24.0.0 replacement. After publication, fresh page/session checks still expose only that initial 05:09 UTC build log and no L6_RUNTIME_IDENTITY record. Therefore the exact current deployed SHA, three revised source digests and all 34 installed runtime pins have NOT been independently established. Hosted native workflows work, but they are not proof that cb9b1f6 or the revised requirements are deployed. Keep the existing service available; do not reboot/delete/recreate it or expand GitHub access as part of this preserved-service check. DEPLOYMENT_CONDITION_NOT_MET until an actual revised deployment and source/package match are observed.
+VERIFIED - L6-F10/L6-F11 CLOSED_TECHNICAL_FOR_TESTED_TARGET. The author explicitly authorised one controlled reboot of the existing candidate. Actual cloud runtime logs observed at 18 November 2026 17:42:47 UTC+08:00 report Git SHA 2cad4b53899f5827c0d51cfb298c49f704d77b6b, exactly the codex/l6-v1-integration HEAD at execution; Python 3.12.16, Streamlit 1.67.0 and PyArrow 24.0.0. All 34 installed project runtime pins exactly match requirements.txt, with no missing packages or version differences; SHA256 of app.py, booking.py and requirements.txt exactly matches the local/GitHub source. The new 09:42 UTC build installs Arrow 24.0.0 directly and has no new Arrow replacement event. Hosted business workflows were rerun against this attested application. Subsequent evidence-only commits must be identified separately and their unchanged application/lock blobs compared; never relabel the actually logged deployment SHA. Human validation, ACCEPT_LOOP and release remain PENDING.
 
 Human H01-H07/VAL-01/VAL-02, residual-risk judgement and ACCEPT_LOOP remain PENDING regardless of technical success. Retain both existing services and the aligned local preview; keep ZIP personal/local. No accepted/tagged V1.0 is asserted. Technical verification, human acceptance, merge approval and release approval are four distinct decisions/evidence boundaries.
 
