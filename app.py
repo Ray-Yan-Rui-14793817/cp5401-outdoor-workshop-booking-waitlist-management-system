@@ -1,4 +1,4 @@
-"""L5 booking/cancellation with retained workshop creation, history and owned rosters."""
+"""V1.0 candidate: workshop creation, booking, cancellation, history and owned rosters."""
 
 from datetime import UTC, datetime, time, timedelta
 
@@ -357,7 +357,7 @@ def main() -> None:
 
     st.title("Outdoor Workshop Booking and Waitlist Management System")
     st.caption(
-        "L5 preview: book workshops, cancel your confirmed bookings and retain your history."
+        "V1.0 candidate: book workshops, cancel your confirmed bookings and retain your history."
     )
     required_roles = {"My Bookings": Role.PARTICIPANT, "Organiser": Role.ORGANISER}
 

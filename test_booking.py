@@ -2865,3 +2865,121 @@ def test_l5_review_ui_cancels_the_clicked_booking_when_two_are_eligible(
     assert set(app.dataframe[1].value["Status"]) == {"CANCELLED"}
     assert previous == before and demo_data == original
     assert app.session_state.selected_user_id == "participant-2"
+
+
+@pytest.mark.parametrize(
+    ("organiser_id", "first_participant", "replacement_participant"),
+    [
+        ("organiser-1", "participant-1", "participant-2"),
+        ("organiser-2", "participant-2", "participant-1"),
+    ],
+)
+def test_l6_created_workshop_completes_the_v1_baseline_journey(
+    monkeypatch: pytest.MonkeyPatch,
+    organiser_id: str,
+    first_participant: str,
+    replacement_participant: str,
+) -> None:
+    """Integrate real UI entry points; existing tests cover multi-attendee targeting."""
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    initial = create_demo_state()
+    before = deepcopy(initial)
+    app = app_with_state(initial)
+    assert app.sidebar.radio(key="current_view").options == ["Workshops"]
+    app.sidebar.selectbox(key="selected_user_id").set_value(organiser_id).run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    fill_creation_form(app, NOW + timedelta(hours=48))
+    app.text_input(key="new_location").set_value(" ")
+    failed_values = creation_form_values(app)
+    app.button(key="create_workshop").click().run()
+    assert [item.value for item in app.error] == [CREATION_REJECTED, "Meeting point is required."]
+    assert creation_form_values(app) == failed_values
+    assert app.session_state.demo_state is initial and initial == before
+    assert (initial.next_workshop_id, initial.next_registration_id) == (1, 1)
+
+    app.text_input(key="new_location").set_value("East Trail Entrance")
+    app.button(key="create_workshop").click().run()
+    assert not app.exception and not app.error
+    created = app.session_state.demo_state
+    assert len(created.workshops) == 1 and created.registrations == []
+    workshop = created.workshops[0]
+    assert (workshop.workshop_id, workshop.owner_id, workshop.capacity) == (
+        "workshop-1",
+        organiser_id,
+        1,
+    )
+    assert workshop.starts_at == NOW + timedelta(hours=48)
+    assert workshop.registration_cutoff == NOW + timedelta(hours=24)
+    assert (created.next_workshop_id, created.next_registration_id) == (2, 1)
+    assert app.text_input(key="new_title").value == ""
+    assert app.number_input(key="new_capacity").value == 10
+    assert not app.session_state.creation_forms[organiser_id].get("draft")
+    assert initial == before
+
+    app.sidebar.selectbox(key="selected_user_id").set_value(first_participant).run()
+    assert app.sidebar.radio(key="current_view").value == "Workshops"
+    assert app.sidebar.radio(key="current_view").options == ["Workshops", "My Bookings"]
+    app.button(key="book_workshop-1").click().run()
+    booked = app.session_state.demo_state
+    first_row = Registration(
+        "registration-1",
+        "workshop-1",
+        first_participant,
+        RegistrationStatus.CONFIRMED,
+        NOW.astimezone(UTC),
+        NOW.astimezone(UTC),
+    )
+    assert booked == replace(created, registrations=[first_row], next_registration_id=2)
+    assert created.registrations == [] and created.next_registration_id == 1
+    app.button(key="book_workshop-1").click().run()
+    assert any(item.value.startswith("DUPLICATE_ACTIVE:") for item in app.error)
+    assert app.session_state.demo_state is booked
+
+    app.sidebar.selectbox(key="selected_user_id").set_value(replacement_participant).run()
+    app.button(key="book_workshop-1").click().run()
+    assert any(item.value.startswith("FULL:") for item in app.error)
+    assert app.session_state.demo_state is booked and booked.registrations == [first_row]
+    assert booked.next_registration_id == 2
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert not app.dataframe
+    assert not any(str(button.key).startswith("cancel_") for button in app.button)
+
+    app.sidebar.selectbox(key="selected_user_id").set_value(first_participant).run()
+    assert list(app.dataframe[0].value["Registration ID"]) == ["registration-1"]
+    app.button(key="cancel_registration-1").click().run()
+    cancelled = app.session_state.demo_state
+    cancelled_row = replace(first_row, status=RegistrationStatus.CANCELLED)
+    assert cancelled == replace(booked, registrations=[cancelled_row])
+    assert booked.registrations == [first_row] and confirmed_count(cancelled, "workshop-1") == 0
+    assert list(app.dataframe[0].value["Status"]) == ["CANCELLED"]
+
+    app.sidebar.selectbox(key="selected_user_id").set_value(replacement_participant).run()
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    app.button(key="book_workshop-1").click().run()
+    final = app.session_state.demo_state
+    replacement_row = replace(
+        first_row, registration_id="registration-2", participant_id=replacement_participant
+    )
+    assert final == replace(
+        cancelled, registrations=[cancelled_row, replacement_row], next_registration_id=3
+    )
+    assert cancelled.registrations == [cancelled_row] and cancelled.next_registration_id == 2
+    assert confirmed_count(final, "workshop-1") == 1
+
+    app.sidebar.selectbox(key="selected_user_id").set_value(organiser_id).run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    assert list(app.dataframe[0].value["Registration ID"]) == ["registration-2"]
+    assert list(app.dataframe[0].value["Participant ID"]) == [replacement_participant]
+    other_organiser = "organiser-2" if organiser_id == "organiser-1" else "organiser-1"
+    app.sidebar.selectbox(key="selected_user_id").set_value(other_organiser).run()
+    assert not app.dataframe and app.session_state.demo_state is final
+
+    monkeypatch.setattr(booking, "server_now", lambda: NOW + timedelta(hours=24))
+    app.sidebar.selectbox(key="selected_user_id").set_value(replacement_participant).run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert app.button(key="cancel_registration-2").disabled
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    assert app.button(key="book_workshop-1").disabled
+    app.sidebar.selectbox(key="selected_user_id").set_value(None).run()
+    assert app.sidebar.radio(key="current_view").options == ["Workshops"]
+    assert app.session_state.demo_state is final and not app.exception

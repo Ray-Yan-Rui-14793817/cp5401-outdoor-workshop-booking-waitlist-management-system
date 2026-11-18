@@ -1,6 +1,6 @@
 # AI Use and Human Contributions
 
-**Current: L5 ACCEPT_LOOP, declared by the author on 18 November 2026 for b597babb5a648d3a576edf5b9c26bb2e7304d45c. Updated UI/H01-H07 complete. L6 NOT_STARTED.** Earlier ledger/contribution sections describe their dated technical stages; the later acceptance entry is the current human decision.
+**Current: L6 V1.0 candidate, HUMAN_REVIEW_PENDING. L0-L5 remain accepted. L7 NOT_STARTED.** The author now authorises bounded L6 work from 8a5c9723afe6a81bbafc634acc09b65dac436ee4; historical sections/holds below retain their dated meaning. Current human L6 observations/checkmarks/decisions have not been supplied.
 
 Tool: Codex assistant with local Python and Git/GitHub tools. No unverified model version is claimed. Inputs were supplied course/design materials and public Demo code; fictional data is used in the prototype.
 
@@ -114,8 +114,22 @@ The human loop gate is satisfied for L5. The author explicitly holds L6, which r
 
 The L0 review clarified isolated test preconditions, derived queue positions, observable result/state contracts, demonstration dates and validation decisions. R-08 user suitability remains pending actual task feedback. The original records and author decision remain available in the [accepted baseline](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/tree/822710b238bb14b8eba17cf2ab9a76ab2753bdb2) and [L0 acceptance](reviews/L0-human-acceptance.md).
 
-## Evidence and acceptance
+## L6 integration, deployment and contribution boundary
+
+The author directs V1.0 integration/deployment/verification after accepted L5, with simple architecture, one CI job, retained regressions, English delivery, a local-only ZIP, a live preview and a stop for human ACCEPT_LOOP. AI verifies the actual GitHub/local base, copies its 22 files to L6_develop and protects 139 earlier files/archives. AI changes only app.py's description/candidate caption, appends one two-case test function, updates five existing English Markdown documents and adds one L6 review. booking.py, dependencies/configuration/workflow and six historical review files remain unchanged.
+
+AI's new tests use actual creation/Book/cancellation/roster controls with literal required state/ID/outcome expectations in one serial chain and two role permutations. AI checks these against the requirements, not inferred outputs. The first generated insertion interrupted an old test and caused two NameError failures; Ruff also detected undefined names. AI restored the complete accepted test source and appended the new function at file end, verified all 115 old test ASTs/decorators and reran the focused/full checks. No business runtime defect was found or repaired. A console-encoding issue affected only reading cached source excerpts and was corrected by UTF-8 output.
+
+Actual AI local results: new 2 passed/306 deselected in 3.47s; all 308 passed in 66.67s, no failures/skips; Ruff/format/Bandit/pip check pass; booking coverage 99% diagnostic. AI prepares the branch and Streamlit deployment, exercises actual browser flows and records observed target/version/results in the L6 review. Any later hosted Actions remains an automated executor. Browser interaction uses the connected CUA Chrome interface; the separate Browser skill/plugin is not listed. No extra browser dependency is installed.
+
+AI-proposed patch review depth is Medium for target/environment provenance, generated-oracle assumptions and scope/record changes; the existing allocation/permission invariants still need their established scrutiny. This is not a human-approved residual rating. AI does not fabricate personal validation, an independent author CI run, human code edits/rejected suggestions or release approval. The author must understand the two new cases, exact prior oracles, real deployment/reset limits and the declared non-authenticated serial prototype, then perform/record H01-H07 and VAL-01/VAL-02 with genuine rationale. R-08 remains VALIDATION_PENDING. L7/CR-01, merge and v1.0 release decisions remain separate.
+
+## Historical evidence and acceptance
 
 Unchanged [L1](reviews/L1-human-review.md), [L2](reviews/L2-human-review.md), [L3](reviews/L3-human-review.md) and [L4](reviews/L4-human-review.md) reviews preserve historical findings and actual author declarations. Earlier holds describe those stages. The later explicit acceptance closes L5 while holding L6; the [L5 review](reviews/L5-human-review.md#current-human-acceptance) is the current human decision/feedback record.
 
 Current L5 status is ACCEPT_LOOP for b597babb5a648d3a576edf5b9c26bb2e7304d45c, supplied by the author on 18 November 2026 (UTC+08:00). Updated UI/H01-H07 completion and L5-HF-01 through L5-HF-05 are actual author declarations, transcribed by AI. Personal commands/precise execution times, additional code edits and a separate formal risk category were not supplied. The 306-case CI/browser/fault records remain automated/AI evidence; this message does not independently certify those executions. The preview is closed. L6 is explicitly held and NOT_STARTED; VAL/R-08 and merge/release decisions remain separate.
+
+## Current L6 gate
+
+The [L6 review](reviews/L6-human-review.md) is the current source of deployment/verification evidence, seven unchecked human items and actual decision fields. The earlier L5 preview closure and next-loop hold remain historical facts; the new instruction starts L6 only. L6 human ACCEPT_LOOP and release gates remain PENDING. Keep the L6 preview running for the author, keep the personal ZIP local and stop before L7.

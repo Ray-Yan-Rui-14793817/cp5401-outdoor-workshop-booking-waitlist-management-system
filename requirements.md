@@ -1,6 +1,15 @@
 # Project Requirements Business Rules and Risks
 
-L0 revision 3 and L1-L5 remain accepted. On 18 November 2026 (UTC+08:00), the author declared updated L5 UI/H01-H07 complete and supplied ACCEPT_LOOP for b597babb5a648d3a576edf5b9c26bb2e7304d45c. Current status: L5 ACCEPT_LOOP; L6 NOT_STARTED under the explicit hold. All canonical FR/BR/QR/risk targets remain unchanged. Accepted scope remains the classroom prototype with serial tests and freely selectable fictional identities, not real authentication or deliberate identity-switch protection. [Current acceptance](docs/reviews/L5-human-review.md#current-human-acceptance) | [Tests](docs/test-plan.md) | [Sources](docs/demo-reuse.md#references)
+L0 revision 3 and L1-L5 remain accepted. The author's 18 November 2026 instruction now authorises L6 integration/deployment/verification from accepted L5 8a5c9723afe6a81bbafc634acc09b65dac436ee4. Current: L6 V1.0 candidate, HUMAN_REVIEW_PENDING; L7 NOT_STARTED. Canonical FR/BR/QR/risk definitions remain unchanged. [Current L6 review](docs/reviews/L6-human-review.md) | [Accepted L5](docs/reviews/L5-human-review.md#current-human-acceptance) | [Tests](docs/test-plan.md).
+
+## L6 integration and deployment subset
+
+FR-01-FR-07 form the working V1.0 candidate: identity/role resolution, workshop information, serial booking, own cancellation/history, creation and owned rosters. booking.py is byte-identical to L5. app.py changes only its description/candidate label. One new test function/two role permutations drives creation failure/correction -> Book -> isolated duplicate/FULL refusals -> own cancellation/history -> new-ID rebooking -> correct owned roster -> exact-C UI lock in one state chain. All 306 prior cases/115 functions and decorators are retained.
+
+No policy, data model, dependency, workflow or canonical scenario is changed. No waitlist or notification implementation, real login, database, shared-concurrency guarantee or persistence is added. The historical stage sections below preserve their then-current counts/limits; L5 supersedes older cancellation-pending descriptions.
+
+Local verification is 308 passed in 66.67s with Ruff/format/Bandit/pip check passing. Deployment coordinates, actual target evidence and status are recorded in README and the L6 review. Technical checks cover B01-B17 and applicable V1.0 I01/I02/I05/I06/I08/I09/I10 portions; I03/I04/I07 and waiting portions remain V1.1 work. AI verification does not close VAL-01/VAL-02 or R-08. New H01-H07, actual human validation, risk judgement and loop/release decisions remain PENDING. Earlier-loop author checkmarks are not copied into L6.
+
 
 ## Identity foundations retained from accepted L2
 
@@ -45,7 +54,7 @@ L4-F08 is an explicitly requested UI-state refinement of FR-06, without changing
 
 The old L3 HF-02 shared-draft behaviour remains historical evidence. F08 replaces that behaviour only in the current L4 application. Previously unowned shared draft data is not automatically assigned to a current identity. No guarantee is added for unsubmitted edits, authentication, shared storage or persistence across sessions/restarts. The exact acceptance-to-test mapping is in the L4 review and test plan.
 
-## Implemented L5 subset
+## Retained L5 implementation subset
 
 L5 implements FR-04's V1.0 cancellation and extends FR-05 history evidence. cancel_registration accepts state, selected actor, registration ID and trusted now, returning (outcome, complete_candidate). Check participant role/actual target/stored ownership. Unknown registration returns UNKNOWN_REGISTRATION; invalid actor/wrong role/non-owner returns the existing permission outcome without mutation. An owned CANCELLED repeat returns ALREADY_CANCELLED before active time checks, including after C/S.
 
