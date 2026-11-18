@@ -2931,6 +2931,8 @@ def test_l6_created_workshop_completes_the_v1_baseline_journey(
     )
     assert booked == replace(created, registrations=[first_row], next_registration_id=2)
     assert created.registrations == [] and created.next_registration_id == 1
+    # Explicit duplicate-before-capacity precedence: this fixture is also full.
+    # Retained spare-capacity tests independently establish B09 duplicate refusal.
     app.button(key="book_workshop-1").click().run()
     assert any(item.value.startswith("DUPLICATE_ACTIVE:") for item in app.error)
     assert app.session_state.demo_state is booked
