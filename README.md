@@ -14,7 +14,7 @@ L6 starts from accepted L5 commit 8a5c9723afe6a81bbafc634acc09b65dac436ee4. The 
 | [booking.py](booking.py) | Dataclasses/lists and pure business operations. Byte-identical to accepted L5. |
 | [test_booking.py](test_booking.py) | All 306 L1-L5 cases/115 functions and decorators retained. One new parametrised UI journey adds two integration cases. |
 
-Keep app.py -> booking.py -> Python data structures. No database, framework, login, runtime module or dependency is added. [Single-job Actions](.github/workflows/quality-checks.yml), configuration and dependency locks retain L5 bytes.
+Keep app.py -> booking.py -> Python data structures. No database, framework, login, runtime module or dependency is added. [Single-job Actions](.github/workflows/quality-checks.yml) retains its steps, immutable Action pins, read-only permissions and checks. Its Python pin changes from 3.12.14 to observed cloud 3.12.16; configuration and dependency locks retain L5 bytes.
 
 V1.0 implements FR-01-FR-07: fixed identity/role selection, public workshop information, booking, own cancellation/history, creation and owned rosters. The two organisers are Rui Yan/organiser-1 and Alex/organiser-2; participants are Xingjian/participant-1 and Sam/participant-2.
 
@@ -29,10 +29,10 @@ Use fictional data only. All business data belongs to one temporary browser sess
 | Target | Current evidence |
 |---|---|
 | Human preview | http://127.0.0.1:8518; retained for L6 personal checks. |
-| Hosted V1.0 candidate | DEPLOYMENT_PENDING |
+| Hosted V1.0 candidate | [https://cp5401-outdoor-workshops-v1.streamlit.app/](https://cp5401-outdoor-workshops-v1.streamlit.app/) |
 | GitHub coordinates | codex/l6-v1-integration; repository-root app.py and requirements.txt. |
-| Python | Local/Actions 3.12.14. Select managed Python 3.12 for Community Cloud; record the actual hosted patch when exposed. |
-| Deployment identity | DEPLOYMENT_IDENTITY_PENDING |
+| Python | Local compatibility run: 3.12.14. Managed cloud: 3.12.16/Streamlit 1.67.0, observed in logs. Actions is aligned to 3.12.16 for target-version regression. |
+| Deployment identity | Launched from GitHub source candidate 4ca9631b8833ac0835526bc5ac4afc90b1777a3c; manager log confirms repository, codex/l6-v1-integration, root app.py and requirements.txt. The cloud UI/log exposes no independent Git HEAD SHA; record the branch/head-at-launch and observed UI rather than claiming such an attestation. Later records/workflow updates keep app.py/booking.py bytes unchanged. |
 
 From the repository or extracted archive root:
 
@@ -65,8 +65,8 @@ AI walkthroughs verify specified behaviour. They do not supply intended-user fee
 | Complete local regression | 308 passed, 66.67s, zero failures/skips, Python 3.12.14. All 306 prior case identities/115 test function ASTs and decorators retained. |
 | Local static checks | Ruff, format check, Bandit and pip check PASS. |
 | Diagnostic booking coverage | 99%; existing demo-fixture error guard is the only unexecuted statement. Coverage and case count do not establish completeness or a grade. |
-| Current L6 Actions | CI_PENDING |
-| Actual browser/deployment smoke | BROWSER_PENDING |
+| Current L6 Actions | Initial source candidate PASS: [source run 44241849816](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44241849816), 308 passed in 74.12s on Python 3.12.14, one job/all 18 steps successful. The aligned 3.12.16 candidate requires its own current-head run; TARGET_CI_PENDING. |
+| Actual browser/deployment smoke | PASS: connected CUA Chrome at 1707x876, plus separate no-login IAB at 912x871. Correct URL/title/nonblank app/no framework overlay; zero relevant browser console errors/warnings. Real hosted cancellation/history, new-ID replacement, per-organiser failed draft isolation, corrected creation/reset and new-workshop booking/owned roster operate. Screenshots inspected; no mobile-specific viewport run is claimed. |
 
 The capacity-1 integration path isolates eligible FULL versus DUPLICATE_ACTIVE. It cannot alone detect cancelling all attendees; retained L5 multi-attendee/order/owner oracles provide that evidence. Existing active cutoff fixtures remain separate from cancelled-repeat no-ops. New journey checks do not replace unit, failure-injection or boundary tests.
 
@@ -105,6 +105,6 @@ The release note is prepared: V1.0 introduces fixed demo roles, creation >24h/ca
 
 ## GitHub Actions
 
-One unchanged quality-checks job runs on main/codex pushes, PRs to main and manual dispatch: isolated runtime installation/imports; locked development install; Ruff/format, pip check, Bandit, complete dependency audits and every test with JUnit/booking branch coverage. Action SHAs are pinned, permissions read-only, failures are not bypassed and head/base/tested identity is recorded. Current commit-specific evidence belongs in the L6 review.
+One quality-checks job, with Python 3.12.16 aligned to the observed cloud patch, runs on main/codex pushes, PRs to main and manual dispatch: isolated runtime installation/imports; locked development install; Ruff/format, pip check, Bandit, complete dependency audits and every test with JUnit/booking branch coverage. Action SHAs are pinned, permissions read-only, failures are not bypassed and head/base/tested identity is recorded. Current commit-specific evidence belongs in the L6 review.
 
 The assessed CR-01 Issue/impact/PR/review/merge/V1.1 lifecycle, final submission URLs/PPTX/document/AI disclosure and oral defence remain later work. Green checks or this loop's implementation do not guarantee an HD result.

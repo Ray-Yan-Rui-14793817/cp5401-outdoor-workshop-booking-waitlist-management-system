@@ -46,7 +46,7 @@ On 18 November 2026, the author accepted updated L5 candidate b597babb5a648d3a57
 
 L6 keeps the explained CampusConnect-style three-file architecture and this project's accepted L5 algorithms. Only the visible V1.0 candidate label and two integrated test cases are added to executable files; no further Demo algorithm/test/source history is imported. The V1.0 candidate precedes CR-01 waitlist implementation. The current L6 instruction supersedes the historical L6 hold above, while preserving original accepted reviews/feedback.
 
-Community Cloud uses this repository's codex/l6-v1-integration branch, root app.py and unchanged requirements.txt with Python 3.12 selected. Actual deployment/version/browser evidence is recorded in README/the L6 review. No secrets, new account, database or extra hosting framework is part of the app. No cloud permission expansion is assumed.
+Community Cloud uses this repository's codex/l6-v1-integration branch, root app.py and unchanged requirements.txt with Python 3.12 selected. The live candidate is https://cp5401-outdoor-workshops-v1.streamlit.app/; logs show Python 3.12.16 and Streamlit 1.67.0. Align the single-job Python pin to the observed managed patch. Actual deployment/version/browser evidence is recorded in README/the L6 review. No secrets, new account, database or extra hosting framework is part of the app. No cloud permission expansion is assumed.
 
 ## References
 
