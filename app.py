@@ -1,6 +1,12 @@
 """V1.0 candidate: workshop creation, booking, cancellation, history and owned rosters."""
 
+import json
+import platform
+import re
 from datetime import UTC, datetime, time, timedelta
+from hashlib import sha256
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 
 import streamlit as st
 
@@ -24,6 +30,42 @@ from booking import (
     server_now,
     workshop_creation_errors,
 )
+
+
+def runtime_identity(root: Path) -> dict:
+    """Read source/Git/package provenance; absent metadata is explicitly unknown."""
+    sources = {}
+    requirements = ""
+    for name in ("app.py", "booking.py", "requirements.txt"):
+        try:
+            raw = (root / name).read_bytes()
+        except OSError:
+            sources[name] = None
+        else:
+            sources[name] = sha256(raw).hexdigest()
+            if name == "requirements.txt":
+                requirements = raw.decode("utf-8")
+    commit = None
+    try:
+        head = (root / ".git/HEAD").read_text(encoding="utf-8").strip()
+        if head.startswith("ref: "):
+            head = (root / ".git" / head[5:]).read_text(encoding="utf-8").strip()
+        if re.fullmatch(r"[0-9a-f]{40}", head):
+            commit = head
+    except OSError:
+        pass
+    packages = {}
+    for name in re.findall(r"^([A-Za-z0-9_.-]+)(?:\[[^\]]+\])?==", requirements, re.M):
+        try:
+            packages[name] = version(name)
+        except PackageNotFoundError:
+            packages[name] = None
+    return {
+        "git_sha": commit,
+        "python": platform.python_version(),
+        "source_sha256": sources,
+        "runtime_packages": packages,
+    }
 
 
 def format_instant(value: datetime) -> str:
@@ -350,6 +392,14 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
 
 def main() -> None:
     st.set_page_config(page_title="Outdoor Workshop Booking", page_icon="🌿", layout="wide")
+
+    if not st.session_state.get("_runtime_identity_logged"):
+        print(
+            "L6_RUNTIME_IDENTITY "
+            + json.dumps(runtime_identity(Path(__file__).parent), sort_keys=True),
+            flush=True,
+        )
+        st.session_state._runtime_identity_logged = True
 
     if "demo_state" not in st.session_state:
         st.session_state.demo_state = create_demo_data(server_now())

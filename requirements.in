@@ -1,3 +1,6 @@
 # Intentional runtime dependencies; requirements.txt records resolved versions and hashes.
 streamlit
 tzdata
+
+# Match Community Cloud's observed compatible Arrow runtime.
+pyarrow==24.0.0

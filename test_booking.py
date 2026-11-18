@@ -2985,3 +2985,129 @@ def test_l6_created_workshop_completes_the_v1_baseline_journey(
     app.sidebar.selectbox(key="selected_user_id").set_value(None).run()
     assert app.sidebar.radio(key="current_view").options == ["Workshops"]
     assert app.session_state.demo_state is final and not app.exception
+
+
+@pytest.mark.parametrize("operation", ["create", "book"])
+@pytest.mark.parametrize("route", ["domain", "ui"])
+def test_l6_review_final_candidate_failure_preserves_creation_and_booking_input(
+    monkeypatch: pytest.MonkeyPatch, operation: str, route: str
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    state = create_demo_data(NOW)
+    before = deepcopy(state)
+    original_lists = (state.users, state.workshops, state.registrations)
+    actor_id = "organiser-1" if operation == "create" else "participant-2"
+    if route == "ui":
+        app = app_with_state(state)
+        app.sidebar.selectbox(key="selected_user_id").set_value(actor_id).run()
+        if operation == "create":
+            app.sidebar.radio(key="current_view").set_value("Organiser").run()
+            fill_creation_form(app, NOW + timedelta(hours=48))
+            submitted = creation_form_values(app)
+    original_replace = booking.replace
+
+    def fail_final_candidate(value: object, **changes: object):
+        if isinstance(value, DemoState):
+            raise RuntimeError("injected final create/book candidate failure")
+        return original_replace(value, **changes)
+
+    monkeypatch.setattr(booking, "replace", fail_final_candidate)
+    if route == "domain":
+        with pytest.raises(RuntimeError, match="injected final create/book candidate failure"):
+            if operation == "create":
+                create_workshop(
+                    state,
+                    resolve_actor(state, actor_id),
+                    title="Fictional candidate failure check",
+                    starts_at=NOW + timedelta(hours=48),
+                    ends_at=NOW + timedelta(hours=50),
+                    location="East Trail Entrance",
+                    capacity=1,
+                    now=NOW,
+                )
+            else:
+                booking.book_workshop(state, resolve_actor(state, actor_id), "workshop-1", now=NOW)
+    else:
+        key = "create_workshop" if operation == "create" else "book_workshop-1"
+        app.button(key=key).click().run()
+        assert app.exception and not app.success
+        assert "injected final create/book candidate failure" in app.exception[0].value
+        assert app.session_state.demo_state is state
+        assert app.session_state.selected_user_id == actor_id
+        if operation == "create":
+            assert creation_form_values(app) == submitted
+    assert state == before
+    assert state.users is original_lists[0]
+    assert state.workshops is original_lists[1]
+    assert state.registrations is original_lists[2]
+    assert (state.next_workshop_id, state.next_registration_id) == (5, 5)
+
+
+@pytest.mark.parametrize("git_mode", ["absent", "detached", "branch", "invalid"])
+def test_l6_runtime_identity_is_read_only_and_explicit_about_git_metadata(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, git_mode: str
+) -> None:
+    from hashlib import sha256
+
+    import app as application
+
+    fixtures = {
+        "app.py": b"fixture application\n",
+        "booking.py": b"fixture business module\n",
+        "requirements.txt": b"streamlit==1.67.0\npyarrow==24.0.0\n",
+    }
+    for name, raw in fixtures.items():
+        (tmp_path / name).write_bytes(raw)
+    expected_sha = None
+    if git_mode != "absent":
+        (tmp_path / ".git").mkdir()
+        head = tmp_path / ".git/HEAD"
+        if git_mode == "detached":
+            head.write_text("1" * 40 + "\n")
+            expected_sha = "1" * 40
+        elif git_mode == "branch":
+            head.write_text("ref: refs/heads/codex/review\n")
+            ref = tmp_path / ".git/refs/heads/codex/review"
+            ref.parent.mkdir(parents=True)
+            ref.write_text("2" * 40 + "\n")
+            expected_sha = "2" * 40
+        else:
+            head.write_text("unverified-text\n")
+    expected_packages = {"streamlit": "1.67.0", "pyarrow": "24.0.0"}
+    monkeypatch.setattr(application, "version", lambda name: expected_packages[name])
+    before = {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    result = application.runtime_identity(tmp_path)
+    assert result == {
+        "git_sha": expected_sha,
+        "python": application.platform.python_version(),
+        "source_sha256": {name: sha256(raw).hexdigest() for name, raw in fixtures.items()},
+        "runtime_packages": expected_packages,
+    }
+    assert {
+        p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()
+    } == before
+
+
+def test_l6_runtime_identity_logs_once_without_changing_business_state(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    import json
+
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    state = create_demo_state()
+    before = deepcopy(state)
+    app = app_with_state(state)
+    messages = [
+        line
+        for line in capsys.readouterr().out.splitlines()
+        if line.startswith("L6_RUNTIME_IDENTITY ")
+    ]
+    assert len(messages) == 1
+    identity = json.loads(messages[0].removeprefix("L6_RUNTIME_IDENTITY "))
+    assert set(identity) == {"git_sha", "python", "source_sha256", "runtime_packages"}
+    assert set(identity["source_sha256"]) == {"app.py", "booking.py", "requirements.txt"}
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    assert not any(
+        line.startswith("L6_RUNTIME_IDENTITY ") for line in capsys.readouterr().out.splitlines()
+    )
+    assert not app.exception and app.session_state.demo_state is state and state == before
