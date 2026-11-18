@@ -1,6 +1,6 @@
 # AI Use and Human Contributions
 
-**Current: L5 HUMAN_REVIEW_PENDING. Accepted L0-L4 remain historical. L6 NOT_STARTED.** The new L5 instruction supersedes the earlier L4 hold for development only. Earlier ledger/contribution sections describe their dated stages; no personal L5 execution or acceptance has been supplied.
+**Current: L5 ACCEPT_LOOP, declared by the author on 18 November 2026 for b597babb5a648d3a576edf5b9c26bb2e7304d45c. Updated UI/H01-H07 complete. L6 NOT_STARTED.** Earlier ledger/contribution sections describe their dated technical stages; the later acceptance entry is the current human decision.
 
 Tool: Codex assistant with local Python and Git/GitHub tools. No unverified model version is claimed. Inputs were supplied course/design materials and public Demo code; fictional data is used in the prototype.
 
@@ -32,6 +32,7 @@ Tool: Codex assistant with local Python and Git/GitHub tools. No unverified mode
 | L4 acceptance-record update | The author declared updated L4 UI/H01-H07 complete, supplied ACCEPT_LOOP and three feedback items, requested local/GitHub/ZIP and AI/human-record updates, closed preview and no L5. AI transcribed the declaration for 7bbbeabb223538d5827a0249116a7f640334add4, retained the feedback verbatim, checked the seven author-declared checklist items, updated six existing English Markdown files, verified unchanged code/tests/rules/workflow/locks, refreshed the local-only ZIP and closed the identified L4 preview process. The existing 250-case CI result is independently verified according to the author; browser/controlled-fault executions remain AI-generated evidence. Any CI on this records-only update remains automated execution. No individual personal commands, human code edits or separate formal risk category are invented. |
 | L5 own cancellation and retained history | The author explicitly requested L5 after accepting L4. AI verified GitHub/local 2f2504acff79317c20760971acae2965ee98a1fb and reused an identical 21-file L5 starting folder, implemented cancel_registration plus My Bookings controls in the three core files, kept all 250 old cases/92 function ASTs unchanged and appended 48 cases in 20 functions. Actual test-first run: 45 fail/3 pass/250 deselected; then 48 focused and 298 full cases pass. AI ran static checks and ten Chrome flows, prepared the English mapping/review and local-only ZIP and retained the 8516 preview. Canonical rules, workflow/locks and all historical reviews remain unchanged. Human L5 UI/H01-H07 and ACCEPT_LOOP remain pending. |
 | L5 deep review | The author requested fresh source-based review against accepted baselines, Assessment 3/HD, lecture/slides and detailed cancellation/state/test/CI expectations. AI re-extracted four original PDFs and 22 decks with matching hashes, inspected the relevant pages/slides and tested three private faults. Each faulty copy passed all 298 old cases. AI appended eight independent cases that reject the faults, retaining all 112 prior test ASTs/decorators; the genuine runtime modules remain unchanged. Local full result: 306 passed in 62.74s. AI ran static checks and 12 fresh Chrome flows on isolated 8517, stopped only that QA service and preserved human preview 8516, then updated the existing English records/ZIP and hosted evidence. No personal acceptance or human risk judgement is inferred. |
+| Updated L5 acceptance-record update | The author declared updated L5 UI/H01-H07 complete, supplied ACCEPT_LOOP and five English feedback items, requested local/GitHub/ZIP and AI/human-record updates, preview closure and no L6. AI bound the declaration to b597babb5a648d3a576edf5b9c26bb2e7304d45c, transcribed all five observations verbatim, marked H01-H07 complete by author declaration, updated six existing English Markdown files, verified unchanged source/tests/rules/workflow/locks, refreshed the local-only ZIP and stopped the identified L5 service. Any CI on this records-only update remains automated evidence. No personal commands, human code edits, formal risk category or independent 306-case CI-verification claim is invented. |
 
 ## L3 acceptance update (historical)
 
@@ -79,7 +80,7 @@ AI's current task is records and delivery maintenance: six existing Markdown upd
 
 The human loop gate is satisfied for L4. The author explicitly holds L5; it remains NOT_STARTED. The preview is closed, while restart instructions remain available. VAL/R-08, PR/merge, deployment and release decisions remain distinct from this loop acceptance.
 
-## L5 contribution and human gate
+## L5 contribution and human gate (historical technical stage)
 
 Intent: implement only own confirmed cancellation with stored ownership, strict cutoff, one seat release, unchanged counters and retained history. Preserve booking/F05/F08, role menus, session-only fictional identities, simple architecture and one Actions job. Changes: app.py, booking.py, test_booking.py, README.md, requirements.md, docs/test-plan.md, docs/demo-reuse.md, this file and one new docs/reviews/L5-human-review.md. Delivery: 22 files/11 Markdown documents; no auxiliary QA tool is delivered.
 
@@ -89,7 +90,7 @@ Setup correction: an existing private metadata directory was verified against ac
 
 The author owns L5 UI/H01-H07, understanding/explanation of the AI-assisted code/test oracles, feedback, risk judgement and the next explicit ACCEPT_LOOP/CHANGES_REQUIRED decision. Proposed review depth is High because cancellation changes allocation and must enforce selected ownership/time/state integrity; this is AI triage, not a human-approved risk rating. No previous author CI-verification declaration or checkmark is transferred to L5. Full R-08/VAL, release/merge approval and L6 remain separate.
 
-## L5 deep-review contribution boundary
+## L5 deep-review contribution boundary (historical technical stage)
 
 Review base: 7c3081f54c3eb952835b07bca24467c9e7dc02c6; client date 18 November 2026 (UTC+08:00). Seven existing files change: test_booking.py, README.md, requirements.md, docs/test-plan.md, docs/demo-reuse.md, docs/ai-use.md and docs/reviews/L5-human-review.md. No file is added. app.py, booking.py, all old test functions, canonical rules/risks/scenarios, dependencies/workflow/configuration and accepted historical reviews retain their bytes or ASTs as applicable. Delivery remains 22 files/11 Markdown documents.
 
@@ -101,12 +102,20 @@ The original L5 risk-sensitive allocation/ownership behaviour still warrants tho
 
 Browser plugin not available; existing bundled Playwright/Chrome was used without dependency changes. Twelve fresh-process flows on 8517 include Sam owning two eligible bookings and cancelling only the second, preserving the other participant and unrelated booking, then rebooking the released Photography seat as registration-6. The 8517 QA service was stopped after identity verification; 8516 remains running. Screenshots/scripts/fault copies/reports stay outside the delivery. The process guard initially compared differently typed JSON timestamps, stopped before touching a process, and was corrected using observed PID/path/start-time/listener identity; no unrelated service was stopped.
 
+## Updated L5 human acceptance
+
+On 18 November 2026 (UTC+08:00), the author explicitly declared the updated L5 UI and H01-H07 complete and supplied ACCEPT_LOOP for b597babb5a648d3a576edf5b9c26bb2e7304d45c. Five actual feedback items accept traceability/consistency, explain the multi-attendee oracle, distinguish active-cutoff from cancelled-repeat fixtures, acknowledge freely selectable identity limits, and value stronger properties over case-count/coverage growth. These are human judgements, not AI-generated personal observations. Exact wording and dispositions are in the L5 review.
+
+AI's current task is records/delivery maintenance only: six existing English Markdown changes, raw local/GitHub/archive integrity checks, local-only ZIP refresh and scoped closure of the L5 preview at port 8516. Application code, all 306 tests, canonical definitions/scenarios, dependencies/configuration/workflow and accepted L0-L4 history retain their bytes. The source remains the accepted classroom/serial prototype. No additional human code edit, personal execution command/timestamp, separate per-finding response, formal risk category or independent 306-case CI-verification statement was supplied. Existing AI/browser/fault/Actions execution evidence is not relabelled as human execution.
+
+The human loop gate is satisfied for L5. The author explicitly holds L6, which remains NOT_STARTED. Preview 8516 is closed; restart instructions remain available. Full VAL/R-08, hosted deployment and PR/merge/release decisions remain separate from this acceptance.
+
 ## L0 review findings
 
 The L0 review clarified isolated test preconditions, derived queue positions, observable result/state contracts, demonstration dates and validation decisions. R-08 user suitability remains pending actual task feedback. The original records and author decision remain available in the [accepted baseline](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/tree/822710b238bb14b8eba17cf2ab9a76ab2753bdb2) and [L0 acceptance](reviews/L0-human-acceptance.md).
 
 ## Evidence and acceptance
 
-Unchanged [L1](reviews/L1-human-review.md), [L2](reviews/L2-human-review.md), [L3](reviews/L3-human-review.md) and [L4](reviews/L4-human-review.md) reviews preserve historical findings and actual author declarations. Earlier holds describe those stages. The new explicit instruction authorises L5 development only; the [L5 review](reviews/L5-human-review.md) is the current pending human gate.
+Unchanged [L1](reviews/L1-human-review.md), [L2](reviews/L2-human-review.md), [L3](reviews/L3-human-review.md) and [L4](reviews/L4-human-review.md) reviews preserve historical findings and actual author declarations. Earlier holds describe those stages. The later explicit acceptance closes L5 while holding L6; the [L5 review](reviews/L5-human-review.md#current-human-acceptance) is the current human decision/feedback record.
 
-Current L5 status is HUMAN_REVIEW_PENDING. All H01-H07, actual personal observations/edits, reviewer/date, risk rationale and ACCEPT_LOOP are PENDING in the [L5 review](reviews/L5-human-review.md). L4 acceptance and its three feedback items remain unchanged historical declarations. The explicit new request permits this L5 work only; L6 is NOT_STARTED. The 8516 preview stays running for human checking. No PR, merge, release or full VAL/R-08 completion is inferred.
+Current L5 status is ACCEPT_LOOP for b597babb5a648d3a576edf5b9c26bb2e7304d45c, supplied by the author on 18 November 2026 (UTC+08:00). Updated UI/H01-H07 completion and L5-HF-01 through L5-HF-05 are actual author declarations, transcribed by AI. Personal commands/precise execution times, additional code edits and a separate formal risk category were not supplied. The 306-case CI/browser/fault records remain automated/AI evidence; this message does not independently certify those executions. The preview is closed. L6 is explicitly held and NOT_STARTED; VAL/R-08 and merge/release decisions remain separate.

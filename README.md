@@ -1,8 +1,8 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Accepted: L0 revision 3 and L1-L4. Current: L5, HUMAN_REVIEW_PENDING. L6: NOT_STARTED.**
+**Accepted: L0 revision 3 and L1-L5. Current: L5 ACCEPT_LOOP, confirmed 18 November 2026. L6: NOT_STARTED.**
 
-L5 starts from accepted L4/GitHub commit 2f2504acff79317c20760971acae2965ee98a1fb. The new author instruction permits own confirmed cancellation, released capacity and retained history. It supersedes the historical L4 hold for L5 development only. All five historical reviews and accepted local L0-L4 folders/archives remain unchanged.
+L5 starts from accepted L4/GitHub commit 2f2504acff79317c20760971acae2965ee98a1fb. The new author instruction permits own confirmed cancellation, released capacity and retained history. The author subsequently declared updated L5 UI/H01-H07 complete and supplied ACCEPT_LOOP for b597babb5a648d3a576edf5b9c26bb2e7304d45c; the five feedback items and current decision are recorded in the L5 review. All five historical reviews and accepted local L0-L4 folders/archives remain unchanged.
 
 ## L5 implementation
 
@@ -12,7 +12,7 @@ L5 starts from accepted L4/GitHub commit 2f2504acff79317c20760971acae2965ee98a1f
 | [booking.py](booking.py) | Pure operations over dataclasses/lists. New cancel_registration checks the stored owner and cutoff, retains history and releases one place. |
 | [test_booking.py](test_booking.py) | 306 cases in 115 functions: all 298 pre-review cases/112 function ASTs and decorators unchanged, plus eight focused review cases in three functions. The original 250 L1-L4 cases remain included. |
 
-The deep review found three test-oracle gaps: cancelling among multiple confirmed attendees, failure during final State construction and choosing one of two eligible bookings in the UI. Three private faulty copies each passed all 298 old tests; the new tests detect them. The genuine app.py/booking.py already enforce the contracts and remain byte-identical to the pre-review candidate. Current local regression: 306 passed. Findings, source-based course alignment and pending human checks are in the L5 review.
+The deep review found three test-oracle gaps: cancelling among multiple confirmed attendees, failure during final State construction and choosing one of two eligible bookings in the UI. Three private faulty copies each passed all 298 old tests; the new tests detect them. The genuine app.py/booking.py already enforce the contracts and remain byte-identical to the pre-review candidate. Current local regression: 306 passed. Findings, source-based course alignment and the subsequent author-declared acceptance are in the L5 review.
 
 Keep app.py -> booking.py -> Python data structures. No runtime module, database, framework, real login or dependency is added. The single-job Actions workflow and both dependency lock pairs remain unchanged.
 
@@ -51,20 +51,20 @@ py -3.12 -m venv .venv
 
 Reuse an existing environment. In this workspace, from L5_develop use ..\.venv\Scripts\python.exe for the existing parent environment. Linux/macOS use the equivalent bin/python path. Runtime-only installation uses --require-hashes -r requirements.txt.
 
-The live human preview is [http://127.0.0.1:8516](http://127.0.0.1:8516), retained for personal checks. AI browser sessions are separate. Relative demo dates initialise once; they are not fixed assessment dates.
+The temporary L5 human preview at http://127.0.0.1:8516 was closed at the author's request after acceptance. Port 8516 is released and its health endpoint is unreachable; the command above can restart it later. Recorded AI browser/fault executions remain separate from the author's UI/H01-H07 declaration. Relative demo dates initialise once per session.
 
 ## Design baseline documents
 
 | Document | Content |
 |---|---|
 | [Requirements](requirements.md) | Unchanged canonical FR/BR/QR/risk targets and implemented L5 scope. |
-| [Test plan](docs/test-plan.md) | Preserved scenarios, retained regressions and exact 48-case L5 mapping. |
+| [Test plan](docs/test-plan.md) | Preserved scenarios, original 48-case L5 mapping and eight deep-review cases. |
 | [Demo reuse](docs/demo-reuse.md) | Pinned reference and explained project-specific adaptation. |
 | [AI use](docs/ai-use.md) | Actual tasks, assumptions/corrections and distinct human responsibility. |
 | [L0](docs/reviews/L0-human-acceptance.md), [L1](docs/reviews/L1-human-review.md), [L2](docs/reviews/L2-human-review.md), [L3](docs/reviews/L3-human-review.md), [L4](docs/reviews/L4-human-review.md) | Unchanged historical decisions/feedback. |
-| [L5 review](docs/reviews/L5-human-review.md) | Current intent/evidence/findings/risks and unchecked H01-H07. |
+| [L5 review](docs/reviews/L5-human-review.md) | Accepted candidate, completed author-declared UI/H01-H07, five feedback items, technical evidence/limits, preview closure and L6 hold. |
 
-Historical next-loop holds describe earlier decisions. The new instruction authorises L5 only; its review is the current gate record. Put L5_develop contents at repository root on codex/l5-cancellation, including .github. The 22-file personal L5_develop.zip stays local with source at archive root. Do not commit/upload it or attach it to a release. Exclude private QA tools/reports/screenshots, environments, caches and course originals.
+Historical next-loop holds describe earlier decisions. The author has now accepted L5 and explicitly holds L6; the L5 review is the current decision/feedback record. Put L5_develop contents at repository root on codex/l5-cancellation, including .github. The 22-file personal L5_develop.zip stays local with source at archive root. Do not commit/upload it or attach it to a release. Exclude private QA tools/reports/screenshots, environments, caches and course originals.
 
 ## Development workflow
 
@@ -77,7 +77,7 @@ The author sets intent and judges independent expected outcomes. AI implements b
 | ACCEPT_RELEASE | Approve verified deployment/release and required validation. |
 | CHANGES_REQUIRED / SPECIALIST_ADVICE_REQUIRED | Correct findings or seek proportionate advice before dependent work. |
 
-L5 UI/H01-H07, actual personal feedback/edits, risk judgement, reviewer/date and ACCEPT_LOOP are PENDING. No L4 checkmarks or independent CI-verification declaration are copied into L5. No PR, main merge, release or L6 work is included.
+On 18 November 2026 (UTC+08:00), the author declared updated L5 UI/H01-H07 complete and supplied ACCEPT_LOOP for b597babb5a648d3a576edf5b9c26bb2e7304d45c. Five supplied feedback items confirm traceability, the value of multi-attendee oracles, separate active/no-op fixtures, classroom identity limits and test quality beyond case count/coverage. Checkmarks transcribe this L5 declaration. No individual personal command log, human code edit, formal risk category or independent 306-case CI-verification statement was supplied. L6 remains NOT_STARTED under the explicit hold; VAL/R-08 and merge/release decisions remain separate.
 
 ## Record for each loop
 
@@ -88,7 +88,7 @@ Record intended/preserved behaviour, FR/BR/QR/risk/test mapping, changed files, 
 | Loop | Work and exit |
 |---|---|
 | L0-L4 | Accepted design, foundations, fixed roles, creation/rosters, booking/history and F08 isolation. |
-| L5 | Own cancellation/history/capacity; stop pending UI/H01-H07 and ACCEPT_LOOP. |
+| L5 | ACCEPT_LOOP: updated UI/H01-H07 declared complete, five feedback items recorded and preview closed. |
 | L6 | NOT_STARTED. Working V1.0 deployment/validation/release after separate authorisation. |
 | L7-L8 | CR-01 waitlist impact/change, new/regression tests, validation and justified pre-merge decision. |
 | L9 | Approved merge, deployment/release and final submission/defence evidence. |

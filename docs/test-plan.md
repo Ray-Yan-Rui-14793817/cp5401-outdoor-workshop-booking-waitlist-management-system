@@ -1,6 +1,8 @@
 # Test Plan and Traceability
 
-L0 revision 3 definitions remain unchanged. The L5 deep-review suite has 306 cases in 115 functions: all 298 pre-review cases and all 112 test function ASTs/decorators are unchanged; eight cases in three appended functions strengthen independent oracles. The original 250 L1-L4 cases remain included. Historical sections retain their original execution counts. [Current deep-review evidence and pending human gate](reviews/L5-human-review.md#deep-review-verification) | [Historical L4 acceptance](reviews/L4-human-review.md#current-human-acceptance).
+L0 revision 3 definitions remain unchanged. The L5 deep-review suite has 306 cases in 115 functions: all 298 pre-review cases and all 112 test function ASTs/decorators are unchanged; eight cases in three appended functions strengthen independent oracles. The original 250 L1-L4 cases remain included. Historical sections retain their original execution counts. [Technical deep-review evidence](reviews/L5-human-review.md#deep-review-verification) | [Subsequent author acceptance and feedback](reviews/L5-human-review.md#current-human-acceptance) | [Historical L4 acceptance](reviews/L4-human-review.md#current-human-acceptance).
+
+On 18 November 2026, the author accepted candidate b597babb5a648d3a576edf5b9c26bb2e7304d45c and declared updated UI/H01-H07 complete. Their feedback specifically recognises why multiple confirmed attendees strengthen the cancellation oracle, why active-cutoff and cancelled-repeat fixtures must be distinct, and why improved assertions matter more than growth from 298 to 306 cases or high coverage. This is actual human feedback, separate from AI-executed tests/browser/fault evidence. The source/tests/scenario definitions are unchanged in this acceptance update; the classroom identity and serial-only limits remain.
 
 [Rules](../requirements.md#business-rules) | [Risks](../requirements.md#risk-controls) | [Traceability](#traceability) | [Loop evidence format](../README.md#record-for-each-loop)
 
@@ -35,7 +37,7 @@ The new tests detect the same copies: four failures for the multi-attendee fault
 
 The earlier construction-failure test stops at Registration replacement. L5-11 additionally reaches final DemoState construction, exposing failure after a temporary input mutation that the earlier injection could not observe. Here rollback means no partial mutation/publication of the original in-memory state; there is no database transaction, durable recovery or simultaneous-concurrency guarantee. B13's participant/organiser restrictions and actual roster ownership remain in the retained L1-L4 tests. B14 is specifically UNKNOWN_WORKSHOP/UNKNOWN_REGISTRATION with valid actors and unchanged state, covered by the retained actual Book/roster/cancellation target checks. B15/B16 deliberately use separate active and already-cancelled fixtures rather than treating a no-op as proof of deadline rejection.
 
-Statement/branch coverage stays 99% diagnostic while these faulty copies previously passed. This is why coverage and pass count alone do not establish the intended property. Human review/validation and R-08 remain pending.
+Statement/branch coverage stays 99% diagnostic while these faulty copies previously passed. This is why coverage and pass count alone do not establish the intended property. The author has supplied L5 human loop acceptance; full intended-user validation and R-08 remain pending.
 
 ## L4 implemented test mapping
 
