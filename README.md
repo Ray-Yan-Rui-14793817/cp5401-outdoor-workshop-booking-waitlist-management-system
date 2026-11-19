@@ -1,8 +1,14 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**Accepted: L0 revision 3 and L1-L6. L6: ACCEPT_LOOP. L7: NOT_STARTED / HELD_BY_AUTHOR. Merge/tag/V1.0 release: NOT_AUTHORISED.**
+**L0-L6 accepted. RH01-RH07 complete by author declaration. ACCEPT_RELEASE received for approved P, conditional. All actual merges/deployment fast-forwards: HUMAN_ONLY. V1.0 NOT_RELEASED; L7 NOT_STARTED.**
 
 This classroom prototype helps participants find/book outdoor workshops and organisers prepare confirmed rosters. V1.0 integrates fixed demo identities, creation, browsing, booking, own cancellation/history and owned rosters. CR-01 waiting/FIFO is later work, after the separate V1.0 release decision. The author owns requirements, expected behaviour, review, acceptance and release; AI/Actions provide explicitly labelled technical work.
+
+## Current release authorisation and human-only execution
+
+On 19 November 2026 the author completed RH01-RH07 and supplied ACCEPT_RELEASE for [e27b3bcd7045901d8131cea8c1d4974fe5766c5b](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/e27b3bcd7045901d8131cea8c1d4974fe5766c5b), with a binding Human-only Merge Requirement. Codex may prepare ordinary Q documentation commits and the PR, check actual source/base/temporary PR merge SHA and separate push/PR CI, then report technical READY_TO_MERGE and stop. **The author personally executes every main merge and deployment-branch fast-forward. Codex must not perform Merge/Squash/Rebase/API/CLI merge, integration Branch Ref Update, force push or equivalent branch-combining operation, even after approval.**
+
+After the author reports each operation, Codex verifies actual main M/CI, then later source/runtime M/dependencies/business checks without reboot/delete/recreate. Only after those real gates pass may Codex create annotated v1.0/Release. Stage 1 results are recorded in the real PR body without changing frozen Q. Main merge, source promotion and publication are not yet executed; L7 remains held. The [current plan and human record](docs/reviews/V1.0-release-readiness.md#current-author-declaration-and-mandatory-execution-boundary) governs live authority; older dated requirement/test/review snapshots retain their pre-authorisation history.
 
 ## V1.0 scope and architecture
 
@@ -59,7 +65,7 @@ An already running earlier environment does not automatically adopt lock changes
 | Historical local restart check | During the earlier isolated 8520 check, cancellation 4/2 reset to factory 4/3 and registration-2 CONFIRMED; Sam widget selection could survive. That event did not stop 8518/cloud. |
 | Subsequent authorised cloud restart | The separately authorised single cloud reboot at 09:42 UTC supplied actual source/version evidence and reinitialised the temporary session. This further review performs zero additional server restarts and preserves services. |
 
-APPLICATION_AND_RUNTIME_LOCK_PARITY_VERIFIED; DOCUMENTATION_ONLY_CHECKOUT_DELTA_EXPLICIT. F10/F11 remain closed for the verified executable target, without claiming that the actual cloud checkout equals a later documentation HEAD. L6: ACCEPT_LOOP by the author on 19 November 2026; UI/H01-H07 complete, VAL-01 9/9 and VAL-02 10/10 accepted within classroom scope. R-08 baseline timing/session suitability is ACCEPTABLE_WITHIN_SCOPE; V1.1 waiting/promotion validation remains pending. L7: NOT_STARTED / HELD_BY_AUTHOR. Main merge, tag and V1.0 release: NOT_AUTHORISED; ACCEPT_LOOP is not ACCEPT_RELEASE.
+APPLICATION_AND_RUNTIME_LOCK_PARITY_VERIFIED; DOCUMENTATION_ONLY_CHECKOUT_DELTA_EXPLICIT. F10/F11 remain closed for the verified executable target, without claiming that the actual cloud checkout equals a later documentation HEAD. L6: ACCEPT_LOOP by the author on 19 November 2026; UI/H01-H07 complete, VAL-01 9/9 and VAL-02 10/10 accepted within classroom scope. R-08 baseline timing/session suitability is ACCEPTABLE_WITHIN_SCOPE; V1.1 waiting/promotion validation remains pending. L7: NOT_STARTED / HELD_BY_AUTHOR. This earlier L6 gate predates the separate scoped ACCEPT_RELEASE recorded above. Human-only execution now controls; actual publication remains conditional and unexecuted. ACCEPT_LOOP alone is not ACCEPT_RELEASE.
 
 ## Controlled restart evidence
 
@@ -108,13 +114,13 @@ Record scope/preserved behaviour, affected files, FR/BR/QR/risk/test mapping, in
 | L0-L5 | ACCEPT_LOOP; historical evidence retained. |
 | L6 technical | Verified executable/lock target and accepted-candidate evidence above; acceptance-record HEAD receives its own CI. |
 | L6 human | ACCEPT_LOOP for 5c1e3ff92168b34397e2bee2ace85431ae4d124e; author declares UI/H01-H07 and VAL-01 9/9, VAL-02 10/10 complete, with actual policy/session/safety feedback. |
-| Merge | READY_TO_MERGE is a distinct explicit decision; reviewed-main CI/deployment must then be verified. No main merge is authorised here. |
-| Release | ACCEPT_RELEASE, formal v1.0 tag and GitHub Release remain unauthorised/PENDING. ACCEPT_LOOP alone does not approve release. |
+| Merge | HUMAN_ONLY. The author personally reviews/clicks the main PR merge after Stage 1 technical READY_TO_MERGE. Codex never merges or moves refs to complete integration. |
+| Release | Scoped ACCEPT_RELEASE received for P. Actual Tag/Release NOT_EXECUTED; Codex may publish only after human merge/fast-forward and exact-M CI/runtime/dependency/business verification. |
 | L7/CR-01 | NOT_STARTED / HELD_BY_AUTHOR. This loop acceptance does not authorise the next loop; a separately approved released V1.0 precedes the assessed change. |
 
 ## V1.0 pre-release preparation
 
-The [deep-reviewed release plan](docs/reviews/V1.0-release-readiness.md) records V1-RF01-RF06 and their dispositions, maps course/HD evidence and separates P/Q push, PR test merge and main-M verification. The earlier in-place cloud branch-change assumption is rejected: the proposed preserve-service route keeps current coordinates and, only after explicit authority/main CI, advances the hosting source ref to the same M. This future route is not executed or guaranteed by a branch label. Only README, AI use and the existing release task file change; code/tests/locks/workflow, 39/51 canonical rows and all seven accepted reviews remain unchanged. RH01-RH07, human release risk judgement and ACCEPT_RELEASE remain pending. No PR/main merge/ref promotion/Tag/Release/reboot or L7 is executed. The corrected preparation head has its own CI/artifact; exact SHA/run are supplied at delivery.
+The [reviewed release plan](docs/reviews/V1.0-release-readiness.md) retains course/HD mapping and V1-RF01-RF06, with the new author declaration controlling execution. RH01-RH07 are declared complete; Stage 1 Q/PR technical evidence is still to be established at record creation and then retained in the actual PR. Only README, AI use and this task file record authority; all code/tests/locks/workflow, 39/51 canonical rows and seven accepted reviews remain unchanged. The 24-file personal ZIP stays local and is matched to Q. All actual merges/fast-forwards are performed by the author; no extra reboot or L7 is authorised.
 
 ## GitHub Actions
 
