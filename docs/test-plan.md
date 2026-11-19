@@ -1,8 +1,21 @@
 # Test Plan and Traceability
 
+## L8 P1 presentation verification
+
+P1 begins at `fbbc86c2de7dcc9960097a0b6f6caf0dc1823606`. Its suite retains all 351 intake identities, including the 317 published V1.0 cases and 34 L8 cases, and adds 12 focused AppTest cases. Legacy UI assertions still cover the same outcomes at the revised render locations. See the [P1 review](reviews/L8-human-review.md#p1-ui-verification) and the [candidate Actions runs](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist).
+
+| Requirement | Technical evidence |
+|---|---|
+| P1-01 and P1-02 | Scoped card assertions cover title, time, location, availability and workshop ID. Six AppTest boundaries check C-1s, C, C+1s, S-1s, S and S+1s with both full and available workshops. Check all labels and enabled controls against unchanged state. |
+| P1-03 | Check headings and table order, exact visible IDs and statuses, position placement, matching Cancel and Withdraw controls in their own groups, history without controls, and state preservation during rendering. |
+| P1-04 | Exercise FULL and separate Join, duplicate Join, confirmed Book, effective Cancel with and without promotion, withdrawal, and stale Cancel at start or after cancellation. Original L8 cases retain USE_BOOKING, STATUS_CHANGED, cutoff and start outcomes and test state adoption failures. |
+| P1-05 | Compare the main identity through guest, participant, organiser and deselection. Retain all four fixed sidebar identities, role menus, independent scope checks and no real authentication claim. |
+| P1-06 | Check contextual C/S and unconfirmed/no-notification guidance. The existing AppTest verifies actual withdrawal at C and the refusal and history at S. R-08 remains pending human VAL-03. |
+| L8-F01/F02/F03 | Retain the original replay, selected-actor change and closed organiser queue cases. Check the actual promoted ID and the correct history label. |
+
 ## L8 CR-01 verification
 
-The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and the frozen V1.0 test suite define the expected results. L8 retains the full source prefix and 317 exact V1.0 case identities. The deep review retains the first candidate's 31 case identities and adds three cases. The existing L8 stale-Join cutoff test now advances the clock after capturing an open control, which exercises the callback's fresh decision and retains the exact refusal and state assertions.
+The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and the frozen V1.0 test suite defined the expected results for the pre-P1 CR-01 candidate. That candidate retained the original source prefix and 317 exact V1.0 case identities. Its deep review retained the first candidate's 31 case identities and added three cases. The pre-P1 adjustment to the stale-Join cutoff test advances the clock after capturing an open control, which exercises the callback's fresh decision and retains the exact refusal and state assertions.
 
 | Requirement and planned evidence | L8 verification |
 |---|---|

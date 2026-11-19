@@ -6,6 +6,8 @@
 
 **Human verification gates.** L8 human acceptance remains `HUMAN_ACCEPTANCE_PENDING`. R-08 remains `PENDING_VAL_03`. The author's L8 decision, later PR review and release approval are separate gates. V1.1 remains unreleased.
 
+The results above verify the CR-01 business candidate before the P1 presentation round. See the [P1 UI verification](../reviews/L8-human-review.md#p1-ui-verification) and [current P1 test map](../test-plan.md#l8-p1-presentation-verification) for that round's evidence.
+
 ## Accepted L7 verification plan
 
 Revision 3 records the author's [L7 planning acceptance](../reviews/L7-human-review.md#human-decision-record). The L7 review checked the stored V1.0 baseline evidence and the planned test expectations. The sections below retain those expectations and procedures from L7. The [change contract](CR-01.md) and [impact and risks](CR-01-impact-and-risks.md) provide the rule and risk references for each oracle. The canonical scenario IDs come from the [V1.0 test plan](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/36e7bff3c1d3f74bb29c1900373726ecffdd176b/docs/test-plan.md).

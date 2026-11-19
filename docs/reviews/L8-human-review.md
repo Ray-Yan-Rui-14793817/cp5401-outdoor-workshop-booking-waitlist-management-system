@@ -1,8 +1,24 @@
 # L8 CR-01 candidate human review
 
-Status: **HUMAN_ACCEPTANCE_PENDING**. Human decision: **PENDING**. R-08: **PENDING_VAL_03**. V1.1 release: **NOT_RELEASED**.
+Status: **HUMAN_ACCEPTANCE_PENDING**. Scope: **P1**. P2: **NOT_STARTED**. Human decision: **PENDING**. R-08: **PENDING_VAL_03**. V1.1 release: **NOT_RELEASED**.
 
 The candidate starts from published V1.0 commit `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. The author's [L7 decision](L7-human-review.md#human-decision-record) approved D-01 and High review depth. The [change contract](../changes/CR-01.md) governs the candidate. The existing V1.0 deployment remains on its released baseline.
+
+## P1 UI verification
+
+P1 refines presentation and interaction feedback on the L8 candidate based on `fbbc86c2de7dcc9960097a0b6f6caf0dc1823606`. The source delta covers `app.py`, `test_booking.py`, this review, `docs/ai-use.md`, `docs/test-plan.md` and a P1 pointer in `docs/changes/CR-01-verification-plan.md`. The business module, dependencies, workflow, published deployment and accepted L7 evidence remain intact.
+
+| Requirement | Before P1 | P1 result and review evidence |
+|---|---|---|
+| P1-01 / P1-02 | Cards presented details in one column and open full workshops used generic registration-window copy. | Give each card a title, availability badge, schedule, counts and meeting point, with notes and identity preserved. Verify C/S against fixed clocks and full versus available fixtures. Keep Book and explicit Join adjacent, with FULL advice on its own line. |
+| P1-03 | History preceded waiting entries, and Cancel controls had a separate section. | Place Upcoming Confirmed Bookings, My Waitlist and Booking History in order. Include the workshop and registration ID in the matching active action. Put current position in the waiting table ahead of dates. Started and cancelled records appear in history with their stored status. |
+| P1-04 | Action feedback used different explanations for similar outcomes. A stale Cancel could disappear before showing repeat feedback after the record became cancelled. | Share refusal guidance. Cancel runs the original operation against current actor, state and trusted time before rendering. An isolated test on the intake reproduced the missing repeat message. P1 tests preserve no-op outcomes at S and after cancellation. A successful cancellation reports a promotion only when a waiting registration became confirmed. |
+| P1-05 | The current identity was repeated in the sidebar and absent from main content. | Show the fictional identity and role next to the heading, retain selection and scoped menus, and display the authentication limit. AppTest and Chrome exercise switching and deselection. |
+| P1-06 | C/S and notification guidance was spread across different views. | Label both times beside workshop details, explain the cutoff near Cancel, and place unconfirmed status and no-notification guidance next to Join or Withdraw. Explain withdrawal through the final 24 hours. R-08 remains PENDING_VAL_03. |
+
+The focused local run passed 113 cases, including 12 new P1 cases and the selected regression cases. The complete local run passed 363 cases under Python 3.12.14 and PyArrow 24.0.0, retaining all 351 intake identities. Ruff, formatting, Bandit and pip check passed locally. Exact GitHub CI and delivery evidence are recorded in the local receipt and on the [candidate Actions page](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist). The older CR-01 execution evidence below retains its original scope.
+
+Local preview for human review is [http://127.0.0.1:8522/](http://127.0.0.1:8522/). Browser verification exercised the four badges, FULL and Join, withdrawal and rejoin, promotion of the same ID, section order and role switching. A fresh 390px browser checked the public card layout. See the [P1 test map](../test-plan.md#l8-p1-presentation-verification). Technical checks provide no author acceptance or human VAL-03 observations.
 
 ## Technical evidence
 
@@ -26,12 +42,12 @@ The 16 November 10:45 transcript pp. 2 and 8-10 supports the three-file adaptati
 
 ## Author checklist
 
-- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped correction. Check the single-job Actions report against the revised SHA and verify the 317 baseline cases, the original 31 L8 identities and the three review additions.
-- [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian and open Outdoor Photography Walk, which starts full. Book should report FULL. Join should create a WAITLISTED record. Verify position 1, the original confirmed count and the absence of another participant's private entries in My Bookings.
+- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the P1 SHA and verify the 317 baseline cases, 34 intake L8 cases and 12 P1 additions.
+- [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian and open Outdoor Photography Walk, which starts full. Check the role badge and workshop states. Book should report FULL. Join should create a WAITLISTED record. Verify position 1, the original confirmed count and the absence of another participant's private entries in My Bookings.
 - [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Leo/Willy test evidence for FIFO, sequence gaps and multi-waiter ordering.
 - [ ] **L8-H04 - Check promotion.** With Xingjian queued, switch to Sam in the same session and cancel Sam's confirmed Outdoor Photography Walk booking. Return to Xingjian and use Refresh view. Verify the same queued ID is CONFIRMED. Check Alex's owned roster and queue, and check Rui Yan's workshop selector for owner scope.
 - [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
-- [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#l8-cr-01-ai-use), fixture-only identities and L8-F01-F03 dispositions. Confirm the no-notification explanation is visible before using Join. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
+- [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#p1-ui-contribution-and-review-boundary), fixture-only identities and L8-F01-F03 dispositions. Confirm the C/S guidance, section order and visible no-notification explanation. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
 - [ ] **L8-H07 - Record the decision.** Record the exact reviewed SHA, observations, issues and ACCEPT_LOOP or CHANGES_REQUIRED. Subsequent integration and release decisions are separate. All actual merges and deployment fast-forwards are author-only.
 
 ## Author decision record

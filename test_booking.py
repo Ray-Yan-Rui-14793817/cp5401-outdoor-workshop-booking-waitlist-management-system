@@ -33,7 +33,7 @@ from booking import (
 APP_PATH = Path(__file__).with_name("app.py")
 PREVIEW_MESSAGES = {
     "Workshops": "Browse workshops below. Times are shown in Asia/Singapore.",
-    "My Bookings": "View your confirmed bookings and retained history for the selected demo identity.",
+    "My Bookings": "View confirmed bookings, waiting entries and history for the selected demo identity.",
     "Organiser": "Create workshops and view confirmed rosters for your own workshops.",
 }
 NOW = datetime(2026, 12, 1, 9, tzinfo=WORKSHOP_TIMEZONE)
@@ -47,6 +47,12 @@ def app_with_state(state: DemoState) -> AppTest:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30)
     app.session_state.demo_state = state
     return app.run()
+
+
+def rendered_workshop(app: AppTest, workshop_id: str):
+    return next(
+        card for card in app.get("flex_container") if card.key == f"workshop_card_{workshop_id}"
+    )
 
 
 @pytest.fixture
@@ -433,7 +439,10 @@ def test_identity_selector_has_only_the_fixed_demo_options() -> None:
         "Rui Yan (ORGANISER)",
         "Alex (ORGANISER)",
     ]
-    assert any("not secure login" in item.value for item in app.sidebar.caption)
+    assert any(
+        "Demo identity selection is not secure authentication." in item.value
+        for item in app.main.get("caption")
+    )
 
 
 @pytest.mark.parametrize(
@@ -450,9 +459,10 @@ def test_fixed_roles_show_only_allowed_menu_and_preview(
 ) -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
     app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
-    assert f"Selected: {display_name} | Role: {role}" in [
-        item.value for item in app.sidebar.caption
-    ]
+    assert any(
+        item.value.endswith(f"[Fictional identity: {display_name} | Role: {role}]")
+        for item in app.main.get("markdown")
+    )
     allowed_view = "My Bookings" if role == Role.PARTICIPANT else "Organiser"
     assert app.sidebar.radio(key="current_view").options == ["Workshops", allowed_view]
     for view in ["Workshops", allowed_view]:
@@ -1501,13 +1511,15 @@ def test_app_seeds_once_and_refresh_uses_current_time_without_reseeding(
     state = app.session_state.demo_state
     before = deepcopy(state)
     assert [m.value for m in app.metric] == ["4", "3"]
-    assert any("Registration window open" in row.value for row in app.caption)
+    open_badges = [item.value for item in app.markdown if item.value.endswith(" OPEN]")]
+    assert open_badges == [":green-badge[BOOKING OPEN]", ":orange-badge[FULL / WAITLIST OPEN]"]
     clock["now"] = NOW + timedelta(days=10)
     app.sidebar.button(key="refresh_view").click().run()
     assert not app.exception
     assert app.session_state.demo_state is state
     assert state == before
-    assert not any("Registration window open" in row.value for row in app.caption)
+    assert not any(item.value.endswith(" OPEN]") for item in app.markdown)
+    assert sum(item.value.endswith("[STARTED]") for item in app.markdown) == 4
 
 
 def test_ui_creates_for_current_identity_then_browse_and_refresh_preserve_it(
@@ -1627,20 +1639,32 @@ def test_public_view_shows_full_details_counts_and_closed_policy(
 ) -> None:
     monkeypatch.setattr("booking.server_now", lambda: NOW)
     app = app_with_state(demo_data)
-    rendered = "\n".join(item.value for item in app.markdown)
+    navigation = rendered_workshop(app, "workshop-1")
+    photography = rendered_workshop(app, "workshop-2")
+    rendered = "\n".join(item.value for item in navigation.get("markdown"))
     for expected in [
         "Outdoor Navigation Basics",
         "North Trail Meeting Point",
+        "Start (S):",
         "2026-12-04 09:00:00 (Asia/Singapore)",
         "2026-12-03 09:00:00 (Asia/Singapore)",
-        "Registration cutoff:",
-        "Capacity: 10 | Confirmed: 1 | Remaining: 9",
-        "Capacity: 1 | Confirmed: 1 | Remaining: 0",
+        "Registration cutoff (C):",
+        "Remaining places: 9",
         "Bring water",
     ]:
         assert expected in rendered
-    assert any("Confirmed roster locked" in item.value for item in app.caption)
-    assert any("Started - historical" in item.value for item in app.caption)
+    assert "Capacity: 10 | Confirmed: 1" in [m.value for m in navigation.get("caption")]
+    assert "Capacity: 1 | Confirmed: 1" in [m.value for m in photography.get("caption")]
+    assert any("Remaining places: 0" in m.value for m in photography.get("markdown"))
+    for workshop_id, status in (
+        ("workshop-1", "BOOKING OPEN"),
+        ("workshop-2", "FULL / WAITLIST OPEN"),
+        ("workshop-3", "BOOKING CLOSED"),
+        ("workshop-4", "STARTED"),
+    ):
+        card = rendered_workshop(app, workshop_id)
+        assert any(m.value.endswith(f"[{status}]") for m in card.get("markdown"))
+        assert f"Workshop ID {workshop_id}" in [m.value for m in card.get("caption")]
     assert not app.dataframe
     assert not app.exception
 
@@ -2106,7 +2130,7 @@ def test_l4_started_confirmed_record_is_history_without_status_change(
     app = app_with_state(state)
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
     app.sidebar.radio(key="current_view").set_value("My Bookings").run()
-    assert "History" in [h.value for h in app.subheader]
+    assert "Booking History" in [h.value for h in app.subheader]
     assert len(app.dataframe) == 1
     assert list(app.dataframe[0].value["Status"]) == ["CONFIRMED"]
     assert list(app.dataframe[0].value["Registration ID"]) == ["registration-1"]
@@ -2221,10 +2245,10 @@ def test_l4_personal_history_moves_at_start_without_rewriting_records(
     current_index = next(
         i
         for i, n in enumerate(nodes)
-        if n.type == "subheader" and n.value == "Upcoming confirmed bookings"
+        if n.type == "subheader" and n.value == "Upcoming Confirmed Bookings"
     )
     history_index = next(
-        i for i, n in enumerate(nodes) if n.type == "subheader" and n.value == "History"
+        i for i, n in enumerate(nodes) if n.type == "subheader" and n.value == "Booking History"
     )
     table_index = next(i for i, n in enumerate(nodes) if n is app.dataframe[0])
     if seconds < 0:
@@ -2602,7 +2626,9 @@ def test_l5_ui_cancel_updates_history_capacity_and_owned_roster_without_losing_d
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
     assert not app.success
     app.sidebar.radio(key="current_view").set_value("Workshops").run()
-    assert any("Capacity: 1 | Confirmed: 0 | Remaining: 1" in m.value for m in app.markdown)
+    card = rendered_workshop(app, "workshop-2")
+    assert "Capacity: 1 | Confirmed: 0" in [m.value for m in card.get("caption")]
+    assert any("Remaining places: 1" in m.value for m in card.get("markdown"))
     app.button(key="book_workshop-2").click().run()
     assert app.session_state.demo_state.registrations[-1].registration_id == "registration-5"
     assert app.session_state.demo_state.next_registration_id == 6
@@ -2658,7 +2684,12 @@ def test_l5_ui_disables_effective_cancellation_at_cutoff_and_after_start(
     app = app_with_state(populated_state)
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
     app.sidebar.radio(key="current_view").set_value("My Bookings").run()
-    assert app.button(key="cancel_registration-1").disabled
+    if offset == 0:
+        assert app.button(key="cancel_registration-1").disabled
+    else:
+        assert not any(button.key == "cancel_registration-1" for button in app.button)
+        assert list(app.dataframe[0].value["Status"]) == ["CONFIRMED"]
+        assert list(app.dataframe[0].value["Registration ID"]) == ["registration-1"]
     assert not app.exception and app.session_state.demo_state is populated_state
     assert populated_state == before
 
@@ -2672,9 +2703,11 @@ def test_l5_stale_cancellation_ui_uses_fresh_decision_time(
     app = app_with_state(demo_data)
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
     app.sidebar.radio(key="current_view").set_value("My Bookings").run()
-    times = iter([NOW, demo_data.workshops[1].registration_cutoff + timedelta(seconds=offset)])
-    monkeypatch.setattr(booking, "server_now", lambda: next(times))
-    app.button(key="cancel_registration-2").click().run()
+    rendered = app.button(key="cancel_registration-2")
+    assert not rendered.disabled
+    decision = demo_data.workshops[1].registration_cutoff + timedelta(seconds=offset)
+    monkeypatch.setattr(booking, "server_now", lambda: decision)
+    rendered.click().run()
     assert not app.exception and not app.success
     assert any("REGISTRATION_CLOSED" in e.value for e in app.error)
     assert app.session_state.demo_state is demo_data and demo_data == before
@@ -3600,7 +3633,7 @@ def test_l8_ui_uses_fresh_withdrawal_deadline(
         )
     else:
         assert row.status is RegistrationStatus.CANCELLED and row.queue_seq == 1
-        assert any("remains in History" in message.value for message in app.success)
+        assert any("Find the record in Booking History" in message.value for message in app.success)
     assert joined == before and app.session_state.demo_state.next_registration_id == 6
 
 
@@ -3753,3 +3786,235 @@ def test_l8_review_closed_organiser_queue_keeps_history_without_live_position(
     assert list(waiting["Registration ID"]) == ["registration-5"]
     assert list(waiting["Status"]) == ["WAITLISTED"]
     assert app.session_state.demo_state is state and state == before
+
+
+@pytest.mark.parametrize(
+    ("seconds_from_cutoff", "available_label", "full_label", "disabled"),
+    [
+        (-1, "BOOKING OPEN", "FULL / WAITLIST OPEN", False),
+        (0, "BOOKING CLOSED", "BOOKING CLOSED", True),
+        (1, "BOOKING CLOSED", "BOOKING CLOSED", True),
+        (86399, "BOOKING CLOSED", "BOOKING CLOSED", True),
+        (86400, "STARTED", "STARTED", True),
+        (86401, "STARTED", "STARTED", True),
+    ],
+    ids=["C-minus-1s", "C", "C-plus-1s", "S-minus-1s", "S", "S-plus-1s"],
+)
+def test_p1_workshop_status_is_scoped_to_card_and_display_time(
+    l8_state: DemoState,
+    monkeypatch: pytest.MonkeyPatch,
+    seconds_from_cutoff: int,
+    available_label: str,
+    full_label: str,
+    disabled: bool,
+) -> None:
+    full, open_with_space = l8_state.workshops
+    state = replace(l8_state, workshops=[full, replace(open_with_space, capacity=2)])
+    before = deepcopy(state)
+    cutoff = datetime(2026, 12, 9, 9, tzinfo=WORKSHOP_TIMEZONE)
+    monkeypatch.setattr(
+        booking, "server_now", lambda: cutoff + timedelta(seconds=seconds_from_cutoff)
+    )
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    for workshop_id, expected_label, places in (
+        ("workshop-1", full_label, 0),
+        ("workshop-2", available_label, 1),
+    ):
+        card = rendered_workshop(app, workshop_id)
+        labels = [m.value for m in card.get("markdown") if "-badge[" in m.value]
+        assert len(labels) == 1 and labels[0].endswith(f"[{expected_label}]")
+        assert any(f"Remaining places: {places}" in m.value for m in card.get("markdown"))
+        assert app.button(key=f"book_{workshop_id}").disabled is disabled
+    assert app.button(key="join_workshop-1").disabled is disabled
+    assert not any(button.key == "join_workshop-2" for button in app.button)
+    assert not app.exception and app.session_state.demo_state is state and state == before
+
+
+def test_p1_main_identity_and_role_update_with_sidebar_without_mutation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = create_demo_data(NOW)
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    states = (
+        (None, "Fictional identity: None selected", ["Workshops"]),
+        (
+            "participant-1",
+            "Fictional identity: Xingjian | Role: PARTICIPANT",
+            ["Workshops", "My Bookings"],
+        ),
+        ("organiser-2", "Fictional identity: Alex | Role: ORGANISER", ["Workshops", "Organiser"]),
+        (None, "Fictional identity: None selected", ["Workshops"]),
+    )
+    for identity, badge, menus in states:
+        app.sidebar.selectbox(key="selected_user_id").set_value(identity).run()
+        labels = [
+            item.value for item in app.main.get("markdown") if "[Fictional identity:" in item.value
+        ]
+        assert len(labels) == 1 and labels[0].endswith(f"[{badge}]")
+        assert not any("[Fictional identity:" in item.value for item in app.sidebar.markdown)
+        assert app.sidebar.radio(key="current_view").options == menus
+        assert any(
+            "Demo identity selection is not secure authentication" in item.value
+            for item in app.main.get("caption")
+        )
+        assert not app.exception and app.session_state.demo_state is state and state == before
+
+
+def test_p1_groups_identified_controls_with_active_records_and_keeps_history_read_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = create_demo_data(NOW)
+    actor = l8_participant(state, "participant-1")
+    outcome, joined = booking.join_waitlist(state, actor, "workshop-2", now=NOW)
+    assert outcome == "OK"
+    outcome, withdrawn = booking.withdraw_waitlist(joined, actor, "registration-5", now=NOW)
+    assert outcome == "OK"
+    outcome, rejoined = booking.join_waitlist(withdrawn, actor, "workshop-2", now=NOW)
+    assert outcome == "OK"
+    before = deepcopy(rejoined)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(rejoined)
+    app.sidebar.selectbox(key="selected_user_id").set_value(actor.user_id).run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    section_titles = ["Upcoming Confirmed Bookings", "My Waitlist", "Booking History"]
+    assert [item.value for item in app.subheader] == ["My Bookings", *section_titles]
+    nodes = list(app.main)
+    start_at = [
+        next(i for i, n in enumerate(nodes) if n.type == "subheader" and n.value == title)
+        for title in section_titles
+    ]
+    confirmed, waiting, history = app.dataframe
+    assert set(confirmed.value["Registration ID"]) == {"registration-1", "registration-3"}
+    assert list(waiting.value["Registration ID"]) == ["registration-6"]
+    assert list(waiting.value["Position"]) == [1]
+    assert waiting.value.columns.get_loc("Position") < waiting.value.columns.get_loc("Start")
+    assert list(history.value["Registration ID"]) == ["registration-5"]
+    assert list(history.value["Status"]) == ["CANCELLED"]
+    assert "Position" not in confirmed.value and "Position" not in history.value
+    assert (
+        start_at[0]
+        < nodes.index(confirmed)
+        < nodes.index(app.button(key="cancel_registration-1"))
+        < start_at[1]
+    )
+    assert (
+        start_at[1]
+        < nodes.index(waiting)
+        < nodes.index(app.button(key="withdraw_registration-6"))
+        < start_at[2]
+    )
+    assert start_at[2] < nodes.index(history)
+    assert not any(
+        button.key in {"withdraw_registration-5", "cancel_registration-5"} for button in app.button
+    )
+    assert any(
+        "including during the final 24 hours" in item.value
+        and "There are no notifications." in item.value
+        for item in nodes[start_at[1] : start_at[2]]
+        if item.type == "caption"
+    )
+    assert not app.exception and app.session_state.demo_state is rejoined and rejoined == before
+
+
+def test_p1_full_book_and_explicit_join_report_outcomes_and_next_actions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = create_demo_data(NOW)
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    card = rendered_workshop(app, "workshop-2")
+    assert any(
+        "WAITLISTED means unconfirmed" in item.value and "There are no notifications." in item.value
+        for item in card.get("caption")
+    )
+    app.button(key="book_workshop-2").click().run()
+    assert any(
+        entry.value.startswith("FULL:") and "Join Waitlist" in entry.value for entry in app.error
+    )
+    assert not app.success and app.session_state.demo_state is state and state == before
+    app.button(key="join_workshop-2").click().run()
+    assert any(
+        "WAITLISTED" in entry.value and "Open My Bookings" in entry.value for entry in app.success
+    )
+    joined = app.session_state.demo_state
+    waiting = joined.registrations[-1]
+    assert (waiting.registration_id, waiting.status, waiting.queue_seq) == (
+        "registration-5",
+        RegistrationStatus.WAITLISTED,
+        1,
+    )
+    assert joined == replace(
+        before, registrations=[*before.registrations, waiting], next_registration_id=6
+    )
+    joined_before = deepcopy(joined)
+    app.button(key="join_workshop-2").click().run()
+    assert any(
+        entry.value.startswith("DUPLICATE_ACTIVE:") and "My Bookings" in entry.value
+        for entry in app.error
+    )
+    assert not app.success and not app.exception
+    assert app.session_state.demo_state is joined and joined == joined_before and state == before
+
+
+def test_p1_successful_book_and_cancel_with_no_waiter_report_the_released_place(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = create_demo_data(NOW)
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.button(key="book_workshop-1").click().run()
+    assert any(
+        "registration-5 (CONFIRMED)" in entry.value and "Open My Bookings" in entry.value
+        for entry in app.success
+    )
+    booked = app.session_state.demo_state
+    assert confirmed_count(booked, "workshop-1") == 2
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    app.button(key="cancel_registration-5").click().run()
+    assert any(
+        "One place released." in entry.value and "Booking History" in entry.value
+        for entry in app.success
+    )
+    assert not any("promoted" in entry.value for entry in app.success)
+    cancelled = replace(booked.registrations[-1], status=RegistrationStatus.CANCELLED)
+    assert app.session_state.demo_state == replace(
+        booked, registrations=[*before.registrations, cancelled]
+    )
+    assert confirmed_count(app.session_state.demo_state, "workshop-1") == 1
+    assert not app.error and not app.exception and state == before
+
+
+@pytest.mark.parametrize("transition", ["at-start", "already-cancelled"])
+def test_p1_stale_cancel_preserves_intent_when_active_control_disappears(
+    monkeypatch: pytest.MonkeyPatch, transition: str
+) -> None:
+    state = create_demo_data(NOW)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    stale = app.button(key="cancel_registration-2")
+    assert not stale.disabled
+    if transition == "at-start":
+        monkeypatch.setattr(booking, "server_now", lambda: state.workshops[1].starts_at)
+        current = state
+        expected = "REGISTRATION_CLOSED"
+    else:
+        actor = l8_participant(state, "participant-2")
+        outcome, current = booking.cancel_registration(state, actor, "registration-2", now=NOW)
+        assert outcome == "OK"
+        app.session_state.demo_state = current
+        expected = "ALREADY_CANCELLED"
+    before = deepcopy(current)
+    stale.click().run()
+    assert any(item.value.startswith(f"{expected}:") for item in [*app.error, *app.info])
+    assert not any(button.key == "cancel_registration-2" for button in app.button)
+    assert not app.exception and not app.success
+    assert app.session_state.demo_state is current and current == before

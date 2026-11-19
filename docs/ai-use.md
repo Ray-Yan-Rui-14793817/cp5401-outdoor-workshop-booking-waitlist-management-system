@@ -20,7 +20,17 @@ Codex supplied implementation, technical tests and packaging. The author's L7 ac
 
 The author requested a review against accepted L7, Assessment 3 HD and lecture evidence, with specific attention to FIFO, C/S, D-01, fixture identities, permissions, state integrity and the 317-case regression. Codex inspected the implementation, original regression sources, CI artifacts and the cited course material. The [review findings](reviews/L8-human-review.md#deep-review-findings-and-dispositions) record the stale Join reproduction, callback identity safeguard and clarity changes.
 
-The review patch changes `app.py`, `test_booking.py` and the current verification and review records. The business module, dependency locks, workflow, accepted L7 evidence and 317 V1.0 test source remain unchanged. Codex added three review cases and adapted the existing L8 cutoff harness to the callback order. The required refusal and state integrity assertions remain. Local browser exercises use fictional demo data and count as technical verification. The author owns L8 acceptance, any future PR decision and VAL-03.
+The pre-P1 review patch changed `app.py`, `test_booking.py` and the verification and review records. It preserved the business module, dependency locks, workflow, accepted L7 evidence and the source of the 317 V1.0 tests at that checkpoint. Codex added three review cases and adapted the existing L8 cutoff harness to the callback order while retaining the required refusal and state integrity assertions. Local browser exercises use fictional demo data and count as technical verification. The author owns L8 acceptance, any future PR decision and VAL-03.
+
+### P1 UI contribution and review boundary
+
+The author requested six presentation refinements in the existing Streamlit app, with the CR-01 outcomes, C/S policy, permission and state safeguards, L8-F01/F02/F03 fixes and regression identities protected. Codex audited the established UI tests, revised `app.py` and `test_booking.py`, and updated the [P1 review](reviews/L8-human-review.md#p1-ui-verification), test map and verification-plan pointer.
+
+Codex added native status badges and grouped cards, moved the fictional identity disclosure into the main content, grouped active controls by record status, and made feedback consistent with the returned domain outcomes. A previously rendered Cancel button can now reach the original cancellation operation when its row moves to history. The callback uses the current state and trusted time and only adopts an OK candidate. The promotion message checks for an actual waiting-to-confirmed transition. The accepted business implementation in `booking.py`, workflow and locks were preserved byte for byte.
+
+The first full suite exposed five presentation assertions tied to the old sidebar location. The adapted assertions check the exact fixed identities and role and authentication disclosure in the main content, alongside the existing permission and menu assertions. Other targeted adaptations cover the new card and section wording, the placement of controls, and the cutoff callback timing. The underlying business assertions and all 351 intake JUnit identities remain. Twelve P1 cases add display boundaries, section/action order, identity changes, operation guidance and stale Cancel checks.
+
+Codex captured actual before and after Chrome screenshots and checked the layout at 1440px and 390px. Review moved the FULL message below the action row so both Book and Join remain adjacent. These tool and browser checks are technical evidence. The author owns H01-H07, VAL-03, `ACCEPT_LOOP` and any future publication decision. P2 remains `NOT_STARTED`.
 
 ## Historical L0-L6 and V1.0 preparation records
 
