@@ -1,4 +1,4 @@
-"""V1.0 candidate: workshop creation, booking, cancellation, history and owned rosters."""
+"""Workshop booking and waitlist candidate for CR-01."""
 
 import json
 import platform
@@ -10,6 +10,7 @@ from pathlib import Path
 
 import streamlit as st
 
+import booking
 from booking import (
     WORKSHOP_TIMEZONE,
     DemoState,
@@ -24,7 +25,10 @@ from booking import (
     create_demo_data,
     create_workshop,
     get_workshop_roster,
+    get_workshop_waitlist,
+    join_waitlist,
     list_own_registrations,
+    list_own_waitlist_positions,
     list_owned_workshops,
     resolve_actor,
     server_now,
@@ -99,7 +103,7 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
             if now >= workshop.starts_at:
                 st.caption("Started - historical information.")
             elif now >= workshop.registration_cutoff:
-                st.caption("Confirmed roster locked: booking is closed under the 24-hour policy.")
+                st.caption("Confirmed roster locked: booking and waitlist joining are closed.")
             else:
                 st.caption("Registration window open. Availability is shown in the counts above.")
             if actor is not None and actor.role == Role.PARTICIPANT:
@@ -127,12 +131,51 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                             "UNKNOWN_WORKSHOP": "This workshop is no longer available.",
                             "INVALID_INPUT": "The server time is unavailable. Please try again.",
                             "REGISTRATION_CLOSED": "Booking closed 24 hours before the start.",
-                            "DUPLICATE_ACTIVE": "You already have a confirmed booking for this workshop.",
-                            "FULL": "No places remain. Waitlisting is not available in this release.",
+                            "DUPLICATE_ACTIVE": "You already have an active registration for this workshop.",
+                            "FULL": "No places remain. Select Join Waitlist to register for the queue.",
+                            "INTEGRITY_ERROR": "The available place conflicts with the queue. Refresh and try again.",
                         }
                         st.error(
                             f"{outcome}: {explanations.get(outcome, 'Booking is unavailable.')}"
                         )
+                if confirmed >= workshop.capacity and st.button(
+                    "Join Waitlist",
+                    key=f"join_{workshop.workshop_id}",
+                    disabled=now >= workshop.registration_cutoff,
+                    help="A waitlist entry is unconfirmed. A released place may be assigned before "
+                    "the cutoff. Refresh My Bookings for updates. There are no notifications.",
+                ):
+                    outcome, candidate = join_waitlist(
+                        st.session_state.demo_state, actor, workshop.workshop_id, now=server_now()
+                    )
+                    if outcome == "OK":
+                        st.session_state.demo_state = candidate
+                        st.session_state.booking_message = (
+                            actor.user_id,
+                            f"Joined the waitlist for {workshop.title} (WAITLISTED). "
+                            "Refresh My Bookings for your current status.",
+                        )
+                        st.rerun()
+                    explanations = {
+                        "USE_BOOKING": "A place is available. Select Book workshop.",
+                        "DUPLICATE_ACTIVE": "You already have an active registration for this workshop.",
+                        "REGISTRATION_CLOSED": "Joining closed 24 hours before the start.",
+                        "INVALID_INPUT": "The server time is unavailable. Please try again.",
+                    }
+                    st.error(f"{outcome}: {explanations.get(outcome, 'Joining is unavailable.')}")
+
+
+def withdraw_from_view(registration_id: str) -> None:
+    # Streamlit calls this before rerendering, so a stale click retains Withdraw intent.
+    state = st.session_state.demo_state
+    selected_id = st.session_state.get("selected_user_id")
+    actor = resolve_actor(state, selected_id)
+    outcome, candidate = booking.withdraw_waitlist(
+        state, actor, registration_id, now=booking.server_now()
+    )
+    if outcome == "OK":
+        st.session_state.demo_state = candidate
+    st.session_state.withdrawal_feedback = (selected_id, outcome)
 
 
 def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
@@ -144,10 +187,26 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
     message = st.session_state.pop("cancellation_message", None)
     if message and message[0] == actor.user_id:
         st.success(message[1])
+    feedback = st.session_state.pop("withdrawal_feedback", None)
+    if feedback and feedback[0] == actor.user_id:
+        result = feedback[1]
+        if result == "OK":
+            st.success("Withdrawn from the waitlist. The registration remains in History.")
+        elif result == "ALREADY_CANCELLED":
+            st.info("ALREADY_CANCELLED: This registration is already cancelled.")
+        else:
+            explanations = {
+                "STATUS_CHANGED": "Refresh the view and check your current registration status.",
+                "WORKSHOP_STARTED": "Withdrawal closed when the workshop started.",
+                "INVALID_INPUT": "The server time is unavailable. Please try again.",
+            }
+            st.error(f"{result}: {explanations.get(result, 'Withdrawal is unavailable.')}")
     workshops = {workshop.workshop_id: workshop for workshop in state.workshops}
-    current, history = [], []
+    _, positions = list_own_waitlist_positions(state, actor)
+    current, waiting, history = [], [], []
     for record in registrations:
         workshop = workshops[record.workshop_id]
+        started = now.astimezone(UTC) >= workshop.starts_at.astimezone(UTC)
         row = {
             "Registration ID": record.registration_id,
             "Workshop ID": record.workshop_id,
@@ -160,11 +219,14 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
             "Created": format_instant(record.created_at),
             "Updated": format_instant(record.updated_at),
         }
-        if record.status == RegistrationStatus.CONFIRMED and now.astimezone(
-            UTC
-        ) < workshop.starts_at.astimezone(UTC):
+        if record.status == RegistrationStatus.CONFIRMED and not started:
             current.append(row)
+        elif record.status == RegistrationStatus.WAITLISTED and not started:
+            row["Position"] = positions[record.registration_id]
+            waiting.append(row)
         else:
+            if record.status == RegistrationStatus.WAITLISTED:
+                row["Waitlist"] = "Closed at workshop start"
             history.append(row)
     for title, rows in (("Upcoming confirmed bookings", current), ("History", history)):
         st.subheader(title)
@@ -172,6 +234,18 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
             st.dataframe(rows, hide_index=True, width="stretch")
         else:
             st.write("No records in this section for the selected identity.")
+    if waiting:
+        st.subheader("Your waitlist entries")
+        st.dataframe(waiting, hide_index=True, width="stretch")
+        for row in waiting:
+            registration_id = row["Registration ID"]
+            st.button(
+                f"Withdraw {registration_id}: {row['Workshop']}",
+                key=f"withdraw_{registration_id}",
+                on_click=withdraw_from_view,
+                args=(registration_id,),
+                help="You can withdraw a waiting entry until the workshop starts.",
+            )
     confirmed = [r for r in registrations if r.status == RegistrationStatus.CONFIRMED]
     if confirmed:
         st.subheader("Cancel a confirmed booking")
@@ -187,11 +261,19 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
                     state, actor, record.registration_id, now=server_now()
                 )
                 if outcome == "OK":
+                    promoted = confirmed_count(candidate, workshop.workshop_id) == confirmed_count(
+                        state, workshop.workshop_id
+                    )
+                    allocation = (
+                        "One waiting participant was promoted."
+                        if promoted
+                        else "One place released."
+                    )
                     st.session_state.demo_state = candidate
                     st.session_state.cancellation_message = (
                         actor.user_id,
                         f"Cancelled {record.registration_id}: {workshop.title}. "
-                        "One place released; the registration remains in History.",
+                        f"{allocation} The registration remains in History.",
                     )
                     st.rerun()
                 elif outcome == "ALREADY_CANCELLED":
@@ -206,19 +288,21 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
                         "UNKNOWN_WORKSHOP": "This workshop is no longer available.",
                         "INVALID_INPUT": "The server time is unavailable. Please try again.",
                         "REGISTRATION_CLOSED": "Confirmed cancellation closed 24 hours before the start.",
+                        "STATUS_CHANGED": "Refresh the view and check your current registration status.",
                     }
                     st.error(
                         f"{outcome}: {explanations.get(outcome, 'Cancellation is unavailable.')}"
                     )
     st.caption(
         "History includes cancelled records and started workshops; original statuses are retained. "
-        "Cancel only your own confirmed booking before its 24-hour cutoff."
+        "WAITLISTED means unconfirmed. Refresh this view for updates. There are no notifications."
     )
 
 
 def show_organiser(state: DemoState, actor: DemoUser) -> None:
     st.info("Create workshops and view confirmed rosters for your own workshops.")
-    default_day = server_now().astimezone(WORKSHOP_TIMEZONE).date() + timedelta(days=3)
+    display_now = server_now()
+    default_day = display_now.astimezone(WORKSHOP_TIMEZONE).date() + timedelta(days=3)
     defaults = {
         "new_title": "",
         "new_start_date": default_day,
@@ -371,10 +455,10 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
             return
         st.caption(f"Confirmed participants: {len(registrations)}")
         st.caption("Only confirmed participants are listed; cancelled history consumes no place.")
+        names = {user.user_id: user.display_name for user in state.users}
         if not registrations:
             st.write("No confirmed participants for this workshop.")
         else:
-            names = {user.user_id: user.display_name for user in state.users}
             st.dataframe(
                 [
                     {
@@ -384,6 +468,31 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                         "Status": row.status.value,
                     }
                     for row in registrations
+                ],
+                hide_index=True,
+                width="stretch",
+            )
+        outcome, waiters = get_workshop_waitlist(state, actor, target_id)
+        if outcome != "OK":
+            st.error(f"{outcome}: The waitlist is unavailable for this identity.")
+            return
+        st.markdown("#### Workshop waitlist")
+        target = next(workshop for workshop in workshops if workshop.workshop_id == target_id)
+        if display_now >= target.starts_at:
+            st.caption("Waitlist closed at workshop start. Remaining entries are historical.")
+        if not waiters:
+            st.write("No waiting participants for this workshop.")
+        else:
+            st.dataframe(
+                [
+                    {
+                        "Position": position,
+                        "Registration ID": row.registration_id,
+                        "Participant ID": row.participant_id,
+                        "Participant": names.get(row.participant_id, row.participant_id),
+                        "Status": row.status.value,
+                    }
+                    for position, row in enumerate(waiters, start=1)
                 ],
                 hide_index=True,
                 width="stretch",
@@ -407,7 +516,7 @@ def main() -> None:
 
     st.title("Outdoor Workshop Booking and Waitlist Management System")
     st.caption(
-        "V1.0 candidate: book workshops, cancel your confirmed bookings and retain your history."
+        "CR-01 candidate: book workshops, join a full workshop's waitlist and review your status."
     )
     required_roles = {"My Bookings": Role.PARTICIPANT, "Organiser": Role.ORGANISER}
 
@@ -472,9 +581,9 @@ def main() -> None:
     st.markdown("**Registration policy**")
     st.write(
         "Workshops must be created more than 24 hours before their start. "
-        "Booking and confirmed cancellation close 24 hours before the start. "
-        "The later waitlist release will allow withdrawal until the workshop starts, "
-        "while joining and promotion close at the 24-hour cutoff."
+        "Booking, confirmed cancellation, joining and promotion close 24 hours before the start. "
+        "Waiting participants may withdraw until the workshop starts. A waitlist entry is "
+        "unconfirmed. Use Refresh view for updates. There are no notifications."
     )
     st.caption("Workshop times will be displayed in Asia/Singapore.")
 

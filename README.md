@@ -1,8 +1,25 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**L0-L6 accepted. RH01-RH07 complete by author declaration. ACCEPT_RELEASE received for approved P, conditional. All actual merges/deployment fast-forwards: HUMAN_ONLY. V1.0 NOT_RELEASED; L7 NOT_STARTED.**
+**L8 CR-01 candidate. HUMAN_ACCEPTANCE_PENDING.** L7 planning was accepted. The published [V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0) and existing Streamlit deployment use baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. V1.1 remains unreleased.
 
-This classroom prototype helps participants find/book outdoor workshops and organisers prepare confirmed rosters. V1.0 integrates fixed demo identities, creation, browsing, booking, own cancellation/history and owned rosters. CR-01 waiting/FIFO is later work, after the separate V1.0 release decision. The author owns requirements, expected behaviour, review, acceptance and release; AI/Actions provide explicitly labelled technical work.
+## Review the CR-01 candidate
+
+Book and Join Waitlist are separate actions. Before the 24-hour cutoff, participants may explicitly join a full workshop. An effective confirmed cancellation promotes at most one waiter from the same workshop, in queue sequence order. A participant can withdraw their own waiting entry until the workshop starts. The confirmed roster is frozen from the 24-hour cutoff. Check My Bookings for the latest status. The app sends no notifications.
+
+The Streamlit UI uses `app.py`, business rules use `booking.py`, and pytest and Streamlit AppTest use `test_booking.py`. The classroom app uses fictional identities and temporary data inside one session. Independent sessions have independent demo state. Leo and Willy are registered in test fixtures only. Human validation of how promptly people can discover promotion and prepare is planned under VAL-03.
+
+Use the existing Python 3.12 environment with the locked development dependencies, or create a fresh environment and install `requirements-dev.txt` with `--require-hashes`. From this folder:
+
+```text
+python -m pytest test_booking.py
+python -m streamlit run app.py --server.address 127.0.0.1 --server.port 8521 --server.headless true
+```
+
+Review the [accepted change request](docs/changes/CR-01.md), the [L8 test map](docs/test-plan.md#l8-cr-01-verification), the [AI record](docs/ai-use.md#l8-cr-01-ai-use), and the [human checklist](docs/reviews/L8-human-review.md). The [candidate Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) use the existing single job and locks.
+
+## Historical V1.0 preparation notes
+
+Sections below preserve the V1.0 preparation snapshot for traceability. The published tag and Release record the subsequent main merge, deployment and publication. The author-only merge and deployment fast-forward requirement continues to apply.
 
 ## Current release authorisation and human-only execution
 

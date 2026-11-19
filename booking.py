@@ -1,4 +1,4 @@
-"""Workshop creation, booking/cancellation and selected-identity reads in memory."""
+"""Workshop booking, waiting and selected-identity reads in memory."""
 
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime, timedelta
@@ -15,9 +15,8 @@ class Role(StrEnum):
 
 
 class RegistrationStatus(StrEnum):
-    """V1.0 states only; waitlist states belong to the later CR-01 change."""
-
     CONFIRMED = "CONFIRMED"
+    WAITLISTED = "WAITLISTED"
     CANCELLED = "CANCELLED"
 
 
@@ -152,12 +151,17 @@ class Registration:
     status: RegistrationStatus
     created_at: datetime
     updated_at: datetime
+    queue_seq: int | None = None
 
     def __post_init__(self) -> None:
         _require_aware(self.created_at, "created_at")
         _require_aware(self.updated_at, "updated_at")
         if self.updated_at.astimezone(UTC) < self.created_at.astimezone(UTC):
             raise ValueError("updated_at must not precede created_at.")
+        if self.queue_seq is not None and (type(self.queue_seq) is not int or self.queue_seq < 1):
+            raise ValueError("queue_seq must be a positive integer.")
+        if self.status == RegistrationStatus.WAITLISTED and self.queue_seq is None:
+            raise ValueError("A waiting registration requires a queue sequence.")
 
 
 @dataclass
@@ -275,10 +279,34 @@ def confirmed_count(state: DemoState, workshop_id: str) -> int:
     )
 
 
+def _ordered_waiters(state: DemoState, workshop_id: str) -> list[Registration]:
+    return sorted(
+        (
+            row
+            for row in state.registrations
+            if row.workshop_id == workshop_id and row.status == RegistrationStatus.WAITLISTED
+        ),
+        key=lambda row: row.queue_seq,
+    )
+
+
 def book_workshop(
     state: DemoState, actor: DemoUser | None, workshop_id: str, *, now: datetime
 ) -> tuple[str, DemoState]:
-    """Book serially against the current state; never mutate the input snapshot."""
+    """Book directly when a confirmed place is available."""
+    return _register(state, actor, workshop_id, now=now, waiting=False)
+
+
+def join_waitlist(
+    state: DemoState, actor: DemoUser | None, workshop_id: str, *, now: datetime
+) -> tuple[str, DemoState]:
+    """Join the queue for a full workshop through a separate explicit action."""
+    return _register(state, actor, workshop_id, now=now, waiting=True)
+
+
+def _register(
+    state: DemoState, actor: DemoUser | None, workshop_id: str, *, now: datetime, waiting: bool
+) -> tuple[str, DemoState]:
     permission = check_permission(state, actor, Role.PARTICIPANT)
     if permission != "OK":
         return permission, state
@@ -295,19 +323,36 @@ def book_workshop(
     if any(
         row.workshop_id == workshop_id
         and row.participant_id == actor.user_id
-        and row.status == RegistrationStatus.CONFIRMED
+        and row.status in (RegistrationStatus.CONFIRMED, RegistrationStatus.WAITLISTED)
         for row in state.registrations
     ):
         return "DUPLICATE_ACTIVE", state
-    if confirmed_count(state, workshop_id) >= workshop.capacity:
+    full = confirmed_count(state, workshop_id) >= workshop.capacity
+    if waiting and not full:
+        return "USE_BOOKING", state
+    if not waiting and full:
         return "FULL", state
+    if not waiting and _ordered_waiters(state, workshop_id):
+        return "INTEGRITY_ERROR", state
+    queue_seq = None
+    if waiting:
+        # Retained history is the per-workshop high-water mark, including promoted rows.
+        queue_seq = 1 + max(
+            (
+                row.queue_seq
+                for row in state.registrations
+                if row.workshop_id == workshop_id and row.queue_seq is not None
+            ),
+            default=0,
+        )
     registration = Registration(
         registration_id=f"registration-{state.next_registration_id}",
         workshop_id=workshop_id,
         participant_id=actor.user_id,
-        status=RegistrationStatus.CONFIRMED,
+        status=RegistrationStatus.WAITLISTED if waiting else RegistrationStatus.CONFIRMED,
         created_at=now,
         updated_at=now,
+        queue_seq=queue_seq,
     )
     return "OK", replace(
         state,
@@ -321,7 +366,25 @@ def book_workshop(
 def cancel_registration(
     state: DemoState, actor: DemoUser | None, registration_id: str, *, now: datetime
 ) -> tuple[str, DemoState]:
-    """Cancel one owned confirmation before C; retain its ID and immutable history."""
+    """Cancel an owned confirmation before C and promote at most one waiter."""
+    return _cancel(state, actor, registration_id, now=now, expected=RegistrationStatus.CONFIRMED)
+
+
+def withdraw_waitlist(
+    state: DemoState, actor: DemoUser | None, registration_id: str, *, now: datetime
+) -> tuple[str, DemoState]:
+    """Withdraw an owned waiting registration before S without allocating a place."""
+    return _cancel(state, actor, registration_id, now=now, expected=RegistrationStatus.WAITLISTED)
+
+
+def _cancel(
+    state: DemoState,
+    actor: DemoUser | None,
+    registration_id: str,
+    *,
+    now: datetime,
+    expected: RegistrationStatus,
+) -> tuple[str, DemoState]:
     registration = next(
         (row for row in state.registrations if row.registration_id == registration_id), None
     )
@@ -340,22 +403,30 @@ def cancel_registration(
     workshop = next((w for w in state.workshops if w.workshop_id == registration.workshop_id), None)
     if workshop is None:
         return "UNKNOWN_WORKSHOP", state
+    if registration.status != expected:
+        return "STATUS_CHANGED", state
     try:
         _require_aware(now, "now")
     except ValueError:
         return "INVALID_INPUT", state
     now = now.astimezone(UTC)
-    if now >= workshop.registration_cutoff.astimezone(UTC):
-        return "REGISTRATION_CLOSED", state
-    cancelled = replace(registration, status=RegistrationStatus.CANCELLED, updated_at=now)
+    waiting = expected == RegistrationStatus.WAITLISTED
+    deadline = workshop.starts_at if waiting else workshop.registration_cutoff
+    if now >= deadline.astimezone(UTC):
+        return ("WORKSHOP_STARTED" if waiting else "REGISTRATION_CLOSED"), state
+    updates = {
+        registration_id: replace(registration, status=RegistrationStatus.CANCELLED, updated_at=now)
+    }
+    if not waiting and (waiters := _ordered_waiters(state, workshop.workshop_id)):
+        first = waiters[0]
+        updates[first.registration_id] = replace(
+            first, status=RegistrationStatus.CONFIRMED, updated_at=now
+        )
     return "OK", replace(
         state,
         users=state.users.copy(),
         workshops=state.workshops.copy(),
-        registrations=[
-            cancelled if row.registration_id == registration_id else row
-            for row in state.registrations
-        ],
+        registrations=[updates.get(row.registration_id, row) for row in state.registrations],
     )
 
 
@@ -367,6 +438,22 @@ def list_own_registrations(
     if permission != "OK":
         return permission, ()
     return "OK", tuple(row for row in state.registrations if row.participant_id == actor.user_id)
+
+
+def list_own_waitlist_positions(
+    state: DemoState, actor: DemoUser | None
+) -> tuple[str, dict[str, int]]:
+    """Return only the selected participant's positions within each workshop queue."""
+    outcome, own = list_own_registrations(state, actor)
+    if outcome != "OK":
+        return outcome, {}
+    workshop_ids = {row.workshop_id for row in own if row.status == RegistrationStatus.WAITLISTED}
+    return "OK", {
+        row.registration_id: position
+        for workshop_id in workshop_ids
+        for position, row in enumerate(_ordered_waiters(state, workshop_id), start=1)
+        if row.participant_id == actor.user_id
+    }
 
 
 def list_owned_workshops(
@@ -382,19 +469,34 @@ def get_workshop_roster(
     state: DemoState, actor: DemoUser | None, workshop_id: str
 ) -> tuple[str, tuple[Registration, ...]]:
     """Check the actual target's stored owner before returning confirmed records."""
-    workshop = next((w for w in state.workshops if w.workshop_id == workshop_id), None)
-    permission = check_permission(
-        state, actor, Role.ORGANISER, owner_id=workshop.owner_id if workshop is not None else None
-    )
-    if permission != "OK":
-        return permission, ()
-    if workshop is None:
-        return "UNKNOWN_WORKSHOP", ()
+    outcome = _check_roster_access(state, actor, workshop_id)
+    if outcome != "OK":
+        return outcome, ()
     return "OK", tuple(
         row
         for row in state.registrations
         if row.workshop_id == workshop_id and row.status == RegistrationStatus.CONFIRMED
     )
+
+
+def get_workshop_waitlist(
+    state: DemoState, actor: DemoUser | None, workshop_id: str
+) -> tuple[str, tuple[Registration, ...]]:
+    """Return a workshop's FIFO queue to its organiser."""
+    outcome = _check_roster_access(state, actor, workshop_id)
+    if outcome != "OK":
+        return outcome, ()
+    return "OK", tuple(_ordered_waiters(state, workshop_id))
+
+
+def _check_roster_access(state: DemoState, actor: DemoUser | None, workshop_id: str) -> str:
+    workshop = next((w for w in state.workshops if w.workshop_id == workshop_id), None)
+    permission = check_permission(
+        state, actor, Role.ORGANISER, owner_id=workshop.owner_id if workshop is not None else None
+    )
+    if permission != "OK":
+        return permission
+    return "UNKNOWN_WORKSHOP" if workshop is None else "OK"
 
 
 def create_demo_data(now: datetime) -> DemoState:

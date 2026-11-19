@@ -1,5 +1,11 @@
 # Project Requirements Business Rules and Risks
 
+## L8 candidate status
+
+Published V1.0 is baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. L7 planning is accepted. The L8 candidate applies FR-08 through FR-11 and D-01 from the [accepted CR-01](docs/changes/CR-01.md), with the existing baseline rules retained. L8 human acceptance and VAL-03 are pending. The dated sections below retain the earlier baseline history.
+
+## Historical V1.0 baseline records
+
 L0 revision 3 and L1-L6 are accepted. On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared L6 UI/H01-H07 and VAL-01/02 complete and supplied ACCEPT_LOOP for 5c1e3ff92168b34397e2bee2ace85431ae4d124e. Current: L6 ACCEPT_LOOP; L7 NOT_STARTED / HELD_BY_AUTHOR; main merge/tag/release NOT_AUTHORISED. Canonical FR/BR/QR/risk definitions remain unchanged. [Current L6 acceptance](docs/reviews/L6-human-review.md#current-human-acceptance) | [Accepted L5](docs/reviews/L5-human-review.md#current-human-acceptance) | [Tests](docs/test-plan.md).
 
 ## L6 integration and deployment subset

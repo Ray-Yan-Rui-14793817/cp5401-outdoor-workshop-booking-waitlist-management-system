@@ -3111,3 +3111,581 @@ def test_l6_runtime_identity_logs_once_without_changing_business_state(
         line.startswith("L6_RUNTIME_IDENTITY ") for line in capsys.readouterr().out.splitlines()
     )
     assert not app.exception and app.session_state.demo_state is state and state == before
+
+
+@pytest.fixture
+def l8_state(workshop: Workshop) -> DemoState:
+    state = create_demo_state()
+    state.users.extend(
+        [
+            DemoUser("participant-leo", "Leo", Role.PARTICIPANT),
+            DemoUser("participant-willy", "Willy", Role.PARTICIPANT),
+        ]
+    )
+    state.workshops = [
+        replace(workshop, capacity=1),
+        replace(workshop, workshop_id="workshop-2", owner_id="organiser-2", capacity=1),
+    ]
+    state.registrations = [
+        Registration(
+            "registration-1", "workshop-1", "participant-1", RegistrationStatus.CONFIRMED, NOW, NOW
+        ),
+        Registration(
+            "registration-2", "workshop-2", "participant-1", RegistrationStatus.CONFIRMED, NOW, NOW
+        ),
+    ]
+    state.next_workshop_id = 3
+    state.next_registration_id = 3
+    return state
+
+
+def l8_participant(state: DemoState, user_id: str) -> DemoUser:
+    actor = resolve_actor(state, user_id)
+    assert actor is not None and actor.user_id == user_id and actor.role is Role.PARTICIPANT
+    return actor
+
+
+def test_l8_explicit_join_keeps_full_book_and_confirmed_counts(l8_state: DemoState) -> None:
+    state = l8_state
+    before = deepcopy(state)
+    leo = l8_participant(state, "participant-leo")
+    assert booking.book_workshop(state, leo, "workshop-1", now=NOW) == ("FULL", state)
+    outcome, joined = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    stamp = NOW.astimezone(UTC)
+    record = Registration(
+        "registration-3", "workshop-1", leo.user_id, RegistrationStatus.WAITLISTED, stamp, stamp, 1
+    )
+    assert outcome == "OK" and joined == replace(
+        before, registrations=[*before.registrations, record], next_registration_id=4
+    )
+    assert (
+        state == before
+        and joined.users is not state.users
+        and joined.workshops is not state.workshops
+    )
+    assert confirmed_count(joined, "workshop-1") == 1
+    assert booking.book_workshop(joined, leo, "workshop-1", now=NOW) == ("DUPLICATE_ACTIVE", joined)
+    assert booking.join_waitlist(joined, leo, "workshop-1", now=NOW) == ("DUPLICATE_ACTIVE", joined)
+    assert booking.join_waitlist(
+        state, l8_participant(state, "participant-1"), "workshop-1", now=NOW
+    ) == ("DUPLICATE_ACTIVE", state)
+    willy = l8_participant(joined, "participant-willy")
+    assert booking.book_workshop(joined, willy, "workshop-1", now=NOW) == ("FULL", joined)
+    assert joined.registrations == [*before.registrations, record]
+
+
+def test_l8_spare_seat_requires_book_and_inconsistent_queue_prevents_bypass(
+    l8_state: DemoState,
+) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    state.registrations.pop(0)
+    before = deepcopy(state)
+    outcome, returned = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "USE_BOOKING" and returned is state and state == before
+    state.registrations.append(
+        Registration(
+            "registration-3",
+            "workshop-1",
+            "participant-willy",
+            RegistrationStatus.WAITLISTED,
+            NOW,
+            NOW,
+            1,
+        )
+    )
+    state.next_registration_id = 4
+    before = deepcopy(state)
+    outcome, returned = booking.book_workshop(state, leo, "workshop-1", now=NOW)
+    assert outcome == "INTEGRITY_ERROR" and returned is state and state == before
+
+
+@pytest.mark.parametrize("reverse_time", [False, True], ids=["equal-times", "later-sequence-older"])
+def test_l8_fifo_ignores_list_names_timestamps_and_other_queues(
+    l8_state: DemoState, reverse_time: bool
+) -> None:
+    state = l8_state
+    confirmed = replace(state.registrations[0], registration_id="registration-10")
+    early = Registration(
+        "registration-13",
+        "workshop-1",
+        "participant-willy",
+        RegistrationStatus.WAITLISTED,
+        NOW,
+        NOW,
+        3,
+    )
+    leo_time = NOW - timedelta(seconds=1) if reverse_time else NOW
+    later = Registration(
+        "registration-18",
+        "workshop-1",
+        "participant-leo",
+        RegistrationStatus.WAITLISTED,
+        leo_time,
+        leo_time,
+        8,
+    )
+    withdrawn = Registration(
+        "registration-11", "workshop-1", "participant-2", RegistrationStatus.CANCELLED, NOW, NOW, 1
+    )
+    foreign = replace(
+        withdrawn,
+        registration_id="registration-21",
+        workshop_id="workshop-2",
+        status=RegistrationStatus.WAITLISTED,
+    )
+    state.registrations = [later, confirmed, withdrawn, foreign, early, state.registrations[1]]
+    state.next_registration_id = 30
+    before = deepcopy(state)
+    decision = datetime(2026, 12, 9, 8, 59, 59, tzinfo=WORKSHOP_TIMEZONE)
+    stamp = decision.astimezone(UTC)
+    owner = l8_participant(state, "participant-1")
+    leo = l8_participant(state, "participant-leo")
+    willy = l8_participant(state, "participant-willy")
+    assert booking.list_own_waitlist_positions(state, willy) == ("OK", {"registration-13": 1})
+    assert booking.list_own_waitlist_positions(state, leo) == ("OK", {"registration-18": 2})
+    assert booking.get_workshop_waitlist(
+        state, resolve_actor(state, "organiser-1"), "workshop-1"
+    ) == ("OK", (early, later))
+    outcome, result = booking.cancel_registration(state, owner, "registration-10", now=decision)
+    expected = [
+        later,
+        replace(confirmed, status=RegistrationStatus.CANCELLED, updated_at=stamp),
+        withdrawn,
+        foreign,
+        replace(early, status=RegistrationStatus.CONFIRMED, updated_at=stamp),
+        before.registrations[-1],
+    ]
+    assert outcome == "OK" and result == replace(before, registrations=expected)
+    assert state == before and result.registrations is not state.registrations
+    assert confirmed_count(result, "workshop-1") == confirmed_count(result, "workshop-2") == 1
+    assert booking.list_own_waitlist_positions(result, leo) == ("OK", {"registration-18": 1})
+    assert booking.list_own_waitlist_positions(result, willy) == ("OK", {})
+    assert booking.cancel_registration(
+        result, owner, "registration-10", now=decision + timedelta(seconds=1)
+    ) == ("ALREADY_CANCELLED", result)
+
+
+@pytest.mark.parametrize("another_waiter", [False, True], ids=["empty-queue", "active-head"])
+def test_l8_withdraw_and_rejoin_after_highest_sequence_preserves_history(
+    l8_state: DemoState, another_waiter: bool
+) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    willy = l8_participant(state, "participant-willy")
+    if another_waiter:
+        outcome, state = booking.join_waitlist(state, willy, "workshop-1", now=NOW)
+        assert outcome == "OK"
+    outcome, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    target = state.registrations[-1]
+    before = deepcopy(state)
+    withdraw_at = NOW + timedelta(minutes=1)
+    outcome, withdrawn = booking.withdraw_waitlist(
+        state, leo, target.registration_id, now=withdraw_at
+    )
+    assert outcome == "OK" and state == before
+    expected = replace(
+        target, status=RegistrationStatus.CANCELLED, updated_at=withdraw_at.astimezone(UTC)
+    )
+    assert withdrawn == replace(before, registrations=[*before.registrations[:-1], expected])
+    outcome, result = booking.join_waitlist(withdrawn, leo, "workshop-1", now=withdraw_at)
+    assert outcome == "OK"
+    rejoined = result.registrations[-1]
+    assert (rejoined.registration_id, rejoined.queue_seq) == (
+        ("registration-5", 3) if another_waiter else ("registration-4", 2)
+    )
+    assert result.registrations[:-1] == withdrawn.registrations
+    assert result.next_registration_id == withdrawn.next_registration_id + 1
+    next_outcome, other = booking.join_waitlist(result, willy, "workshop-2", now=withdraw_at)
+    assert next_outcome == "OK" and other.registrations[-1].queue_seq == 1
+    assert other.registrations[:-1] == result.registrations
+
+
+@pytest.mark.parametrize("join_first", [True, False], ids=["join-then-cancel", "cancel-then-join"])
+def test_l8_serial_actions_use_the_previous_result(l8_state: DemoState, join_first: bool) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    owner = l8_participant(state, "participant-1")
+    if join_first:
+        outcome, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+        assert outcome == "OK"
+    outcome, cancelled = booking.cancel_registration(state, owner, "registration-1", now=NOW)
+    assert outcome == "OK" and cancelled.registrations[0].status is RegistrationStatus.CANCELLED
+    if join_first:
+        assert cancelled.registrations[-1].registration_id == "registration-3"
+        assert cancelled.registrations[-1].status is RegistrationStatus.CONFIRMED
+        assert cancelled.registrations[-1].queue_seq == 1
+        assert cancelled.next_registration_id == state.next_registration_id
+    else:
+        assert confirmed_count(cancelled, "workshop-1") == 0
+        assert booking.join_waitlist(cancelled, leo, "workshop-1", now=NOW) == (
+            "USE_BOOKING",
+            cancelled,
+        )
+        outcome, booked = booking.book_workshop(cancelled, leo, "workshop-1", now=NOW)
+        assert outcome == "OK" and booked.registrations[-1].status is RegistrationStatus.CONFIRMED
+        assert booked.registrations[-1].queue_seq is None
+
+
+@pytest.mark.parametrize(
+    ("offset", "allocation", "withdrawal"),
+    [
+        (-1, "OK", "OK"),
+        (0, "REGISTRATION_CLOSED", "OK"),
+        (1, "REGISTRATION_CLOSED", "OK"),
+        (86399, "REGISTRATION_CLOSED", "OK"),
+        (86400, "REGISTRATION_CLOSED", "WORKSHOP_STARTED"),
+        (86401, "REGISTRATION_CLOSED", "WORKSHOP_STARTED"),
+    ],
+)
+def test_l8_cutoff_and_start_distinguish_effective_operations(
+    l8_state: DemoState, offset: int, allocation: str, withdrawal: str
+) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    willy = l8_participant(state, "participant-willy")
+    owner = l8_participant(state, "participant-1")
+    outcome, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    before = deepcopy(state)
+    cutoff = datetime(2026, 12, 9, 9, tzinfo=WORKSHOP_TIMEZONE)
+    decision = cutoff + timedelta(seconds=offset)
+    outcome, joined = booking.join_waitlist(state, willy, "workshop-1", now=decision)
+    assert outcome == allocation
+    if allocation == "OK":
+        assert joined.registrations[-1].queue_seq == 2 and joined.next_registration_id == 5
+    else:
+        assert joined is state
+    outcome, cancelled = booking.cancel_registration(state, owner, "registration-1", now=decision)
+    assert outcome == allocation
+    if allocation == "OK":
+        assert [row.status for row in cancelled.registrations] == [
+            RegistrationStatus.CANCELLED,
+            RegistrationStatus.CONFIRMED,
+            RegistrationStatus.CONFIRMED,
+        ]
+        assert cancelled.next_registration_id == 4
+    else:
+        assert cancelled is state
+    outcome, withdrawn = booking.withdraw_waitlist(state, leo, "registration-3", now=decision)
+    assert outcome == withdrawal
+    if withdrawal == "OK":
+        assert withdrawn == replace(
+            before,
+            registrations=[
+                *before.registrations[:2],
+                replace(
+                    before.registrations[2],
+                    status=RegistrationStatus.CANCELLED,
+                    updated_at=decision.astimezone(UTC),
+                ),
+            ],
+        )
+        assert booking.withdraw_waitlist(
+            withdrawn, leo, "registration-3", now=cutoff + timedelta(days=1)
+        ) == ("ALREADY_CANCELLED", withdrawn)
+    else:
+        assert withdrawn is state
+    assert state == before
+
+
+@pytest.mark.parametrize("offset", [-1, 0, 1, 86400])
+def test_l8_d01_preserves_confirmed_booking_after_stale_withdrawal(
+    l8_state: DemoState, offset: int
+) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    owner = l8_participant(state, "participant-1")
+    outcome, joined = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    outcome, promoted = booking.cancel_registration(joined, owner, "registration-1", now=NOW)
+    assert outcome == "OK" and promoted.registrations[-1].status is RegistrationStatus.CONFIRMED
+    before = deepcopy(promoted)
+    decision = datetime(2026, 12, 9, 9, tzinfo=WORKSHOP_TIMEZONE) + timedelta(seconds=offset)
+    outcome, same = booking.withdraw_waitlist(promoted, leo, "registration-3", now=decision)
+    assert outcome == "STATUS_CHANGED" and same is promoted and same == before
+
+
+def test_l8_d01_checks_identity_owner_target_and_noop_before_status_or_clock(
+    l8_state: DemoState,
+) -> None:
+    state = l8_state
+    owner = l8_participant(state, "participant-1")
+    leo = l8_participant(state, "participant-leo")
+    organizer = resolve_actor(state, "organiser-1")
+    invalid_clock = NOW.replace(tzinfo=None)
+    before = deepcopy(state)
+    cases = [
+        (organizer, "registration-1", "FORBIDDEN"),
+        (leo, "registration-1", "FORBIDDEN"),
+        (None, "registration-1", "INVALID_ACTOR"),
+        (owner, "missing", "UNKNOWN_REGISTRATION"),
+        (owner, "registration-1", "STATUS_CHANGED"),
+    ]
+    for actor, registration_id, expected in cases:
+        outcome, result = booking.withdraw_waitlist(
+            state, actor, registration_id, now=invalid_clock
+        )
+        assert outcome == expected and result is state and state == before
+    missing_workshop = replace(state, workshops=state.workshops[1:])
+    assert booking.withdraw_waitlist(
+        missing_workshop, owner, "registration-1", now=invalid_clock
+    ) == ("UNKNOWN_WORKSHOP", missing_workshop)
+    outcome, joined = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    assert booking.cancel_registration(joined, leo, "registration-3", now=invalid_clock) == (
+        "STATUS_CHANGED",
+        joined,
+    )
+    assert booking.withdraw_waitlist(joined, leo, "registration-3", now=invalid_clock) == (
+        "INVALID_INPUT",
+        joined,
+    )
+    outcome, withdrawn = booking.withdraw_waitlist(joined, leo, "registration-3", now=NOW)
+    assert outcome == "OK"
+    for action in (booking.withdraw_waitlist, booking.cancel_registration):
+        outcome, same = action(withdrawn, leo, "registration-3", now=invalid_clock)
+        assert outcome == "ALREADY_CANCELLED" and same is withdrawn
+        assert action(withdrawn, owner, "registration-3", now=invalid_clock) == (
+            "FORBIDDEN",
+            withdrawn,
+        )
+
+
+@pytest.mark.parametrize("bad_actor", ["unknown", "organiser-1", "participant-leo"])
+def test_l8_waitlist_reads_and_mutations_respect_actor_and_workshop_scope(
+    l8_state: DemoState, bad_actor: str
+) -> None:
+    state = l8_state
+    willy = l8_participant(state, "participant-willy")
+    outcome, state = booking.join_waitlist(state, willy, "workshop-2", now=NOW)
+    assert outcome == "OK"
+    before = deepcopy(state)
+    actor = resolve_actor(state, bad_actor)
+    expected = "INVALID_ACTOR" if actor is None else "FORBIDDEN"
+    assert booking.get_workshop_waitlist(state, actor, "workshop-2") == (expected, ())
+    assert booking.withdraw_waitlist(state, actor, "registration-3", now=NOW) == (expected, state)
+    assert booking.get_workshop_waitlist(
+        state, resolve_actor(state, "organiser-2"), "workshop-2"
+    ) == ("OK", (state.registrations[-1],))
+    assert state == before
+
+
+def test_l8_promotion_fault_does_not_adopt_half_cancellation(
+    l8_state: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    outcome, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    before = deepcopy(state)
+    original_replace = booking.replace
+    attempted_statuses = []
+
+    def fail_on_promotion(value: object, **changes: object):
+        if isinstance(value, Registration):
+            attempted_statuses.append(changes["status"])
+            if value.status is RegistrationStatus.WAITLISTED:
+                raise RuntimeError("injected promotion construction failure")
+        return original_replace(value, **changes)
+
+    monkeypatch.setattr(booking, "replace", fail_on_promotion)
+    with pytest.raises(RuntimeError, match="injected promotion construction failure"):
+        booking.cancel_registration(
+            state, l8_participant(state, "participant-1"), "registration-1", now=NOW
+        )
+    assert attempted_statuses == [RegistrationStatus.CANCELLED, RegistrationStatus.CONFIRMED]
+    assert state == before and confirmed_count(state, "workshop-1") == 1
+
+
+def test_l8_ui_join_promote_refresh_and_read_owned_queue(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(create_demo_data(NOW))
+    identity = app.sidebar.selectbox(key="selected_user_id")
+    identity.set_value("participant-1").run()
+    assert not any("Leo" in option or "Willy" in option for option in identity.options)
+    app.button(key="book_workshop-2").click().run()
+    assert any("FULL:" in error.value for error in app.error)
+    assert len(app.session_state.demo_state.registrations) == 4
+    app.button(key="join_workshop-2").click().run()
+    assert any("WAITLISTED" in message.value for message in app.success)
+    assert confirmed_count(app.session_state.demo_state, "workshop-2") == 1
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert any(
+        "Position" in frame.value and list(frame.value["Position"]) == [1]
+        for frame in app.dataframe
+    )
+    assert app.button(key="withdraw_registration-5")
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.selectbox(key="roster_workshop_id").set_value("workshop-2").run()
+    assert list(app.dataframe[0].value["Participant"]) == ["Sam"]
+    assert list(app.dataframe[1].value["Participant"]) == ["Xingjian"]
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-1").run()
+    assert all(
+        "registration-5" not in list(frame.value["Registration ID"]) for frame in app.dataframe
+    )
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert not any(str(button.key).startswith("withdraw_") for button in app.button)
+    app.button(key="cancel_registration-2").click().run()
+    assert any("One waiting participant was promoted" in message.value for message in app.success)
+    assert list(app.dataframe[0].value["Status"]) == ["CANCELLED", "CANCELLED"]
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    app.sidebar.button(key="refresh_view").click().run()
+    assert not app.exception
+    assert "registration-5" in list(app.dataframe[0].value["Registration ID"])
+    assert set(app.dataframe[0].value["Status"]) == {"CONFIRMED"}
+    assert app.session_state.demo_state.next_registration_id == 6
+
+
+def test_l8_ui_stale_withdrawal_uses_latest_state_and_original_intent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    state = create_demo_data(NOW)
+    outcome, state = booking.join_waitlist(
+        state, l8_participant(state, "participant-1"), "workshop-2", now=NOW
+    )
+    assert outcome == "OK"
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    stale = app.button(key="withdraw_registration-5")
+    outcome, promoted = booking.cancel_registration(
+        state, l8_participant(state, "participant-2"), "registration-2", now=NOW
+    )
+    assert outcome == "OK"
+    before = deepcopy(promoted)
+    app.session_state.demo_state = promoted
+    stale.click().run()
+    assert not app.exception and app.session_state.demo_state is promoted and promoted == before
+    assert any("STATUS_CHANGED: Refresh" in error.value for error in app.error)
+    assert not any(str(button.key).startswith("withdraw_") for button in app.button)
+
+
+@pytest.mark.parametrize(
+    "at_start", [False, True], ids=["withdraw-at-cutoff", "stale-withdraw-at-start"]
+)
+def test_l8_ui_uses_fresh_withdrawal_deadline(
+    monkeypatch: pytest.MonkeyPatch, at_start: bool
+) -> None:
+    state = create_demo_data(NOW)
+    outcome, joined = booking.join_waitlist(
+        state, l8_participant(state, "participant-1"), "workshop-2", now=NOW
+    )
+    assert outcome == "OK"
+    workshop = state.workshops[1]
+    monkeypatch.setattr(booking, "server_now", lambda: workshop.registration_cutoff)
+    app = app_with_state(joined)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    assert app.button(key="join_workshop-2").disabled
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert not app.button(key="withdraw_registration-5").disabled
+    before = deepcopy(joined)
+    if at_start:
+        monkeypatch.setattr(booking, "server_now", lambda: workshop.starts_at)
+    app.button(key="withdraw_registration-5").click().run()
+    assert not app.exception and confirmed_count(app.session_state.demo_state, "workshop-2") == 1
+    row = app.session_state.demo_state.registrations[-1]
+    if at_start:
+        assert (
+            row.status is RegistrationStatus.WAITLISTED and app.session_state.demo_state is joined
+        )
+        assert any("WORKSHOP_STARTED" in error.value for error in app.error)
+        assert any(
+            "Closed at workshop start" in list(frame.value.get("Waitlist", []))
+            for frame in app.dataframe
+        )
+    else:
+        assert row.status is RegistrationStatus.CANCELLED and row.queue_seq == 1
+        assert any("remains in History" in message.value for message in app.success)
+    assert joined == before and app.session_state.demo_state.next_registration_id == 6
+
+
+def test_l8_withdrawn_head_stays_cancelled_and_promoted_history_retains_sequence(
+    l8_state: DemoState,
+) -> None:
+    state = l8_state
+    leo = l8_participant(state, "participant-leo")
+    willy = l8_participant(state, "participant-willy")
+    owner = l8_participant(state, "participant-1")
+    outcome, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    outcome, state = booking.join_waitlist(state, willy, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    outcome, state = booking.withdraw_waitlist(state, leo, "registration-3", now=NOW)
+    assert outcome == "OK" and state.registrations[0].registration_id == "registration-1"
+    assert state.registrations[0].status is RegistrationStatus.CONFIRMED
+    assert booking.list_own_waitlist_positions(state, willy) == ("OK", {"registration-4": 1})
+    outcome, state = booking.cancel_registration(state, owner, "registration-1", now=NOW)
+    assert outcome == "OK"
+    assert state.registrations[2].status is RegistrationStatus.CANCELLED
+    assert state.registrations[3].status is RegistrationStatus.CONFIRMED
+    assert state.registrations[3].queue_seq == 2
+    outcome, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    assert (state.registrations[-1].registration_id, state.registrations[-1].queue_seq) == (
+        "registration-5",
+        3,
+    )
+
+
+def test_l8_ui_join_at_fresh_cutoff_preserves_open_view_snapshot(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = create_demo_data(NOW)
+    cutoff = state.workshops[1].registration_cutoff
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    before = deepcopy(state)
+    decision_times = iter((NOW, cutoff))
+    monkeypatch.setattr(booking, "server_now", lambda: next(decision_times))
+    app.button(key="join_workshop-2").click().run()
+    assert not app.exception and not app.success
+    assert any("REGISTRATION_CLOSED" in error.value for error in app.error)
+    assert app.session_state.demo_state is state and state == before
+
+
+def test_l8_ui_never_adopts_partial_promotion_on_fault(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    state = create_demo_data(NOW)
+    outcome, state = booking.join_waitlist(
+        state, l8_participant(state, "participant-1"), "workshop-2", now=NOW
+    )
+    assert outcome == "OK"
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    before = deepcopy(state)
+    original_replace = booking.replace
+    attempted = []
+
+    def fail_after_cancellation(value: object, **changes: object):
+        if isinstance(value, Registration):
+            attempted.append(changes["status"])
+            if value.status is RegistrationStatus.WAITLISTED:
+                raise RuntimeError("injected UI promotion failure")
+        return original_replace(value, **changes)
+
+    monkeypatch.setattr(booking, "replace", fail_after_cancellation)
+    app.button(key="cancel_registration-2").click().run()
+    assert attempted == [RegistrationStatus.CANCELLED, RegistrationStatus.CONFIRMED]
+    assert app.exception and not app.success
+    assert app.session_state.demo_state is state and state == before
+
+
+def test_l8_equal_display_names_keep_distinct_queue_entries(l8_state: DemoState) -> None:
+    state = l8_state
+    state.users[-1] = replace(state.users[-1], display_name="Leo")
+    leo = l8_participant(state, "participant-leo")
+    willy = l8_participant(state, "participant-willy")
+    assert leo.display_name == willy.display_name and leo.user_id != willy.user_id
+    first, state = booking.join_waitlist(state, leo, "workshop-1", now=NOW)
+    second, state = booking.join_waitlist(state, willy, "workshop-1", now=NOW)
+    assert (first, second) == ("OK", "OK")
+    assert booking.list_own_waitlist_positions(state, leo) == ("OK", {"registration-3": 1})
+    assert booking.list_own_waitlist_positions(state, willy) == ("OK", {"registration-4": 2})
+    assert [row.participant_id for row in state.registrations[-2:]] == [leo.user_id, willy.user_id]

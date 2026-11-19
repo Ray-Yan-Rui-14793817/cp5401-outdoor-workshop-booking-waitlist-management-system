@@ -1,5 +1,22 @@
 # Test Plan and Traceability
 
+## L8 CR-01 verification
+
+The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and the frozen V1.0 test suite define the expected results. L8 adds 31 cases to the 317 baseline cases in `test_booking.py`. Compare the exact JUnit case identities to the recorded V1.0 inventory. Every original test, fixture and assertion is retained in the original source prefix.
+
+| Requirement and planned evidence | L8 verification |
+|---|---|
+| AC-01, AC-06 / W01-W04, W15, I01-I02 | Separate FULL and Join, USE_BOOKING with spare capacity, active duplicates across both statuses, and spare-capacity queue integrity guard. Check exact records and allocation counters. |
+| AC-02 / W05-W07, W10-W11, I03-I05 | Use registered Leo and Willy fixtures with conflicting alphabetical, timestamp and stored-list orders, a withdrawn lower sequence and another workshop. Assert one exact promotion, shared decision instant, correct capacity and unchanged input. Cover no-waiter cancellation, both serial action orders, repeated cancellation and a promotion fault before adoption. |
+| AC-03 / W08-W09, W12, W16 | Withdraw the head and tail, keep the confirmation and history, and rejoin with a fresh ID above the historic sequence maximum. Check equal names and distinct IDs, allowed withdrawal at C and refusal at S. |
+| AC-04 and D-01 / W12, I10, CRV-01 | Use independent active records at C-1s, C, C+1s, S-1s, S and S+1s. Submit stale Join/Withdraw controls and assert fresh trusted time. Check actor, owner, unknown reference, cancelled no-op and active mismatch ordering and full state equality. |
+| AC-05 / W13-W14, I06, I08-I09, CRV-02 | Check live own positions, owned ordered list, menu permissions, separate session factories and the single-session AppTest journey. Check closed waitlist history without modifying status and verify the current promotion via Refresh view. |
+| AC-07 / B01-B17, I07 | All 317 original cases and no-waiter fixtures remain. Retained constructors default to no queue sequence. No live migration or shared concurrency is exercised. |
+| QR-02 / CRV-03 | Inject failure during promotion after preparing the cancelled row. Check both direct business state and actual Streamlit state, including absence of partial writes and false success. |
+| R-08 / VAL-03A-E | Pending author-led human validation on a candidate. Pay particular attention to pre-cutoff promotion discovered after the cutoff, awareness, feasibility and the lack of alerts. |
+
+The [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) record the tested SHA and all quality steps. L8 review remains pending the author's checklist. Prior sections below are historical.
+
 ## L6 integration and verification
 
 L6 ACCEPT_LOOP by author declaration on 19 November 2026 (UTC+08:00); L7 NOT_STARTED / HELD_BY_AUTHOR. Merge/tag/release NOT_AUTHORISED. Accepted L5 is 8a5c9723afe6a81bbafc634acc09b65dac436ee4; deep-review intake is fc964bb7bde9476e98aaabfee85ff8ab15156300. All 308 intake case identities, 116 test ASTs/decorators and seven existing helper definitions remain unchanged. Current: 317 cases/119 test functions; all 51 canonical scenario rows below retain their content. [Current evidence](reviews/L6-human-review.md) | [Human validation](reviews/L6-human-review.md#validation-record).

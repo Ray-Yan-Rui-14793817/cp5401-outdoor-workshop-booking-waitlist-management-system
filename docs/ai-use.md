@@ -1,5 +1,19 @@
 # AI Use and Human Contributions
 
+## L8 CR-01 AI use
+
+The author accepted [L7 planning, D-01 and High review depth](reviews/L7-human-review.md) and directed L8 implementation from published V1.0 while holding publication. The author explicitly required the additional test participants Leo and Willy to be valid users in the same fixture state.
+
+| Area | Codex contribution and review evidence |
+|---|---|
+| `booking.py` | Implemented explicit full-only Join, status-based withdrawal, and confirmed cancellation with one FIFO promotion. Reused the existing owner and role checks. Proposed deriving the per-workshop sequence high-water mark from retained registration history, so it survives withdrawal and promotion without a separate mutable counter. Constructed complete candidate states before adoption. |
+| `app.py` | Added separate Join and Withdraw controls, own position/history, owned waitlist and cutoff/notification copy. Withdraw preserves action intent through a callback using current state, identity and the clock at submission. Existing role menus, forms, roster and session model remain in scope. |
+| `test_booking.py` | Added independent FIFO and time oracles, scoped roles, replay/status precedence, fault-injection and actual-control AppTests. Registered Leo and Willy as test-only participant records. Compared the original test source and stored 317 baseline JUnit identities against the candidate. |
+| Review | A targeted stale-withdrawal AppTest initially exercised an earlier clock function binding. The callback now resolves the clock through the booking module when invoked. The test distinguishes a stale active waiting action at S from an already-cancelled repeat. A Windows temporary-directory permission error in the first local baseline attempt was isolated by using a fresh workspace test directory. |
+| Delivery | Copied the five accepted L7 records as evidence, updated the English candidate records, verified the unchanged single-job workflow and locks, and retained the personal ZIP locally. |
+
+Codex supplied implementation, technical tests and packaging. The author's L7 acceptance supplies the approved contract. L8 human review and the author-led VAL-03 observations remain pending. No merge, deployment update or release decision is recorded.
+
 **Current: L0-L6 accepted; RH01-RH07 declared complete; scoped ACCEPT_RELEASE received. All actual merges/deployment fast-forwards HUMAN_ONLY. No release published; L7 NOT_STARTED.** On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation/risk feedback. Earlier pending gates and holds below retain their historical technical-stage meaning and are superseded only by the explicit later author decision; ACCEPT_LOOP does not imply ACCEPT_RELEASE.
 
 Tool: Codex assistant with local Python and Git/GitHub tools. No unverified model version is claimed. Inputs were supplied course/design materials and public Demo code; fictional data is used in the prototype.
