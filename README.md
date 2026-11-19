@@ -114,7 +114,7 @@ Record scope/preserved behaviour, affected files, FR/BR/QR/risk/test mapping, in
 
 ## V1.0 pre-release preparation
 
-The author requests preparation only. The [release check and human checklist](docs/reviews/V1.0-release-readiness.md) records the accepted L6 identities, actual 317-case CI evidence, full main difference, current L6 cloud source and proposed exact-main deployment. README, AI use and one new task file are the only preparation changes; runtime/tests/locks/workflow and all accepted review files are unchanged. RH01-RH07 and ACCEPT_RELEASE remain pending. No PR, main merge, Tag, Release or source reconfiguration is executed, and L7 stays held. The preparation commit receives its own exact-head Actions verification; its SHA/run are identified in the delivery response.
+The [deep-reviewed release plan](docs/reviews/V1.0-release-readiness.md) corrects V1-RF01-RF06, maps course/HD evidence and separates P/Q push, PR test merge and main-M verification. The earlier in-place cloud branch-change assumption is rejected: the proposed preserve-service route keeps current coordinates and, only after explicit authority/main CI, advances the hosting source ref to the same M. This future route is not executed or guaranteed by a branch label. Only README, AI use and the existing release task file change; code/tests/locks/workflow, 39/51 canonical rows and all seven accepted reviews remain unchanged. RH01-RH07, human release risk judgement and ACCEPT_RELEASE remain pending. No PR/main merge/ref promotion/Tag/Release/reboot or L7 is executed. The corrected preparation head has its own CI/artifact; exact SHA/run are supplied at delivery.
 
 ## GitHub Actions
 
