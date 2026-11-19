@@ -1,6 +1,75 @@
-# Project Requirements
+# Project Requirements Business Rules and Risks
 
-L0 revision 3. Human design decision: ACCEPT_LOOP, 16 November 2026. Implementation remains NOT_STARTED. [Rules](docs/business-rules.md) | [Tests](docs/test-plan.md) | [Sources](docs/sources.md)
+L0 revision 3 and L1-L6 are accepted. On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared L6 UI/H01-H07 and VAL-01/02 complete and supplied ACCEPT_LOOP for 5c1e3ff92168b34397e2bee2ace85431ae4d124e. Current: L6 ACCEPT_LOOP; L7 NOT_STARTED / HELD_BY_AUTHOR; main merge/tag/release NOT_AUTHORISED. Canonical FR/BR/QR/risk definitions remain unchanged. [Current L6 acceptance](docs/reviews/L6-human-review.md#current-human-acceptance) | [Accepted L5](docs/reviews/L5-human-review.md#current-human-acceptance) | [Tests](docs/test-plan.md).
+
+## L6 integration and deployment subset
+
+FR-01-FR-07 form the V1.0 candidate. All 39 canonical FR/BR/QR/risk rows remain unchanged, as do the 51 scenarios and accepted business policy. booking.py is byte-identical to L5. Initial L6 adds two actual-control serial journeys to 306 retained cases. The deep review retains all 308 cases/116 test function ASTs/decorators and adds nine cases in three functions: final Create/Book candidate-construction failures (four), read-only Git/source/package metadata (four), and once-per-session logging without business mutation (one). Current suite: 317 cases/119 test functions.
+
+app.py adds only read-only source/environment evidence beyond the initial candidate caption. No waiting/FIFO, shared concurrency, database, real authentication, notification, new framework or business rule is introduced. The single-job workflow remains byte-identical to initial L6, Python 3.12.16. The author specifically permits a PyArrow-only dependency correction after actual cloud logs show 26.0.1 replaced by 24.0.0. Existing pip-tools generates both locks; runtime/development retain 34/71 pins and all 33/70 unrelated pin/hash blocks. requirements-dev.in is unchanged. Metadata/compatibility checks and full regression, rather than the provider warning alone, establish the tested scope.
+
+Fresh local execution in this review: 317 passed in 76.81s on Python 3.12.14/PyArrow 24.0.0, with Ruff/format/Bandit/pip check and complete strict 34/71-package audits passing. Accepted-candidate CI: [run 44284607153](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44284607153) tests 5c1e3ff92168b34397e2bee2ace85431ae4d124e; job 134733904416, Python 3.12.16, 317 passed in 55.10s, zero failures/errors/skips, one job/all 18 steps successful. Runtime/development audits cover all 34/71 pins without known vulnerabilities or omissions. Artifact 14418996361 (quality-checks-44284607153-1) was independently checked for digest/CRC, exact tested SHA, all 317 case identities, quality reports and all 34 installed runtime versions. This accepted candidate and subsequent acceptance-record heads have unchanged executable/test/lock/workflow files relative to the observed cloud checkout. The records-only acceptance commit receives a separate exact-head Actions/artifact check; this run is not relabelled as that later result.
+
+REVERIFIED at 18 November 2026 18:07:04 UTC+08:00 from a newly generated cloud runtime record. Actual checkout SHA is 2cad4b53899f5827c0d51cfb298c49f704d77b6b; review intake HEAD is 78cdce5ce906ea0f42aad03cb346e21ccf0c0c16. They are NOT the same Git commit. GitHub comparison establishes that the intake is one commit ahead with exactly six modified Markdown files; all runtime/test/dependency/configuration/workflow blobs are unchanged. Cloud SHA256 of app.py, booking.py and requirements.txt exactly matches the current L6 branch, Python is 3.12.16, Streamlit is 1.67.0, and all 34 installed runtime pins match requirements.txt, including PyArrow 24.0.0, with zero missing/version differences. F10/F11 remain technically closed for the verified executable/lock target; literal checkout-versus-documentation-HEAD equality is explicitly not claimed. No new server reboot is performed in this review. Later evidence-only heads are checked for the same non-runtime delta and have their own CI. At this 18 November technical stage, human validation and ACCEPT_LOOP were still pending. The author supplied UI/H01-H07 completion, VAL-01/02 results and ACCEPT_LOOP on 19 November; the current human acceptance record supersedes that gate. Merge/tag/release remain NOT_AUTHORISED.
+
+The [current L6 review](docs/reviews/L6-human-review.md) records source identity, oracle findings, actual deployment checks and author acceptance. I05 has complete-input/late-failure evidence for V1.0 Create/Book/Cancel; I06/I08/I09 separate automated/AI evidence from the author-declared personal checks. I10 covers fresh-time Create/Book/confirmed cancellation, not waiting. The author reports VAL-01 PASS 9/9 and VAL-02 PASS 10/10, accepts baseline cutoff/session limits and supplies ACCEPT_LOOP. R-08 V1.1 waiting/awareness validation and release approval remain pending. Historical stage sections below preserve dated counts/limits; current acceptance changes no rule, test, runtime or lock.
+
+The subsequent controlled-restart instruction authorises one existing-candidate reboot and evidence updates only. The executed deployment now supplies the missing source/runtime proof; no canonical FR/BR/QR/risk definition, policy, dependency pin or runtime code is changed. The author still owns L6 validation, acceptance and release decisions.
+
+The further deep review changes only evidence wording and dated verification records. The fresh 317-case run and independent 16-decision matrix pass without a source/test change; current runtime/lock parity and the separate documentation-only SHA delta are recorded explicitly. Canonical FR/BR/QR/risk definitions remain unchanged; personal acceptance/validation remains pending.
+
+## Identity foundations retained from accepted L2
+
+The author's L2 instruction fixes the demonstration identities below. Stable IDs and their roles are retained from L1; display names are updated. No account editor or real login is introduced.
+
+| Fixed ID | Demo name | Role |
+|---|---|---|
+| organiser-1 | Rui Yan | ORGANISER |
+| organiser-2 | Alex | ORGANISER |
+| participant-1 | Xingjian | PARTICIPANT |
+| participant-2 | Sam | PARTICIPANT |
+
+resolve_actor maps a selected ID to the canonical session DemoUser, or None. check_permission returns INVALID_ACTOR for an absent/unknown actor or inconsistent role claim; FORBIDDEN for a valid actor with the wrong operation role or optional owner; otherwise OK. Both functions leave all input state unchanged. The UI displays an allowed restricted preview only for explicit OK; an absent or unrecognised permission result denies the view without changing business state. Names are display labels, not permission keys.
+
+The role requested by an operation is an application constant, not a user role editor. The helper alone does not establish target existence. L3 binds roster ownership to the actual looked-up target and implements B13. L4 adds actual-target Book enforcement and B10's actor-ID own-record read; cancellation ownership B12 remains L5 work. B01/B02 retain their identity checks. Switching or clearing the selector never reseeds business state. Selection is freely switchable and does not authenticate a real person.
+
+The author's navigation update combines menu visibility with independent access rejection:
+
+| Actor | Visible views |
+|---|---|
+| None | Workshops |
+| PARTICIPANT | Workshops, My Bookings |
+| ORGANISER | Workshops, Organiser |
+
+Before rendering the menu, reset a disallowed/unknown saved view to Workshops; retain a permitted current view. Independently recheck a private view's role through check_permission even if menu selection is bypassed. Unknown returned views/results must not display private preview content. These UI refinements support FR-01, BR-01 and QR-03/QR-04; they do not change the accepted business rules or claim real authentication.
+
+## Retained L3-L4 subset (historical implementation)
+
+L3 creation/public browsing/owned confirmed rosters and its complete form-feedback lifecycle are retained. L4 implements FR-03 and FR-05's V1.0 booking/history subset. FR-01/02/06/07 foundations remain. Cancellation (FR-04) awaits L5; all waitlist operations await CR-01 after working V1.0.
+
+- book_workshop returns (outcome, complete_candidate). Check participant permission, actual target, aware trusted clock, strict t<C, active duplicate, then capacity. Outcomes include INVALID_ACTOR, FORBIDDEN, UNKNOWN_WORKSHOP, INVALID_INPUT for an unusable application clock, REGISTRATION_CLOSED, DUPLICATE_ACTIVE, FULL and OK. Valid application clocks remain server-controlled; no UI clock editor is added.
+- Success allocates one CONFIRMED registration with the selected participant ID and one new ID/counter advance. Copy mutable collections; preserve input, all prior rows and the workshop counter. Rejection/exception changes no input record/counter. The UI adopts only OK against its current same-session state. No database/concurrent-user guarantee is claimed.
+- list_own_registrations checks the participant role and filters by that actor's stable ID. No arbitrary participant-ID read target is exposed. Keep CONFIRMED and CANCELLED history. UI current/history grouping is derived from status/start time and never rewrites records or implies attendance.
+- Participant-only Book controls complement business-layer rejection. Already closed/started controls are disabled; an operation still receives fresh server_now at its decision. Repeat and full requests show specific reasons. Full Book never adds a waiter; cross-workshop overlap rejection remains excluded.
+- Retain fixed-role menu hiding plus independent private-view rejection/reset, owned roster lookup/ownership, creation >24h/1-30, once-per-session valid fixtures, failed draft retention and targeted success-only reset. Do not clear unrelated identity/form/business session keys during booking.
+
+The current suite has 250 cases in 92 functions: all 238 pre-review cases/90 function ASTs and parameter definitions are unchanged, with 12 new cases in two functions. The preceding F08 implementation retained 228 parameter cases and explicitly adapted two UI functions for the requested organiser-keyed state; that historical adaptation remains disclosed. New review cases prove exact restoration of invalid zero/empty values and explicit-OK creation-candidate adoption. Genuine app.py/booking.py are unchanged by this review. B07-B10 and B17's booking/history paths, B06/B14/B15's Book paths and serial I01/I02 are covered. I05/I06/I08/I09/I10 coverage is explicitly partial by lifecycle/operation. Cancellation, complete integration lifecycle and W/VAL scenarios remain future work. The author has now separately declared L4 UI/H01-H07 completion and ACCEPT_LOOP; automated technical tests do not supply that human decision or close R-08 suitability validation.
+
+L4-F05 is fixed within the existing form: initialise or restore the eight known input keys before rendering and pass no competing widget default for date/time/capacity. Preserve invalid submitted values and reset only those inputs after success. Two warning-enabled regressions cover reset and draft restoration; three start-boundary and two rejected-candidate tests strengthen FR-05/QR-02 evidence. This changes no FR/BR/QR or accepted risk rule.
+
+L4-F08 is an explicitly requested UI-state refinement of FR-06, without changing any canonical FR/BR/QR/risk definition. In one session, creation_forms[user_id] holds that organiser's latest failed eight values, field errors and feedback. Eight shared visible widget keys are reloaded from the selected organiser when the form owner changes, or restored when widget cleanup removes them. Success clears only the selected organiser's failure and resets their visible inputs; success feedback/reset signals are also organiser-scoped. Workshop ownership still comes only from the current validated actor passed to create_workshop, never from draft metadata. Participant/no-identity menus and business rejections are unchanged.
+
+The old L3 HF-02 shared-draft behaviour remains historical evidence. F08 replaces that behaviour only in the current L4 application. Previously unowned shared draft data is not automatically assigned to a current identity. No guarantee is added for unsubmitted edits, authentication, shared storage or persistence across sessions/restarts. The exact acceptance-to-test mapping is in the L4 review and test plan.
+
+## Retained L5 implementation subset
+
+L5 implements FR-04's V1.0 cancellation and extends FR-05 history evidence. cancel_registration accepts state, selected actor, registration ID and trusted now, returning (outcome, complete_candidate). Check participant role/actual target/stored ownership. Unknown registration returns UNKNOWN_REGISTRATION; invalid actor/wrong role/non-owner returns the existing permission outcome without mutation. An owned CANCELLED repeat returns ALREADY_CANCELLED before active time checks, including after C/S.
+
+An active confirmation requires an aware usable application clock and strict t<C. At/after C return REGISTRATION_CLOSED, including stale submissions. Success changes only that row's status to CANCELLED and updated_at to the UTC decision instant. Preserve its ID/created_at, every other row and both counters; copy mutable lists into the complete candidate and keep input unchanged. A missing referenced workshop returns UNKNOWN_WORKSHOP without mutation; this is an internal inconsistent-fixture guard, not a workshop-deletion feature. Construction exceptions propagate without partial state.
+
+My Bookings shows only own confirmed cancellation buttons and disables locked/started targets. The actual operation receives fresh server_now; only OK replaces business state. ALREADY_CANCELLED is informational and creates no further release/success. Keep organiser forms/errors, actor/current page and unrelated session values. Cancelled rows stay in History; a later pre-C Book gets a new ID, and old-ID repeats cannot release its place.
+
+Current verification: 306 cases in 115 functions, retaining all 298 pre-review cases/112 function ASTs and parameter definitions unchanged and appending eight review cases in three functions. The initial L5 implementation retained 250 L1-L4 cases and added 48; those remain. New evidence checks exactly one changed registration among multiple confirmations, late candidate-construction failure through domain/UI and the clicked target when two own bookings are eligible. app.py/booking.py, canonical FR/BR/QR/risk/scenario definitions, workflow and locks are unchanged by the review. B11-B17 and relevant I05/I08/I09/I10 evidence remain explicitly bounded; all waiting/promotion paths and full VAL/R-08 remain future work. The author has now separately declared L5 UI/H01-H07 complete and supplied ACCEPT_LOOP; this does not close full VAL/R-08 or approve a release. The current review preserves the original L3 HF-02 and L4-HF-01/02/03 declarations.
 
 ## Problem and purpose
 
@@ -95,3 +164,153 @@ At first demo-session initialisation, create bookable example workshops relative
 I07 checks representative baseline fixtures under V1.1 rules. It does not promise live-session upgrade, serialization or durable migration.
 
 Target Python 3.12, Streamlit and pytest. Lock actual application and quality-tool versions in L1, aligned with deployment.
+
+## Business rules
+
+### Time and operation matrix
+
+S is an aware workshop start; C = S - 24 elapsed hours; t is trusted server decision time. The duration is not midnight on the previous calendar day.
+
+Creation requires S-t>24h. At C, freeze confirmed additions/cancellation and close waitlist joining/promotion. Owner waiting withdrawal remains available until S. At S all effective registration mutations close.
+
+| Operation | t < C | C <= t < S | t >= S |
+|---|---|---|---|
+| Create proposed workshop | Allow if valid | Reject | Reject |
+| Book | Apply rules | Reject | Reject |
+| Cancel CONFIRMED | Owner may cancel | Reject | Reject |
+| Join waitlist | Apply V1.1 rules | Reject | Reject |
+| Withdraw WAITLISTED | Owner may withdraw | Owner may withdraw | Reject effective withdrawal |
+| Promote | With effective cancellation | Prohibited | Prohibited |
+| Read / repeat owned CANCELLED | Role/ownership rules | Same | Same |
+
+One universal read-only flag must not block final-24h withdrawal. Use operation-specific conditions. Check time when the submitted action is processed, not when the page was rendered. Cancellation and its promotion use one decision time and return together.
+
+### Rules
+
+| ID | Rule |
+|---|---|
+| **BR-01** | Selected actors must exist with their fixed role. Enforce operation role and ownership in booking.py, not only through buttons. These checks do not authenticate a person. |
+| **BR-02** | Trimmed title/location are non-empty. Capacity is an integer 1-30; reject booleans, fractions, missing and out-of-range values. |
+| **BR-03** | Use complete timezone-aware instants with end>S. Obtain fresh trusted server time for each action; do not use caller-controlled dates as current time. Tests may inject a clock, unavailable as a deployed user control. |
+| **BR-04** | Confirmed count is at most capacity; remaining = capacity-confirmed. WAITLISTED/CANCELLED records consume no confirmed place. |
+| **BR-05** | At most one active registration per participant/workshop: CONFIRMED in V1.0; CONFIRMED or WAITLISTED in V1.1. IDs, not display names, identify users. |
+| **BR-06** | Cancel by registration ID with selected-actor ownership checks. Repeating an owned CANCELLED record returns ALREADY_CANCELLED without any mutation/allocation, including after C/S. |
+| **BR-07** | Rebooking before C creates a new ID and retains history. Unknown or unauthorised targets cause no mutation. |
+| **BR-08** | Join is explicit, full-only, before C and without an active duplicate. Spare capacity returns USE_BOOKING without registering. |
+| **BR-09** | Use unique increasing workshop queue_seq for strict FIFO among current WAITLISTED records. Allocate new sequences only for successful joins. Only pre-C cancellation can promote. |
+| **BR-10** | One effective confirmed cancellation promotes at most the earliest waiter by changing that same registration to CONFIRMED. Confirmed count stays unchanged with a waiter, otherwise decreases by one. |
+| **BR-11** | Owner WAITLISTED withdrawal is allowed while t<S, including C<=t<S. Change no confirmed records/counts and trigger no promotion. Preserve others' relative order; rejoin only before C with a new ID/tail sequence. |
+| **BR-12** | Before C a direct booking cannot bypass an active queue. Unexpected spare capacity alongside a queue blocks mutation as INTEGRITY_ERROR. At/after C allocate no new place, including after withdrawal. |
+| **BR-13** | Validate and construct complete new state before UI replacement. Success does not mutate the input snapshot; rejection, no-op or exception preserves all input records/counters. Serial same-session processing is assumed, not concurrent storage transactions. |
+| **BR-14** | No created-detail/capacity editing, account management, cross-workshop overlap restriction or confirmed-cutoff override. Use fictional session data without authentication/durability claims. |
+| **BR-15** | Creation requires S-t>24h. Reject exactly 24h or less with no workshop or ID-counter advance. |
+| **BR-16** | At t>=C stop Book, effective CONFIRMED cancellation, Join and Promotion. Permit owner WAITLISTED withdrawal only while t<S. At t>=S stop all effective registration mutations; retain reads/no-op repeats. |
+
+#### Queue sequence and displayed position
+
+queue_seq is stable historical ordering, not the displayed position. A waiting entry's current position is one plus the number of current WAITLISTED entries in the same workshop with smaller queue_seq.
+
+Sequence gaps are not display gaps. With active sequences 3 and 8, positions are 1 and 2. Withdrawal can reduce positions during the final 24 hours without changing the confirmed roster or enabling promotion. After S, label any displayed queue as historical and closed.
+
+#### Observable results
+
+Return an outcome that identifies success or the specific reason for refusal. Tests assert this outcome and state invariants independently of presentation wording. The exact Python return type remains a small L1 implementation choice.
+
+| Outcome | Meaning |
+|---|---|
+| OK | The requested valid operation produced its complete result. |
+| INVALID_ACTOR | Unknown actor or a role inconsistent with the predefined identity. |
+| FORBIDDEN | A valid selected actor lacks the operation role or record ownership. |
+| INVALID_INPUT | Invalid creation fields, types or insufficient creation lead time. |
+| UNKNOWN_WORKSHOP / UNKNOWN_REGISTRATION | A well-formed target ID is not present. |
+| REGISTRATION_CLOSED | Effective Book, confirmed cancellation or Join is attempted at/after C. |
+| WORKSHOP_STARTED | Effective waiting withdrawal is attempted at/after S. |
+| DUPLICATE_ACTIVE | The selected participant already holds an active record for that workshop. |
+| FULL | A direct Book request has no confirmed capacity. |
+| USE_BOOKING | A Join request has spare capacity and creates no record. |
+| ALREADY_CANCELLED | An owned cancelled record is unchanged; this is a no-op, not late effective cancellation. |
+| INTEGRITY_ERROR | An inconsistent open spare-place/queue state prevents bypass. |
+
+For registration operations, first resolve a valid actor and operation role, then target and ownership. Recognise an owned CANCELLED repeat before rejecting active mutations on time. For new Book/Join, check the applicable time window, then duplicate-active status before full/available conditions. Creation validates input types before time arithmetic.
+
+Negative tests must still isolate their intended cause rather than relying on this order to hide other failures.
+
+### Boundary examples
+
+S = 2026-12-10 09:00 Asia/Singapore; C = 2026-12-09 09:00. Freeze the test clock for these examples.
+
+| Time / target | Expected result | Planned checks |
+|---|---|---|
+| Creation at C-1 second | Valid creation may succeed; lead is greater than 24h. | B03 |
+| Creation at C or later | INVALID_INPUT; no workshop/counter change. | B05 |
+| Valid active Book/cancellation at C-1 second | Apply ordinary rules. | B15 |
+| Active Book/cancellation at C or later | REGISTRATION_CLOSED; unchanged state. | B15/I10 |
+| Owned active waiter at C or S-1 second | Withdrawal succeeds; confirmed roster unchanged. | W08/W12/I10 |
+| Fresh owned active waiter at S or later | WORKSHOP_STARTED; unchanged state. | W12/I10 |
+| Owned CANCELLED record after S | ALREADY_CANCELLED; unchanged state. | B16/W16 |
+
+Use a fresh valid active fixture for each boundary parameter. Do not withdraw at C and then reuse that CANCELLED record to claim that a later no-op proves start-time rejection.
+
+### State transitions
+
+| Event | Transition | Condition |
+|---|---|---|
+| Book | none -> CONFIRMED | Valid participant, capacity, no active duplicate, t<C |
+| Cancel confirmed | CONFIRMED -> CANCELLED | Owner and t<C; V1.1 may promote |
+| Join | none -> WAITLISTED | Full, no active duplicate, t<C |
+| Withdraw | WAITLISTED -> CANCELLED | Owner and t<S, including after C |
+| Promote | WAITLISTED -> CONFIRMED | Earliest waiter within effective pre-C cancellation |
+| Repeat | CANCELLED -> CANCELLED | Owner, no change |
+| Time phase | Derived display | Preserve history; the final-24h queue may shrink |
+
+Selection is not identity security. Early allocation without notification does not guarantee early awareness. Validate these scope/timing limits through R-08 rather than silently adding real authentication, shared storage or overrides.
+
+## Risk controls
+
+The following is the accepted risk-control plan. V1.0 implementation/technical execution and the author's 19 November acceptance are in the [L6 review](docs/reviews/L6-human-review.md#current-human-acceptance); V1.1 controls remain planned. The author owns risk judgements. Initial ratings below are retained planning assessments, not new residual ratings. Actual VAL-01/02 feedback accepts the baseline cutoff and temporary-session model within classroom scope. The cutoff supports equipment/activity, transport and safety preparation; booking records do not guarantee attendance or require unsafe participation, and private emergencies may affect attendance. This feedback adds no attendance-tracking feature, emergency override or cancellation-policy change. R-08 baseline suitability is ACCEPTABLE_WITHIN_SCOPE, while V1.1 near-C promotion/discovery remains VALIDATION_PENDING.
+
+### Controls and planned acceptance
+
+| ID / version | Risk and control | Acceptance evidence |
+|---|---|---|
+| **R-01** / Both | Overbooking, duplicate active records or stale replacement. Use current same-session state, validate capacity/uniqueness and serially adopt returned results. Verify last-place/repeated actions without claiming shared-concurrency correctness. | B04, B07-B09; W03/W04; I01/I02 |
+| **R-02** / V1.1 | Unfair FIFO or incorrect transitions. Use stable sequences, earliest current WAITLISTED, tail rejoining and a complete cancellation/promotion result. Exclude withdrawn entries; never promote twice for one cancellation. | W05-W11/W15/W16; I03-I05 |
+| **R-03** / Both | Missing selected-role/owner checks or overstated security. Enforce rules in booking.py, filter by selected ID and disclose freely switchable fictional identities. Use no real private data. These controls do not prevent identity impersonation. | B01/B02/B10/B12-B14; W13/W14; I08; scope acceptance |
+| **R-04** / Both | Accidental rerun reset, aliased lists or misunderstood memory loss. Initialise once per session, preserve state on actor change and use independent state factories. Test actual lifecycle; new-session/restart reset remains a disclosed limitation. | I05-I09; VAL-01/VAL-02 |
+| **R-05** / Both | Wrong timing, particularly blocking withdrawal at C or allowing it after S. Use fresh trusted time and operation-specific deadlines. Isolate C/S boundaries with fresh active records and test late form submission. | B03/B05/B06/B15/B16; W08/W12/W16; I10 |
+| **R-06** / AI-assisted work | Unchecked AI assumptions, changed policy or unrelated complexity. Bound intent/files, preserve contracts, inspect oracles/dependencies and record human corrections and decisions. | AI-use, loop review, CR-01, PR and findings records |
+| **R-07** / Both | Weak tests, false-positive denials or baseline regressions. Derive oracles from requirements; isolate each rejection cause, retain baseline tests and inspect collected/skipped/mocked scope. Protect full rejection, empty-queue cancellation and no-op safety. | B01-B17, W01-W16 and applicable I checks; especially B08/B11/B12/B15/B16, W06/W07/W10/W12 and I05 |
+| **R-08** / Both | Misunderstood states, delayed confirmation awareness, cutoff restrictions or temporary data. Explain S/C, no notification, permitted waiting withdrawal, closed confirmed cancellation and session limits; validate actual tasks and feasibility. | VAL-01/VAL-02/VAL-03A-VAL-03E |
+
+Acceptance requires the specified outcomes and state assertions in the linked scenarios, not merely a green report or a helper function's presence.
+
+### Initial likelihood and impact
+
+M means Medium; H means High. Unknown means evidence is still required.
+
+| Risk | Likelihood / impact | Rationale |
+|---|---|---|
+| R-01 | M / H | Capacity is central and successive actions can use stale state. |
+| R-02 | M / H | One state change can allocate a place to another participant. |
+| R-03 | M / M for rule defects | Fictional-role checks matter; free identity selection is an intentional limitation, not solved authentication. |
+| R-04 | M / H for accidental loss | Unexpected same-session loss breaks the demonstration; new-session reset is expected scope. |
+| R-05 | M / H | C and S deliberately permit different actions. |
+| R-06 | M / H | Generated work can retain superseded assumptions or change tests to fit code. |
+| R-07 | M / H | An error can pass through weak assertions or a denial caused by the wrong precondition. |
+| R-08 | Unknown / H | Preparation, arrival and restriction acceptability have not been observed. |
+
+### Monitoring and human decisions
+
+After each control is implemented, record owner, environment/SHA, expected and observed results, evidence, residual risk and decision using the [loop recording format](README.md#record-for-each-loop).
+
+Progress from PLANNED to IMPLEMENTED_NOT_VERIFIED and then VERIFIED_FOR_STATED_SCOPE. Record residual acceptance separately; verification never means all possible failures are eliminated.
+
+Capacity errors, selected-role/owner bypass, wrong C/S behaviour, partial mutation and material FIFO defects block the relevant release. Freely selectable actors and temporary unshared state are scope limitations only after clear disclosure and genuine author acceptance. They are not technically eliminated risks.
+
+Use VAL-01/02 for baseline suitability and VAL-03 before V1.1 merge. Unresolved critical user needs prevent the relevant release. Return policy uncertainty to the human owner rather than adding authentication, notifications or overrides without an agreed change.
+
+### Change-review depth
+
+The planned CR-01 changes core user-visible business state. Start with Medium review depth and justify the actual classification at intake. Reclassify/escalate if the patch changes role boundaries, validation contracts, dependencies or broader data handling. The absence of a database removes migration concerns, not correctness responsibilities.
+
+Track open blockers, missing evidence, test failures/skips, findings dispositions and outstanding human decisions. Do not substitute prompt counts or generated lines of code for quality measures.

@@ -68,7 +68,7 @@ R-08 remains pending user validation in later stages.
 
 At L0, the author supplied scope/policy directions, requested review and made the actual ACCEPT_LOOP decision. AI drafted/reviewed the specification, proposed evidence and organised the English baseline. The [AI-use record](../ai-use.md) distinguishes those contributions and summarises the design findings.
 
-Later loops must record what the author actually checked, understood, changed or rejected, alongside what AI generated and executed. The [workflow](../development-workflow.md#record-for-each-loop) defines each loop's AI task, personal acceptance, outputs and exit condition. AI must wait for the relevant human decision before advancing.
+Later loops must record what the author actually checked, understood, changed or rejected, alongside what AI generated and executed. The [workflow](../../README.md#record-for-each-loop) defines each loop's AI task, personal acceptance, outputs and exit condition. AI must wait for the relevant human decision before advancing.
 
 ## Remaining obligations and next step
 

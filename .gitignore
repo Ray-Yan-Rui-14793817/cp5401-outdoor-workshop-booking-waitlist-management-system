@@ -13,6 +13,9 @@ __pycache__/
 htmlcov/
 reports/
 
+# Personal delivery ZIPs stay local, including mixed-case extensions.
+*.[zZ][iI][pP]
+
 # Local secrets and machine settings
 .env
 .env.*
