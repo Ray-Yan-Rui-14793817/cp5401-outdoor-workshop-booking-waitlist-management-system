@@ -1,8 +1,16 @@
 # CR-01 verification, validation and regression plan
 
-Status: **PLANNED**, revision 3, with L7 planning acceptance recorded. The L7 review verified the stored V1.0 baseline evidence and reviewed the expected results below. V1.1 candidate execution remains pending. Use the [change contract](CR-01.md) and [impact and risks](CR-01-impact-and-risks.md) to review every oracle before coding. The canonical scenario IDs come from the [V1.0 test plan](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/36e7bff3c1d3f74bb29c1900373726ecffdd176b/docs/test-plan.md).
+## L8 execution evidence
 
-## Baseline and regression controls
+**Technical verification completed.** The reviewed L8 implementation at `9cd862d32b4fc0e05dafe69d0885ecbef93cdc45` passed all 351 cases locally and in the single-job [GitHub Actions push run 44539537632](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44539537632). The JUnit report in artifact 14537756650 records each of the 317 original V1.0 case identities exactly once, plus 31 initial L8 cases and three deep-review additions. There were zero failures, errors or skips. See the [L8 test map](../test-plan.md#l8-cr-01-verification) for coverage of the planned scenarios and the [L8 review](../reviews/L8-human-review.md#technical-evidence) for the evidence and findings.
+
+**Human verification gates.** L8 human acceptance remains `HUMAN_ACCEPTANCE_PENDING`. R-08 remains `PENDING_VAL_03`. The author's L8 decision, later PR review and release approval are separate gates. V1.1 remains unreleased.
+
+## Accepted L7 verification plan
+
+Revision 3 records the author's [L7 planning acceptance](../reviews/L7-human-review.md#human-decision-record). The L7 review checked the stored V1.0 baseline evidence and the planned test expectations. The sections below retain those expectations and procedures from L7. The [change contract](CR-01.md) and [impact and risks](CR-01-impact-and-risks.md) provide the rule and risk references for each oracle. The canonical scenario IDs come from the [V1.0 test plan](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/36e7bff3c1d3f74bb29c1900373726ecffdd176b/docs/test-plan.md).
+
+### Baseline and regression controls
 
 - Freeze reference M `36e7bff3c1d3f74bb29c1900373726ecffdd176b` and [annotated v1.0](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0). Retain the 317 collected case identities and behaviour in the original test snapshot. Reference the prior exact-M [Main CI run 44467024765](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44467024765), artifact 14502403290, and [deployment-branch CI run 44471176595](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44471176595), artifact 14504372775. The retained tested SHA and JUnit XML are baseline evidence. These runs do not verify the future V1.1 candidate.
 - Preserve B01-B17 and the applicable V1.0 I scenarios. Compare collection inventory and review all changed assertions and fixtures. Run the retained tests on compatible no-waiter fixtures under the new code, then run the complete baseline-plus-change suite. Do not delete, skip, xfail or weaken a baseline assertion just to make an intentional change pass. If V1.1 copy or a proposed compatibility seam requires an edit, record original case identity, old claim, replacement oracle and justification for author review.
@@ -10,14 +18,14 @@ Status: **PLANNED**, revision 3, with L7 planning acceptance recorded. The L7 re
 - Use the existing pinned CI environment and one-job workflow. The future code candidate must pass the full suite, Ruff/format, Bandit, dependency consistency, isolated runtime verification and dependency audits under that workflow. Record candidate branch/source SHA, base SHA, event, run/job/artifact, actual Tested SHA and test outcomes. Push tests the branch SHA. PR tests the generated test merge result, which is distinct from the source SHA. Main CI after an author-performed merge must test the actual merge commit. Preserve artifacts and compare the case inventory and scope. Successful CI is technical evidence. It does not approve a merge or release.
 - Collect the exact code reviewed and link requirement, test, report, finding disposition and user decision. Selected focused tests may run during development. The final gate requires the complete suite and reporting of any skipped or unexecuted planned check. Candidate deployment and validation are future work.
 
-### Reproduce the 317-case comparison
+#### Reproduce the 317-case comparison
 
 1. Start from the preserved exact-M Main CI archive, SHA-256 `834d01e250360a2749361fb5ef3a18a28f45aa947a37aaaada6b984f35e4812e`. Check archive CRC, `tested-sha.txt` and `junit.xml`. The independently compared deployment archive has SHA-256 `5fa4e8d1d5017b9ed6cac1c62aa5f7c5861a69b151e3ad3bf6b930003f12eab1`. Both contain the same 317 unique JUnit case identities and zero failures, errors or skips. The official artifact download windows end on 3 December 2026. Keep the existing offline copies as evidence.
 2. Build the comparison inventory from each JUnit testcase's exact `(classname, name)` pair, preserving multiplicity. The L7 check sorted these pairs, serialized them as compact JSON arrays with ASCII escaping and no trailing newline, and calculated SHA-256 `2b7ba1fb223c5ee39b8e9dd93ae8b6e6bedd5b664fbfdc0c5a6ae23cf16c3eca` in both reports. Use the pairs themselves for later set-difference and occurrence checks. The digest identifies the frozen inventory only.
 3. On the future candidate, run `python -m pytest --collect-only -q test_booking.py` to inspect collected IDs, then use the workflow's full pytest command to produce candidate JUnit. From candidate JUnit, require all 317 baseline identities exactly once and passing, and list the additional planned cases and their results separately. An equal or greater total does not compensate for a missing, renamed, duplicated, skipped or weakened baseline case. Review changed fixtures, test assertions and test parameters by diff. A necessary copy adjustment must retain the original behaviour assertion and case identity.
 4. Compare candidate push and PR test-merge evidence separately and record any gap. Confirm the PR's base/head and actual test-merge identity from the run and report. A later author merge needs a new main-push report for the actual V1.1 merge commit. A missing or mismatched report leaves the relevant gate pending or failed. V1.0's known 317 passes must never be credited to a future V1.1 run.
 
-## New and affected test mapping
+### New and affected test mapping
 
 | Scenario | Contract and primary controls | Planned evidence and independent oracle |
 |---|---|---|
@@ -44,7 +52,7 @@ For I03, start each order with a separate capacity-one open fixture and one conf
 
 Use expected IDs, statuses, counts, sequences, timestamps and positions declared by the fixture. Keep the clock independent of the deployed UI. The hosted UI uses the original two participants for a serial single-waiter demonstration. Evidence is scoped to the serial classroom workflow.
 
-### Independent FIFO and boundary oracles
+#### Independent FIFO and boundary oracles
 
 For W05/W06 and any other test using a third or fourth participant, add each fictional participant as a `DemoUser` with a unique `user_id` and `Role.PARTICIPANT` to the exact fixture's `DemoState.users`. Match every seeded registration owner to a participant in that state. Resolve the actor against that same state and assert the expected stable ID and role before exercising a valid action. Assert the intended operation outcome and exact resulting state. An absent ID reaches INVALID_ACTOR and belongs in a separate identity rejection case. Keep the hosted seed and selector unchanged. Source: [author feedback 5](../reviews/L7-human-review.md#author-feedback).
 
@@ -67,7 +75,7 @@ After each refusal, compare the whole pre-action snapshot and all counters. Meas
 | QR-03, role and ownership | B01/B02/B10/B12-B14, W13/W14, I08, CRV-01/CRV-02. Verify entry points, data visibility and negative paths. |
 | QR-04, session behaviour | I06/I07/I09, scoped UI checks and future VAL-03. Confirm ordinary reruns keep state and an independent session rebuilds demo seed data. |
 
-## Human validation and R-08 closure
+### Human validation and R-08 closure
 
 Keep baseline VAL-01/VAL-02 as historical author validation. When directed to validate a real V1.1 candidate, execute VAL-03A-E and record the candidate SHA, environment, tester role, observed actions, comprehension, feasibility, feedback and human decision. Author role-play, external participant evidence and AI technical smoke must be identified separately.
 
@@ -81,6 +89,6 @@ Keep baseline VAL-01/VAL-02 as historical author validation. When directed to va
 
 Classify observations as ACCEPTABLE_WITHIN_SCOPE, CHANGES_REQUIRED or UNRESOLVED, with an author rationale. A technical pass supplies verification evidence. Validation of awareness or feasibility requires a human outcome. R-08 V1.1 remains open until those observations justify its disposition.
 
-## Required evidence at later gates
+### Required evidence at later gates
 
 After the author approves the plan and directs implementation, use a separate branch based on M. For a later PR, link CR-01, exact diff, approved assumptions, risk classification, focused findings with disposition, regression/CI results, and the author's justified merge decision. Any actual merge or deployment fast-forward is author-only. Verify the deployed commit and separate V1.1 release evidence when authorised. Stop on an unresolved substantive issue, weak oracle, failing CI, wrong SHA or critical validation gap. Preserve V1.0 tag, release, records and service at this planning stage.

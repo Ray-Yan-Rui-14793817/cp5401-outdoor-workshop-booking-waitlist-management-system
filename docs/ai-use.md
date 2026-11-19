@@ -1,5 +1,7 @@
 # AI Use and Human Contributions
 
+**Project status.** V1.0 is published, L7 planning has the author's `ACCEPT_LOOP`, and L8 awaits human acceptance. R-08 remains pending human VAL-03 validation. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and [L8 execution evidence](changes/CR-01-verification-plan.md#l8-execution-evidence).
+
 ## L8 CR-01 AI use
 
 The author accepted [L7 planning, D-01 and High review depth](reviews/L7-human-review.md) and directed L8 implementation from published V1.0 while holding publication. The author explicitly required the additional test participants Leo and Willy to be valid users in the same fixture state.
@@ -20,7 +22,9 @@ The author requested a review against accepted L7, Assessment 3 HD and lecture e
 
 The review patch changes `app.py`, `test_booking.py` and the current verification and review records. The business module, dependency locks, workflow, accepted L7 evidence and 317 V1.0 test source remain unchanged. Codex added three review cases and adapted the existing L8 cutoff harness to the callback order. The required refusal and state integrity assertions remain. Local browser exercises use fictional demo data and count as technical verification. The author owns L8 acceptance, any future PR decision and VAL-03.
 
-**Current: L0-L6 accepted; RH01-RH07 declared complete; scoped ACCEPT_RELEASE received. All actual merges/deployment fast-forwards HUMAN_ONLY. No release published; L7 NOT_STARTED.** On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation/risk feedback. Earlier pending gates and holds below retain their historical technical-stage meaning and are superseded only by the explicit later author decision; ACCEPT_LOOP does not imply ACCEPT_RELEASE.
+## Historical L0-L6 and V1.0 preparation records
+
+At the L6 release-readiness checkpoint, L0-L6 had been accepted, RH01-RH07 had been declared complete and the author had supplied scoped `ACCEPT_RELEASE`. The author personally executes all actual merges and deployment-branch fast-forwards. On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation and risk feedback. The entries below describe the stage and authorisation in force when each activity occurred. V1.0 publication and L7 acceptance followed this checkpoint.
 
 Tool: Codex assistant with local Python and Git/GitHub tools. No unverified model version is claimed. Inputs were supplied course/design materials and public Demo code; fictional data is used in the prototype.
 
@@ -212,7 +216,7 @@ At the earlier L5 acceptance stage, status was ACCEPT_LOOP for b597babb5a648d3a5
 | Automated CI | The acceptance-record commit receives its own single-job regression/security/artifact verification, tied to its exact HEAD. The prior 317-case result remains attributed to accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e; human 19-scenario validation is not added to pytest counts. |
 | Evidence limits | The author supplied aggregate validation outcomes and observations. No individual scenario execution logs, exact test times/commands, external tester identities, personal code edits, rejected suggestions or new numerical residual-risk ratings were supplied; none are invented. Original numbered item 7 was blank. A later separate message supplies genuine L6-HF-07; H07 completion already follows the explicit H01-H07 declaration. |
 
-See [verbatim human feedback and dispositions](reviews/L6-human-review.md#current-human-acceptance). This receipt is a human-in-the-loop decision record; earlier AI Browser Testing remains technical verification. L6 is accepted, while services stay available and L7/main merge/tag/release stay held.
+The author accepted L6 at this checkpoint and kept later L7, merge, tag and release work on hold at that time. Earlier AI browser testing supplied technical verification. See [verbatim human feedback and dispositions](reviews/L6-human-review.md#current-human-acceptance).
 
 ## V1.0 pre-release preparation contribution (historical plan stage)
 
@@ -240,6 +244,6 @@ All application/test/config/dependency bytes and seven historical L0-L6 reviews 
 
 Stage 2 requires the author's personal main PR merge report, then Codex verifies actual M and main CI. Stage 3 requires safe-ancestry guidance and the author's own deployment fast-forward, never a Codex ref move. Stage 4 verifies real cloud M, hashes/Python/Streamlit/Arrow/all 34 runtime pins and core flows without extra restart/delete/recreate. Stage 5 annotated v1.0/Release is conditionally authorised only after those real gates pass. L7 remains held. No future event or success is invented.
 
-## Current L6 gate
+## Historical V1.0 Stage 1 gate
 
-L6 remains ACCEPT_LOOP with its accepted actual feedback/history unchanged. The separate RH01-RH07/ACCEPT_RELEASE declaration is received for P under the Human-only Merge Requirement. Codex prepares/verifies Q and the PR, then stops for the author's personal main merge. Tag/Release permission is conditional; actual M, deployment, publication and L7 are not completed. Preserve services and the local-only ZIP. Neither READY_TO_MERGE nor ACCEPT_RELEASE authorises Codex to merge or fast-forward a deployment branch.
+Stage 1 recorded the author's separate RH01-RH07 and `ACCEPT_RELEASE` decision for P under the Human-only Merge Requirement. Codex prepared and verified Q and the PR, then stopped for the author's main merge. The main merge, deployment and publication were handled in subsequent stages. Actual merges and deployment-branch fast-forwards remain author-only. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0).
