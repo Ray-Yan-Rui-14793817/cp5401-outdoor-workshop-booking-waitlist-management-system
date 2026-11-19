@@ -14,6 +14,12 @@ The author accepted [L7 planning, D-01 and High review depth](reviews/L7-human-r
 
 Codex supplied implementation, technical tests and packaging. The author's L7 acceptance supplies the approved contract. L8 human review and the author-led VAL-03 observations remain pending. No merge, deployment update or release decision is recorded.
 
+### Deep review of the L8 candidate
+
+The author requested a review against accepted L7, Assessment 3 HD and lecture evidence, with specific attention to FIFO, C/S, D-01, fixture identities, permissions, state integrity and the 317-case regression. Codex inspected the implementation, original regression sources, CI artifacts and the cited course material. The [review findings](reviews/L8-human-review.md#deep-review-findings-and-dispositions) record the stale Join reproduction, callback identity safeguard and clarity changes.
+
+The review patch changes `app.py`, `test_booking.py` and the current verification and review records. The business module, dependency locks, workflow, accepted L7 evidence and 317 V1.0 test source remain unchanged. Codex added three review cases and adapted the existing L8 cutoff harness to the callback order. The required refusal and state integrity assertions remain. Local browser exercises use fictional demo data and count as technical verification. The author owns L8 acceptance, any future PR decision and VAL-03.
+
 **Current: L0-L6 accepted; RH01-RH07 declared complete; scoped ACCEPT_RELEASE received. All actual merges/deployment fast-forwards HUMAN_ONLY. No release published; L7 NOT_STARTED.** On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation/risk feedback. Earlier pending gates and holds below retain their historical technical-stage meaning and are superseded only by the explicit later author decision; ACCEPT_LOOP does not imply ACCEPT_RELEASE.
 
 Tool: Codex assistant with local Python and Git/GitHub tools. No unverified model version is claimed. Inputs were supplied course/design materials and public Demo code; fictional data is used in the prototype.

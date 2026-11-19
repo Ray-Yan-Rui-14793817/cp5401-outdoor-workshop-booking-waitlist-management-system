@@ -3641,9 +3641,10 @@ def test_l8_ui_join_at_fresh_cutoff_preserves_open_view_snapshot(
     app = app_with_state(state)
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
     before = deepcopy(state)
-    decision_times = iter((NOW, cutoff))
-    monkeypatch.setattr(booking, "server_now", lambda: next(decision_times))
-    app.button(key="join_workshop-2").click().run()
+    rendered = app.button(key="join_workshop-2")
+    assert not rendered.disabled
+    monkeypatch.setattr(booking, "server_now", lambda: cutoff)
+    rendered.click().run()
     assert not app.exception and not app.success
     assert any("REGISTRATION_CLOSED" in error.value for error in app.error)
     assert app.session_state.demo_state is state and state == before
@@ -3689,3 +3690,66 @@ def test_l8_equal_display_names_keep_distinct_queue_entries(l8_state: DemoState)
     assert booking.list_own_waitlist_positions(state, leo) == ("OK", {"registration-3": 1})
     assert booking.list_own_waitlist_positions(state, willy) == ("OK", {"registration-4": 2})
     assert [row.participant_id for row in state.registrations[-2:]] == [leo.user_id, willy.user_id]
+
+
+def test_l8_review_stale_join_rechecks_capacity_and_keeps_the_seat_available(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    state = create_demo_data(NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    stale_join = app.button(key="join_workshop-2")
+    outcome, reopened = booking.cancel_registration(
+        state, l8_participant(state, "participant-2"), "registration-2", now=NOW
+    )
+    assert outcome == "OK" and confirmed_count(reopened, "workshop-2") == 0
+    before = deepcopy(reopened)
+    app.session_state.demo_state = reopened
+    stale_join.click().run()
+    assert not app.exception and not app.success
+    assert any("USE_BOOKING" in error.value for error in app.error)
+    assert app.session_state.demo_state is reopened and reopened == before
+    assert not any(button.key == "join_workshop-2" for button in app.button)
+
+
+def test_l8_review_stale_join_does_not_enrol_a_different_selected_participant(
+    l8_state: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    state = l8_state
+    before = deepcopy(state)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    stale_join = app.button(key="join_workshop-1")
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-willy")
+    stale_join.click().run()
+    assert not app.exception and not app.success
+    assert any("INVALID_ACTOR" in error.value for error in app.error)
+    assert app.sidebar.selectbox(key="selected_user_id").value == "participant-willy"
+    assert app.session_state.demo_state is state and state == before
+
+
+def test_l8_review_closed_organiser_queue_keeps_history_without_live_position(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = create_demo_data(NOW)
+    outcome, state = booking.join_waitlist(
+        state, l8_participant(state, "participant-1"), "workshop-2", now=NOW
+    )
+    assert outcome == "OK"
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: state.workshops[1].starts_at)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
+    app.sidebar.radio(key="current_view").set_value("Organiser").run()
+    app.selectbox(key="roster_workshop_id").set_value("workshop-2").run()
+    assert not app.exception and any(
+        "Remaining entries are historical" in row.value for row in app.caption
+    )
+    waiting = app.dataframe[1].value
+    assert "Position" not in waiting
+    assert list(waiting["Queue order at close"]) == [1]
+    assert list(waiting["Registration ID"]) == ["registration-5"]
+    assert list(waiting["Status"]) == ["WAITLISTED"]
+    assert app.session_state.demo_state is state and state == before

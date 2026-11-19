@@ -26,7 +26,6 @@ from booking import (
     create_workshop,
     get_workshop_roster,
     get_workshop_waitlist,
-    join_waitlist,
     list_own_registrations,
     list_own_waitlist_positions,
     list_owned_workshops,
@@ -76,11 +75,41 @@ def format_instant(value: datetime) -> str:
     return value.astimezone(WORKSHOP_TIMEZONE).strftime("%Y-%m-%d %H:%M:%S") + " (Asia/Singapore)"
 
 
+def join_from_view(workshop_id: str, rendered_user_id: str) -> None:
+    # Handle the original click before rendering hides a now-ineligible control.
+    state = st.session_state.demo_state
+    selected_id = st.session_state.get("selected_user_id")
+    if selected_id != rendered_user_id:
+        st.session_state.join_feedback = (selected_id, "INVALID_ACTOR")
+        return
+    actor = resolve_actor(state, selected_id)
+    outcome, candidate = booking.join_waitlist(state, actor, workshop_id, now=booking.server_now())
+    if outcome == "OK":
+        st.session_state.demo_state = candidate
+    st.session_state.join_feedback = (selected_id, outcome)
+
+
 def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> None:
     st.info("Browse workshops below. Times are shown in Asia/Singapore.")
     message = st.session_state.pop("booking_message", None)
     if message and actor is not None and message[0] == actor.user_id:
         st.success(message[1])
+    feedback = st.session_state.pop("join_feedback", None)
+    if feedback and feedback[0] == (actor.user_id if actor is not None else None):
+        result = feedback[1]
+        if result == "OK":
+            st.success(
+                "Joined the waitlist (WAITLISTED). Refresh My Bookings for your current status."
+            )
+        else:
+            explanations = {
+                "USE_BOOKING": "A place is available. Select Book workshop.",
+                "DUPLICATE_ACTIVE": "You already have an active registration for this workshop.",
+                "REGISTRATION_CLOSED": "Joining closed 24 hours before the start.",
+                "INVALID_INPUT": "The server time is unavailable. Please try again.",
+                "INVALID_ACTOR": "Check the selected demo identity and try again.",
+            }
+            st.error(f"{result}: {explanations.get(result, 'Joining is unavailable.')}")
     workshops = browse_workshops(state)
     if not workshops:
         st.write("No workshops have been created in this session.")
@@ -138,31 +167,20 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                         st.error(
                             f"{outcome}: {explanations.get(outcome, 'Booking is unavailable.')}"
                         )
-                if confirmed >= workshop.capacity and st.button(
-                    "Join Waitlist",
-                    key=f"join_{workshop.workshop_id}",
-                    disabled=now >= workshop.registration_cutoff,
-                    help="A waitlist entry is unconfirmed. A released place may be assigned before "
-                    "the cutoff. Refresh My Bookings for updates. There are no notifications.",
-                ):
-                    outcome, candidate = join_waitlist(
-                        st.session_state.demo_state, actor, workshop.workshop_id, now=server_now()
-                    )
-                    if outcome == "OK":
-                        st.session_state.demo_state = candidate
-                        st.session_state.booking_message = (
-                            actor.user_id,
-                            f"Joined the waitlist for {workshop.title} (WAITLISTED). "
-                            "Refresh My Bookings for your current status.",
+                if confirmed >= workshop.capacity:
+                    if now < workshop.registration_cutoff:
+                        st.caption(
+                            "This workshop is full. Joining the waitlist does not confirm a place. "
+                            "A place may be assigned before the cutoff. Check My Bookings for updates. "
+                            "There are no notifications."
                         )
-                        st.rerun()
-                    explanations = {
-                        "USE_BOOKING": "A place is available. Select Book workshop.",
-                        "DUPLICATE_ACTIVE": "You already have an active registration for this workshop.",
-                        "REGISTRATION_CLOSED": "Joining closed 24 hours before the start.",
-                        "INVALID_INPUT": "The server time is unavailable. Please try again.",
-                    }
-                    st.error(f"{outcome}: {explanations.get(outcome, 'Joining is unavailable.')}")
+                    st.button(
+                        "Join Waitlist",
+                        key=f"join_{workshop.workshop_id}",
+                        disabled=now >= workshop.registration_cutoff,
+                        on_click=join_from_view,
+                        args=(workshop.workshop_id, actor.user_id),
+                    )
 
 
 def withdraw_from_view(registration_id: str) -> None:
@@ -478,7 +496,8 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
             return
         st.markdown("#### Workshop waitlist")
         target = next(workshop for workshop in workshops if workshop.workshop_id == target_id)
-        if display_now >= target.starts_at:
+        closed = display_now >= target.starts_at
+        if closed:
             st.caption("Waitlist closed at workshop start. Remaining entries are historical.")
         if not waiters:
             st.write("No waiting participants for this workshop.")
@@ -486,7 +505,7 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
             st.dataframe(
                 [
                     {
-                        "Position": position,
+                        ("Queue order at close" if closed else "Position"): position,
                         "Registration ID": row.registration_id,
                         "Participant ID": row.participant_id,
                         "Participant": names.get(row.participant_id, row.participant_id),
