@@ -194,6 +194,14 @@ At the earlier L5 acceptance stage, status was ACCEPT_LOOP for b597babb5a648d3a5
 
 See [verbatim human feedback and dispositions](reviews/L6-human-review.md#current-human-acceptance). This receipt is a human-in-the-loop decision record; earlier AI Browser Testing remains technical verification. L6 is accepted, while services stay available and L7/main merge/tag/release stay held.
 
+## V1.0 pre-release preparation contribution
+
+The author's 19 November 2026 instruction authorises a pre-release check and English review materials only, with no main merge, tag, publication or L7. AI verifies intake B 882b7ffd3845636249470b9fa38d662a5b672879 and its actual successful 317-case CI; compares main M0 against the full accepted history (50 commits ahead at intake); explains the five historical document consolidations; reads the lack of repository protection/rulesets and actual L6 deployment coordinates; and prepares the bounded [release plan, proposed PR and Tag/Release text, and RH01-RH07](reviews/V1.0-release-readiness.md). The manager panel is closed with the existing Alex view/counts retained; no business operation, refresh, source change or reboot is performed.
+
+Only README, this ledger and one new English release task file change. All 23 accepted intake files except these two current documents remain byte-identical, including the seven accepted L0-L6 review records, code/tests, all four dependency input/lock files and single-job workflow. Canonical 39/51 definition/scenario rows are unchanged. Delivery becomes 24 files and the personal ZIP is refreshed locally without uploading it. The preparation documentation commit has its own actual HEAD/CI/artifact verification, reported at delivery rather than relabelling an older run.
+
+RH01-RH07 and ACCEPT_RELEASE remain PENDING. The earlier actual L6 ACCEPT_LOOP, H01-H07, VAL-01/02 and seven feedback items remain accepted history; they do not supply the new release checks. AI does not create an author release observation, target merge SHA, Tag or Release. A proposed combined approval format preserves explicit merge/deployment/publication scope, with conditional post-merge gates and L7 held. No code, dependency or policy repair is claimed from this records-only task.
+
 ## Current L6 gate
 
 The [L6 review](reviews/L6-human-review.md#current-human-acceptance) records completed author-declared H01-H07, actual validation feedback and ACCEPT_LOOP for the preceding delivered candidate. AI transcribes the decision and verifies documentation/archive/current-head CI; it does not execute the author's tasks retrospectively. Preserve local/cloud services and the personal local-only ZIP. L7 remains NOT_STARTED / HELD_BY_AUTHOR. No main merge, tag, GitHub Release or V1.0 publication is authorised; ACCEPT_LOOP is not ACCEPT_RELEASE.

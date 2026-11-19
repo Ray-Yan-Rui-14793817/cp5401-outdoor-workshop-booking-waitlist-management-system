@@ -88,9 +88,10 @@ The author personally declared UI/H01-H07 and VAL-01/02 complete on 19 November 
 | [Demo reuse](docs/demo-reuse.md) | Pinned source, explained adaptations and course/technical references. |
 | [AI use](docs/ai-use.md) | Actual AI work, corrections and human contribution boundary. |
 | [L6 review](docs/reviews/L6-human-review.md) | Findings, source/environment/results, completed author-declared H01-H07, actual validation feedback and separate release gates. |
+| [V1.0 release preparation](docs/reviews/V1.0-release-readiness.md) | Current conditions, full main-integration plan, deployment transition, Tag/Release drafts and unchecked RH01-RH07. No release authority granted. |
 | [L0](docs/reviews/L0-human-acceptance.md), [L1](docs/reviews/L1-human-review.md), [L2](docs/reviews/L2-human-review.md), [L3](docs/reviews/L3-human-review.md), [L4](docs/reviews/L4-human-review.md), [L5](docs/reviews/L5-human-review.md) | Byte-identical accepted historical reviews/feedback. |
 
-Put L6_develop contents at repository root, including .github. The 23-file L6_develop.zip is personal/local only, with files at archive root. No ZIP, environment, cache, private QA script/log/screenshot/report or course original enters GitHub. Normal 14-day Actions quality-report artifacts are separate from the personal source ZIP.
+Put L6_develop contents at repository root, including .github. The 24-file L6_develop.zip (the 23-file accepted candidate plus one release task file) is personal/local only, with files at archive root. No ZIP, environment, cache, private QA script/log/screenshot/report or course original enters GitHub. Normal 14-day Actions quality-report artifacts are separate from the personal source ZIP.
 
 ## Development workflow
 
@@ -110,6 +111,10 @@ Record scope/preserved behaviour, affected files, FR/BR/QR/risk/test mapping, in
 | Merge | READY_TO_MERGE is a distinct explicit decision; reviewed-main CI/deployment must then be verified. No main merge is authorised here. |
 | Release | ACCEPT_RELEASE, formal v1.0 tag and GitHub Release remain unauthorised/PENDING. ACCEPT_LOOP alone does not approve release. |
 | L7/CR-01 | NOT_STARTED / HELD_BY_AUTHOR. This loop acceptance does not authorise the next loop; a separately approved released V1.0 precedes the assessed change. |
+
+## V1.0 pre-release preparation
+
+The author requests preparation only. The [release check and human checklist](docs/reviews/V1.0-release-readiness.md) records the accepted L6 identities, actual 317-case CI evidence, full main difference, current L6 cloud source and proposed exact-main deployment. README, AI use and one new task file are the only preparation changes; runtime/tests/locks/workflow and all accepted review files are unchanged. RH01-RH07 and ACCEPT_RELEASE remain pending. No PR, main merge, Tag, Release or source reconfiguration is executed, and L7 stays held. The preparation commit receives its own exact-head Actions verification; its SHA/run are identified in the delivery response.
 
 ## GitHub Actions
 
