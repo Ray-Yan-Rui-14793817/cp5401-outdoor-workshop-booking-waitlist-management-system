@@ -7,7 +7,7 @@
 | L9 decision | `HUMAN_ACCEPTANCE_PENDING` |
 | Risk R-08 | `PENDING_VAL_03`. The project author assesses discovery and preparation after personally performing the scenarios. |
 | L10 and V1.1 release | L10 `NOT_STARTED`. V1.1 `NOT_RELEASED`. |
-| Preview | [L9 local preview](http://127.0.0.1:8528/) for the existing fictional Streamlit app. |
+| Preview | [Revised L9 local preview](http://127.0.0.1:8529/) for VAL-03. The prior L9 preview runs on port 8528. |
 
 ## Integration verification
 
@@ -24,6 +24,20 @@ This is integrated technical evidence for the app's behaviour. The VAL-03 scenar
 | L9-F03. The L9 test delegated the confirmed roster count to production code and lacked a post-discovery stale-withdrawal check against both the owner and another participant. | Require the exact confirmed registration ID from the state. Check a stale owner's Withdraw control against the latest promoted state for STATUS_CHANGED. A separate domain check requires FORBIDDEN for Willy targeting Leo's entry at the same instant. Both refusals must keep the complete state and object identity. |
 | L9-F04. The manual B setup assumed both waiters had joined. The E steps could use a withdrawn record as the at-S test subject. | Make both joins and the pre-withdrawal roster snapshot explicit. Check S in a separate still-active waiting case because a cancelled entry takes the idempotent repeat path. |
 
+## L9-F05 Booking & Waitlist Reminder
+
+The author requested participant-focused support for booking awareness under R-08. The accepted CR-01 policy governs the same actions and data. The classroom FIFO walkthrough is recorded in the README.
+
+| Area | Before | Revised UI |
+|---|---|---|
+| Entry point | Demo Guide describes the fictional FIFO demonstration. | A compact participant-only booking and waitlist reminder explains manual checking, C/S and the absence of automatic alerts. |
+| Before C | Generic advice and a notice near Join. | The waiting notice explains FIFO and checking regularly before C. The confirmed notice points to meeting point and preparation notes and explains the cancellation deadline. |
+| From C to S | A waiting row still shows its position and a confirmed cancellation is disabled. | A waiting row explains that promotion has closed and withdrawal remains possible before S. A confirmed row explains the closed cancellation deadline. |
+| At and after S | The history table holds recorded statuses. | Guidance points to Booking History and explains action closure. Stored WAITLISTED records remain historical. |
+| Counts | Confirmed participants and generic confirmation labels. | Confirmed bookings and remaining places refer to allocated registrations, with a booking-count explanation. |
+
+The UI uses the existing selected-identity scope, statuses and C/S comparison. [Test adaptations](../changes/CR-01-test-adaptations.md#l9-f05-reminder-and-booking-count-assertions) record the visible assertion changes and unchanged behavior checks. R-08 remains PENDING_VAL_03 because guidance reduces confusion but participants still have to check for themselves and assess available preparation and travel time.
+
 ## Assessment 3 and lecture cross-check
 
 | Criterion and source | Evidence and remaining gate |
@@ -36,11 +50,11 @@ This is integrated technical evidence for the app's behaviour. The VAL-03 scenar
 
 ## VAL-03 author worksheet
 
-Use fictional identities and workshop details. Record the candidate commit, session type, timezone and tester role. Use Asia/Singapore (UTC+08:00) when recording C, S and observations. In the live preview, preserve the browser session through the sequence. Switch identities through the sidebar and use **Refresh view**. Prepare a separate fresh session for the normal-promotion exercise so the waitlist starts clean. Write down what you understood and would do before consulting the technical evidence. Before reading the scenario rows or timed instructions, prewrite when and where you would normally check without any app alert, including your reason and any user-set reminder. Use that plan in the practical assessment below.
+Use fictional identities and workshop details. Record the candidate commit, session type, timezone and tester role. Use Asia/Singapore (UTC+08:00) when recording C, S and observations. Use the revised Booking & Waitlist Reminder preview on port 8529 for VAL-03A-E. Preserve the browser session through each live sequence. Switch identities through the sidebar and use **Refresh view**. Prepare a separate fresh session for the normal-promotion exercise so the waitlist starts clean. Write down what you understood and would do before consulting the technical evidence. Before reading the scenario rows or timed instructions, prewrite when and where you would normally check without any app alert, including your reason and any user-set reminder. Use that plan in the practical assessment below.
 
 | Scenario | Author task | What to record |
 |---|---|---|
-| VAL-03A | As Leo, open the full Outdoor Photography Walk, join the waitlist and find your entry in My Bookings. Explain the meaning of the current status, the difference between C and S, and how you would learn about a promotion. | First interpretation, where you found C and S, the entry ID, and how and when you would check again. |
+| VAL-03A | As Leo, open the full Outdoor Photography Walk, join the waitlist and find your entry in My Bookings. Explain the meaning of the current status, the difference between C and S, and how you would learn about a promotion. After recording your first interpretation, locate the Booking & Waitlist Reminder and say what, if anything, it clarified. | First interpretation, where you found C and S, the entry ID, and how and when you would check again. |
 | VAL-03B | In a fresh session, join the full Outdoor Photography Walk as Leo, then join it as Willy. Verify both positions before switching to Sam and cancelling before C. Switch back to Leo and use Refresh view. Identify the status and practical next step. | Time of cancellation and first check, retained registration ID, location of the current status, and what you would do next. |
 | VAL-03C | Use the timed exercise below to promote Leo close to C. First observe the outcome before C in a dedicated repeat or role-play the canonical 08:59 timeline. Assess whether the remaining lead is enough to prepare and travel. | Actual or simulated promotion and discovery times, lead until S, essential preparation, travel, check-in and buffer, and your latest useful confirmation time. |
 | VAL-03D | Repeat the timed setup in a new session. After Sam cancels close to C, leave Leo's view unopened until after C. Return to Leo and check manually. Contrast his confirmed booking with Willy's still-waiting entry. | Discovery lag, confirmation and action availability, where you looked for a notice, whether you would realistically check in time, and what you would do if preparation or travel were no longer feasible. |
@@ -90,8 +104,8 @@ Use `ACCEPTABLE_WITHIN_SCOPE`, `CHANGES_REQUIRED` or `UNRESOLVED` with the obser
 
 ## Author acceptance checklist
 
-- [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and full inventory of all 377 retained tests plus the L9 integration case.
-- [ ] **L9-H02** Personally perform VAL-03A and B. Record the initial status interpretation, how you discover a promotion and the registration ID.
+- [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and the 378 retained case identities plus the five reminder boundary cases.
+- [ ] **L9-H02** Personally perform VAL-03A and B. Record your initial status interpretation, what the revised reminder contributes, how you discover a promotion and the registration ID.
 - [ ] **L9-H03** Perform VAL-03C. Record C, S, the near-C promotion and preparation and travel feasibility.
 - [ ] **L9-H04** Perform VAL-03D. Record the guided post-C result separately from your prewritten checking plan. Compare observed or estimated discovery against the latest useful time and record preparation feasibility without an alert.
 - [ ] **L9-H05** Perform VAL-03E. Check withdrawal, history and confirmed-roster stability and explain the boundary at S.

@@ -38,3 +38,14 @@ The rows are generated from the old and new assertion syntax of existing test fu
 | `test_p1_review_stale_book_keeps_rendered_identity[participant-willy]` | Parameter switched from Leo to Willy in the specialised state | Keep the historical case label and switch from fixture Alpha to fixture Zulu. | Both actors are valid participants with otherwise eligible booking, with exact state preservation on refusal. Organiser variant remains. |
 
 The focused and full JUnit comparisons are linked from the [P2 test map](../test-plan.md#l8-p2-verification). The [published V1.0 commit](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/36e7bff3c1d3f74bb29c1900373726ecffdd176b) retains the original test source and release evidence.
+
+## L9-F05 reminder and booking-count assertions
+
+Retain original function and parameter identities. The changed assertions concern the intended reminder replacement and allocated booking terminology.
+
+| Test | Original UI assertion | Revised UI assertion |
+|---|---|---|
+| test_owned_roster_displays_selected_confirmed_count | Confirmed participants count label and empty confirmed-participant message. | Require the equivalent confirmed-bookings count and empty booking message, preserving expected count, roster rows and state assertions. |
+| test_public_view_shows_full_details_counts_and_closed_policy | Card caption uses Capacity and Confirmed for the expected numbers. | Require the equivalent Confirmed bookings caption with the same expected numbers and retain all surrounding behaviour assertions. |
+| test_l5_ui_cancel_updates_history_capacity_and_owned_roster_without_losing_drafts | Card caption uses Capacity and Confirmed for the expected numbers. | Require the equivalent Confirmed bookings caption with the same expected numbers and retain all surrounding behaviour assertions. |
+| test_p2_demo_guide_and_organiser_tabs_are_read_only | Read-only Demo Guide with the no-notification text. | The landmark is replaced with a read-only participant Booking & Waitlist Reminder. Check manual refresh, absence of automatic notices, role gating, organiser ownership and separate draft restoration. Retain complete business state, both organiser tabs and create/roster controls. |

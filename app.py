@@ -73,6 +73,45 @@ def format_instant(value: datetime) -> str:
     return value.astimezone(WORKSHOP_TIMEZONE).strftime("%Y-%m-%d %H:%M:%S") + " (Asia/Singapore)"
 
 
+STARTED_BOOKING_GUIDANCE = (
+    "This workshop has started. Check Booking History for the recorded status. "
+    "Booking, cancellation and waitlist actions are closed."
+)
+
+
+def active_booking_guidance(status: RegistrationStatus, closed: bool) -> str:
+    if status == RegistrationStatus.WAITLISTED:
+        if closed:
+            return (
+                "WAITLISTED is unconfirmed. Promotion closed at C. "
+                "You may withdraw before the workshop starts (S)."
+            )
+        return (
+            "WAITLISTED means unconfirmed. Use Refresh view regularly before C to check for "
+            "FIFO promotion. There are no notifications. You may withdraw before S, "
+            "including during the final 24 hours."
+        )
+    if closed:
+        return "Your booking is confirmed. The cancellation deadline has passed. Review your booking details."
+    return (
+        "Your booking is confirmed. Review the meeting point and preparation notes. "
+        "You may cancel before C if your plans change."
+    )
+
+
+def show_booking_reminder() -> None:
+    with st.expander("Booking & Waitlist Reminder"):
+        st.markdown(
+            "**Before C.** Check My Bookings regularly, especially near the registration cutoff "
+            "(C). WAITLISTED means unconfirmed. FIFO promotion may occur before C. "
+            "Review the workshop details and plan ahead.\n\n"
+            "**From C.** Use Refresh view in My Bookings to check your status. New bookings, "
+            "waitlist joining, promotion and confirmed cancellation are closed. "
+            "Waiting entries can still be withdrawn before the workshop starts (S).\n\n"
+            "**No automatic notifications.** Consider setting your own reminder to check before C."
+        )
+
+
 def show_refusal(outcome: str) -> None:
     if outcome == "ALREADY_CANCELLED":
         st.info("ALREADY_CANCELLED: This record is already cancelled. Check Booking History.")
@@ -176,30 +215,32 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                 st.write("End:", format_instant(workshop.ends_at))
             with availability:
                 st.write(f"**Remaining places: {remaining}**")
-                st.caption(f"Capacity: {workshop.capacity} | Confirmed: {confirmed}")
+                st.caption(f"Capacity: {workshop.capacity} | Confirmed bookings: {confirmed}")
                 st.write("**Meeting point:**", workshop.location)
             st.write(
                 "Preparation:", workshop.preparation_notes or "No additional preparation notes."
             )
             if actor is not None and actor.role == Role.PARTICIPANT:
-                if full:
-                    if active_status == RegistrationStatus.CONFIRMED:
-                        st.caption(
-                            "You already have a confirmed booking for this workshop. "
-                            "Open My Bookings to view it."
+                if active_status is not None:
+                    if started:
+                        history_hint = (
+                            "Your waitlist entry is in Booking History. "
+                            if active_status == RegistrationStatus.WAITLISTED
+                            else ""
                         )
-                    elif active_status == RegistrationStatus.WAITLISTED:
-                        if started:
-                            st.caption("Your waitlist entry is in Booking History.")
-                        else:
-                            st.caption(
-                                "You are already on this waitlist. Open My Bookings for your position."
-                            )
-                    elif not closed:
-                        st.caption(
-                            "WAITLISTED means unconfirmed. A place may be assigned before cutoff (C). "
-                            "Check My Bookings for updates. There are no notifications."
+                        st.caption(history_hint + STARTED_BOOKING_GUIDANCE)
+                    else:
+                        own_entry = (
+                            "You are already on this waitlist. Open My Bookings for your position. "
+                            if active_status == RegistrationStatus.WAITLISTED
+                            else "You already have a confirmed booking for this workshop. "
                         )
+                        st.caption(own_entry + active_booking_guidance(active_status, closed))
+                elif full and not closed:
+                    st.caption(
+                        "WAITLISTED means unconfirmed. FIFO promotion may occur before C. "
+                        "Check My Bookings for updates. There are no notifications."
+                    )
                 with st.container(horizontal=True):
                     st.button(
                         "Book workshop",
@@ -333,14 +374,17 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
         st.subheader("Upcoming Confirmed Bookings")
         if current:
             st.dataframe(current, hide_index=True, width="stretch")
-            st.caption("Cancel an upcoming booking before its registration cutoff (C).")
             for row in current:
                 registration_id = row["Registration ID"]
                 workshop = workshops[row["Workshop ID"]]
+                closed = now >= workshop.registration_cutoff
+                st.caption(
+                    f"{workshop.title}. {active_booking_guidance(RegistrationStatus.CONFIRMED, closed)}"
+                )
                 st.button(
                     f"Cancel Booking: {workshop.title} ({registration_id})",
                     key=f"cancel_{registration_id}",
-                    disabled=now >= workshop.registration_cutoff,
+                    disabled=closed,
                     on_click=cancel_from_view,
                     args=(registration_id, workshop.workshop_id),
                 )
@@ -351,13 +395,13 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
         st.subheader("My Waitlist")
         if waiting:
             st.dataframe(waiting, hide_index=True, width="stretch")
-            st.caption(
-                "WAITLISTED means unconfirmed. You can withdraw until the workshop starts (S), "
-                "including during the final 24 hours. Use Refresh view for updates. "
-                "There are no notifications."
-            )
             for row in waiting:
                 registration_id = row["Registration ID"]
+                workshop = workshops[row["Workshop ID"]]
+                closed = now >= workshop.registration_cutoff
+                st.caption(
+                    f"{workshop.title}. {active_booking_guidance(RegistrationStatus.WAITLISTED, closed)}"
+                )
                 st.button(
                     f"Withdraw Waitlist: {row['Workshop']} ({registration_id})",
                     key=f"withdraw_{registration_id}",
@@ -371,7 +415,10 @@ def show_my_bookings(state: DemoState, actor: DemoUser, now: datetime) -> None:
         st.subheader("Booking History")
         if history:
             st.dataframe(history, hide_index=True, width="stretch")
-            st.caption("Cancelled records and started workshops retain their recorded status.")
+            for row in history:
+                workshop = workshops[row["Workshop ID"]]
+                if now >= workshop.starts_at:
+                    st.caption(f"{workshop.title}. {STARTED_BOOKING_GUIDANCE}")
         else:
             st.write("No booking history.")
 
@@ -533,11 +580,11 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
         st.caption(
             f"Capacity: {target.capacity} | Remaining places: {target.capacity - len(registrations)}"
         )
-        st.caption(f"Confirmed participants: {len(registrations)}")
-        st.caption("Only confirmed participants are listed; cancelled history consumes no place.")
+        st.caption(f"Confirmed bookings: {len(registrations)}")
+        st.caption("This roster shows confirmed bookings. Cancelled records use no places.")
         names = {user.user_id: user.display_name for user in state.users}
         if not registrations:
-            st.write("No confirmed participants for this workshop.")
+            st.write("No confirmed bookings for this workshop.")
         else:
             st.dataframe(
                 [
@@ -652,22 +699,15 @@ def main() -> None:
     workshops, confirmed = st.columns(2)
     workshops.metric("Workshop records in this session", len(state.workshops))
     confirmed.metric(
-        "Confirmed records in this session",
+        "Confirmed bookings in this session",
         sum(record.status == RegistrationStatus.CONFIRMED for record in state.registrations),
     )
 
-    with st.expander("Demo Guide"):
-        st.markdown(
-            "1. Select a fictional identity. Participants manage only the selected identity's "
-            "records. Organisers create workshops and manage their own rosters and waitlists.\n"
-            "2. To try FIFO in a fresh session, join the full Outdoor Photography Walk as Leo, "
-            "then as Willy. Switch to Sam, open My Bookings and cancel the seed booking "
-            "before the cutoff. Check the result as Leo, Willy and organiser Alex.\n"
-            "3. Check My Bookings or use Refresh view for updates. Waiting is unconfirmed "
-            "and there are no notifications. Waiting participants can withdraw until start."
-        )
+    st.caption("Booking counts show reserved places and do not measure attendance.")
 
     with st.container(key=identity_view_key(selected_id)):
+        if actor is not None and actor.role == Role.PARTICIPANT:
+            show_booking_reminder()
         st.subheader(view)
         if view not in ("Workshops", "My Bookings", "Organiser"):
             st.error("This view is unavailable. Please refresh and try again.")

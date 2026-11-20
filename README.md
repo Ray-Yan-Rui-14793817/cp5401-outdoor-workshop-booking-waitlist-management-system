@@ -6,7 +6,7 @@
 
 Book and Join Waitlist are separate actions. Before the 24-hour cutoff, participants may explicitly join a full workshop. An effective confirmed cancellation promotes at most one waiter from the same workshop, in queue sequence order. A participant can withdraw their own waiting entry until the workshop starts. The confirmed roster is frozen from the 24-hour cutoff. Check My Bookings for the latest status. The app sends no notifications.
 
-The Streamlit UI uses `app.py`, business rules use `booking.py`, and pytest and Streamlit AppTest use `test_booking.py`. The classroom app uses fictional identities and temporary data inside one session. Independent sessions have independent demo state. Select Xingjian, Sam, Leo or Willy as a participant, or Rui Yan or Alex as an organiser. The Organiser view separates Create Workshop from Manage My Workshops. Open Demo Guide for the normal six-user FIFO walkthrough. FIFO Test Alpha and FIFO Test Zulu are available only in the specialised automated fixture. Human validation of how promptly people can discover promotion and prepare is planned under VAL-03.
+The Streamlit UI uses `app.py`, business rules use `booking.py`, and pytest and Streamlit AppTest use `test_booking.py`. The classroom app uses fictional identities and temporary data inside one session. Independent sessions have independent demo state. Select Xingjian, Sam, Leo or Willy as a participant, or Rui Yan or Alex as an organiser. The Organiser view separates Create Workshop from Manage My Workshops. Participants can expand Booking & Waitlist Reminder to review status, cutoff and manual refresh guidance. FIFO Test Alpha and FIFO Test Zulu are available only in the specialised automated fixture. Human validation of how promptly people can discover promotion and prepare is planned under VAL-03.
 
 Use the existing Python 3.12 environment with the locked development dependencies, or create a fresh environment and install `requirements-dev.txt` with `--require-hashes`. From this folder:
 
@@ -16,6 +16,14 @@ python -m streamlit run app.py --server.address 127.0.0.1 --server.port 8526 --s
 ```
 
 Review the [accepted change request](docs/changes/CR-01.md), the [L8 test map](docs/test-plan.md#l8-cr-01-verification), the [AI record](docs/ai-use.md#l8-cr-01-ai-use), and the [human checklist](docs/reviews/L8-human-review.md). The reviewed P2 SHA passed 377 tests in the [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754). See the [P2 test map](docs/test-plan.md#l8-p2-verification) and [test adaptation log](docs/changes/CR-01-test-adaptations.md).
+
+### FIFO demonstration
+
+Use a fresh local session for this fictional walkthrough.
+
+1. Open the full Outdoor Photography Walk as Leo and join the waitlist. Switch to Willy and join the same waitlist.
+2. Switch to Sam, open My Bookings and cancel the confirmed seed booking before C.
+3. Check My Bookings as Leo and Willy. Leo is confirmed under his original registration ID. Willy remains waiting at position 1. Alex can review the roster for his workshop.
 
 ## Historical V1.0 preparation notes
 

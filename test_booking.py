@@ -1609,12 +1609,12 @@ def test_owned_roster_displays_selected_confirmed_count(
     app.selectbox(key="roster_workshop_id").set_value(workshop_id).run()
 
     assert not app.exception
-    assert f"Confirmed participants: {expected_count}" in [row.value for row in app.caption]
+    assert f"Confirmed bookings: {expected_count}" in [row.value for row in app.caption]
     if expected_count:
         assert len(app.dataframe[0].value) == expected_count
     else:
         assert not app.dataframe
-        assert "No confirmed participants for this workshop." in [row.value for row in app.markdown]
+        assert "No confirmed bookings for this workshop." in [row.value for row in app.markdown]
     assert demo_data == before
 
 
@@ -1657,8 +1657,8 @@ def test_public_view_shows_full_details_counts_and_closed_policy(
         "Bring water",
     ]:
         assert expected in rendered
-    assert "Capacity: 10 | Confirmed: 1" in [m.value for m in navigation.get("caption")]
-    assert "Capacity: 1 | Confirmed: 1" in [m.value for m in photography.get("caption")]
+    assert "Capacity: 10 | Confirmed bookings: 1" in [m.value for m in navigation.get("caption")]
+    assert "Capacity: 1 | Confirmed bookings: 1" in [m.value for m in photography.get("caption")]
     assert any("Remaining places: 0" in m.value for m in photography.get("markdown"))
     for workshop_id, status in (
         ("workshop-1", "BOOKING OPEN"),
@@ -2632,7 +2632,7 @@ def test_l5_ui_cancel_updates_history_capacity_and_owned_roster_without_losing_d
     assert not app.success
     app.sidebar.radio(key="current_view").set_value("Workshops").run()
     card = rendered_workshop(app, "workshop-2")
-    assert "Capacity: 1 | Confirmed: 0" in [m.value for m in card.get("caption")]
+    assert "Capacity: 1 | Confirmed bookings: 0" in [m.value for m in card.get("caption")]
     assert any("Remaining places: 1" in m.value for m in card.get("markdown"))
     app.button(key="book_workshop-2").click().run()
     assert app.session_state.demo_state.registrations[-1].registration_id == "registration-5"
@@ -4357,14 +4357,34 @@ def test_p2_default_demo_promotes_leo_and_leaves_willy_first(
 def test_p2_demo_guide_and_organiser_tabs_are_read_only() -> None:
     app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
     original = deepcopy(app.session_state.demo_state)
-    guide = next(item for item in app.expander if item.label == "Demo Guide")
-    assert not guide.button
-    assert "there are no notifications" in guide.markdown[0].value
-    app.sidebar.selectbox(key="selected_user_id").set_value("organiser-2").run()
-    app.sidebar.radio(key="current_view").set_value("Organiser").run()
-    assert [tab.label for tab in app.tabs] == ["Create Workshop", "Manage My Workshops"]
-    assert app.tabs[0].button(key="create_workshop")
-    assert app.tabs[1].selectbox(key="roster_workshop_id")
+    drafts = {
+        "organiser-1": {"draft": {"new_title": "Rui draft"}},
+        "organiser-2": {"draft": {"new_title": "Alex draft"}},
+    }
+    app.session_state.creation_forms = deepcopy(drafts)
+    assert not app.expander
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    assert [item.label for item in app.expander] == ["Booking & Waitlist Reminder"]
+    reminder = app.expander[0]
+    assert [item.type for item in reminder] == ["expander", "markdown"]
+    assert "No automatic notifications." in reminder.markdown[0].value
+    assert "Use Refresh view in My Bookings" in reminder.markdown[0].value
+    assert app.session_state.creation_forms == drafts
+
+    for organiser_id, saved_title, owned, foreign in (
+        ("organiser-2", "Alex draft", "workshop-2", "workshop-1"),
+        ("organiser-1", "Rui draft", "workshop-1", "workshop-2"),
+    ):
+        app.sidebar.selectbox(key="selected_user_id").set_value(organiser_id).run()
+        app.sidebar.radio(key="current_view").set_value("Organiser").run()
+        assert not app.expander
+        assert [tab.label for tab in app.tabs] == ["Create Workshop", "Manage My Workshops"]
+        assert app.tabs[0].button(key="create_workshop")
+        assert app.tabs[0].text_input(key="new_title").value == saved_title
+        options = app.tabs[1].selectbox(key="roster_workshop_id").options
+        assert any(owned in option for option in options)
+        assert all(foreign not in option for option in options)
+        assert app.session_state.creation_forms == drafts
     assert app.session_state.demo_state == original
     assert not app.exception
 
@@ -4586,3 +4606,84 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
         ],
     )
     assert not app.exception
+
+
+@pytest.mark.parametrize(
+    ("offset", "confirmed_hint", "waiting_hint", "cancel_open", "withdraw_open"),
+    [
+        (-1, "You may cancel before C", "FIFO promotion", True, True),
+        (0, "cancellation deadline has passed", "Promotion closed at C", False, True),
+        (86399, "cancellation deadline has passed", "Promotion closed at C", False, True),
+        (86400, "Check Booking History", "Check Booking History", False, False),
+        (86401, "Check Booking History", "Check Booking History", False, False),
+    ],
+    ids=["before-C", "at-C", "before-S", "at-S", "after-S"],
+)
+def test_l9_status_guidance_respects_confirmed_and_waiting_boundaries(
+    monkeypatch: pytest.MonkeyPatch,
+    offset: int,
+    confirmed_hint: str,
+    waiting_hint: str,
+    cancel_open: bool,
+    withdraw_open: bool,
+) -> None:
+    state = create_demo_data(NOW)
+    state.registrations.append(
+        Registration(
+            "registration-5",
+            "workshop-2",
+            "participant-leo",
+            RegistrationStatus.WAITLISTED,
+            NOW,
+            NOW,
+            1,
+        )
+    )
+    state.next_registration_id = 6
+    baseline = deepcopy(state)
+    cutoff = datetime(2026, 12, 4, 9, tzinfo=WORKSHOP_TIMEZONE)
+    monkeypatch.setattr(booking, "server_now", lambda: cutoff + timedelta(seconds=offset))
+    app = app_with_state(state)
+
+    for user_id, reg_id, status, hint, action, action_open in (
+        ("participant-2", "registration-2", "CONFIRMED", confirmed_hint, "cancel", cancel_open),
+        (
+            "participant-leo",
+            "registration-5",
+            "WAITLISTED",
+            waiting_hint,
+            "withdraw",
+            withdraw_open,
+        ),
+    ):
+        app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+        app.sidebar.radio(key="current_view").set_value("Workshops").run()
+        card = rendered_workshop(app, "workshop-2")
+        assert any(hint in caption.value for caption in card.get("caption"))
+        assert any("Confirmed bookings: 1" in caption.value for caption in card.get("caption"))
+        summary = app.metric[1]
+        assert summary.label == "Confirmed bookings in this session"
+        assert any("do not measure attendance" in caption.value for caption in app.caption)
+        app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+        app.sidebar.button(key="refresh_view").click().run()
+        assert any(
+            "Outdoor Photography Walk" in caption.value and hint in caption.value
+            for caption in app.caption
+        )
+        controls = {button.key: button for button in app.button}
+        button_key = f"{action}_{reg_id}"
+        if withdraw_open:
+            assert button_key in controls and (not controls[button_key].disabled) == action_open
+        else:
+            assert button_key not in controls
+        rows = [
+            record
+            for table in app.dataframe
+            for record in table.value.to_dict("records")
+            if record["Registration ID"] == reg_id
+        ]
+        assert len(rows) == 1 and rows[0]["Status"] == status
+        if status == "WAITLISTED" and not withdraw_open:
+            assert rows[0]["Waitlist"] == "Closed at workshop start"
+            assert "Position" not in rows[0]
+        assert not app.exception and app.session_state.demo_state is state and state == baseline
