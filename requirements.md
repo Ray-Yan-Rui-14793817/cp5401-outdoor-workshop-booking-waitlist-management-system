@@ -286,7 +286,7 @@ The following is the accepted risk-control plan. V1.0 implementation/technical e
 | **R-05** / Both | Wrong timing, particularly blocking withdrawal at C or allowing it after S. Use fresh trusted time and operation-specific deadlines. Isolate C/S boundaries with fresh active records and test late form submission. | B03/B05/B06/B15/B16; W08/W12/W16; I10 |
 | **R-06** / AI-assisted work | Unchecked AI assumptions, changed policy or unrelated complexity. Bound intent/files, preserve contracts, inspect oracles/dependencies and record human corrections and decisions. | AI-use, loop review, CR-01, PR and findings records |
 | **R-07** / Both | Weak tests, false-positive denials or baseline regressions. Derive oracles from requirements; isolate each rejection cause, retain baseline tests and inspect collected/skipped/mocked scope. Protect full rejection, empty-queue cancellation and no-op safety. | B01-B17, W01-W16 and applicable I checks; especially B08/B11/B12/B15/B16, W06/W07/W10/W12 and I05 |
-| **R-08** / Both | Misunderstood states, delayed confirmation awareness, cutoff restrictions or temporary data. Explain S/C, no notification, permitted waiting withdrawal, closed confirmed cancellation and session limits; validate actual tasks and feasibility. | VAL-01/VAL-02/VAL-03A-VAL-03E |
+| **R-08** / Both | Misunderstood states, delayed confirmation awareness, cutoff restrictions or temporary data. Explain S/C, no notification, permitted waiting withdrawal, closed confirmed cancellation and session limits. For V1.1, validate actual status comprehension, manual promotion discovery in time for the intended booking decision, and understanding of the remaining actions. Outdoor preparation and travel are context for the decision. [L9 scope and acceptance basis](docs/reviews/L9-human-review.md#scope-and-acceptance-basis). | VAL-01/VAL-02/VAL-03A-VAL-03E |
 
 Acceptance requires the specified outcomes and state assertions in the linked scenarios, not merely a green report or a helper function's presence.
 
@@ -303,7 +303,7 @@ M means Medium; H means High. Unknown means evidence is still required.
 | R-05 | M / H | C and S deliberately permit different actions. |
 | R-06 | M / H | Generated work can retain superseded assumptions or change tests to fit code. |
 | R-07 | M / H | An error can pass through weak assertions or a denial caused by the wrong precondition. |
-| R-08 | Unknown / H | Preparation, arrival and restriction acceptability have not been observed. |
+| R-08 | Unknown / H | Initial planning considered preparation, arrival and restrictions. The V1.1 follow-up measures booking comprehension and action timing. Actual R-08 observations remain pending. |
 
 ### Monitoring and human decisions
 

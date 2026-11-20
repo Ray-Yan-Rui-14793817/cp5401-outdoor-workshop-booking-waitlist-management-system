@@ -8,7 +8,7 @@ The author directed L9 from accepted L8 `2531b0d`. Codex retained the applicatio
 
 ### L9 deep review
 
-Codex compared the 378-case intake and 377-case L8 inventory and inspected the cutoff, stale-action and state-isolation assertions. It strengthened the existing L9 case to check exact-C refusal with an active queue through Streamlit and retention of both pre-transition snapshots. Codex also identified the prompting effect of a scheduled check and separated that technical replay from the author's assessment of ordinary checking behaviour, access and time-sensitive preparation in the [VAL-03 worksheet](reviews/L9-human-review.md#check-discovery-and-preparation-separately). The author supplies all VAL-03 observations and the R-08 decision.
+Codex compared the 378-case intake and 377-case L8 inventory and inspected the cutoff, stale-action and state-isolation assertions. It strengthened the existing L9 case to check exact-C refusal with an active queue through Streamlit and retention of both pre-transition snapshots. Codex also identified the prompting effect of a scheduled check and separated that technical replay from the author's assessment of ordinary checking behaviour, access and time-sensitive preparation in the [VAL-03 worksheet](reviews/L9-human-review.md#check-discovery-against-the-booking-decision). The author supplies all VAL-03 observations and the R-08 decision.
 
 ### L9 course and oracle cross-check
 
@@ -23,6 +23,10 @@ For the follow-up to `88f7dbf`, the author requested that the public Registratio
 The author then identified two L9 review points: assessment should measure comprehension before and after reading the collapsed reminder, and the CR-01 impact record still described two participants and Demo Guide as current. Codex added the two-pass record and reconciled current descriptions with the accepted L7/L8 history and L9-F05. This was a documentation-only change. No VAL-03 responses or L9 acceptance have been entered on the author's behalf.
 
 The author supplied both VAL-03A passes in Chinese. Codex translated the ten responses into English and compared them with the documented C/S and notification rules. The [responses](reviews/L9-human-review.md#author-submitted-val-03a-responses) preserve the author's first-pass uncertainty and second-pass clarifications. The author supplied the answers. Codex supplied the translation and comparison. The exercise metadata, VAL-03B-E, the R-08 decision and L9 acceptance remain pending.
+
+### L9 author scope clarification and evidence classification
+
+The author supplied H01-H06 review feedback, identified the VAL-03A answers as simulated and directed R-08 to cover booking and waitlist outcomes. Codex recorded the feedback and evidence type, aligned the CR-01 and VAL-03 criteria, and kept preparation as optional context for the latest useful booking decision. Actual human observations, the author's R-08 disposition and L9 acceptance remain pending. This record changes documentation only. See the [feedback and worksheet](reviews/L9-human-review.md#l9-author-feedback-and-scope-decision).
 
 ## L8-P2 author acceptance and records update
 

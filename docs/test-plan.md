@@ -2,7 +2,7 @@
 
 ## L9 V1.1 integration verification
 
-Use accepted L8 `2531b0d` and its [377-case evidence](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44682855711) as the regression baseline. L9 adds `test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff`. It verifies the integrated Streamlit flow at C minus one minute and C plus five minutes, including whole state, the unchanged promoted ID, delayed discovery, and effective withdrawal of the remaining waiting entry. The deep review applies a stale Cancel control at exact C with an active queue and confirms identity and equality of the state. The course cross-check adds post-C D-01 stale-control and different-owner checks in the same L9 case and requires the exact confirmed registration ID. The original 378 case identities are retained. Compare the complete case identity inventory. The [VAL-03 worksheet](reviews/L9-human-review.md#val-03-author-worksheet) covers the separate human assessment of understanding, discovery and preparation.
+Use accepted L8 `2531b0d` and its [377-case evidence](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44682855711) as the regression baseline. L9 adds `test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff`. It verifies the integrated Streamlit flow at C minus one minute and C plus five minutes, including whole state, the unchanged promoted ID, delayed discovery, and effective withdrawal of the remaining waiting entry. The deep review applies a stale Cancel control at exact C with an active queue and confirms identity and equality of the state. The course cross-check adds post-C D-01 stale-control and different-owner checks in the same L9 case and requires the exact confirmed registration ID. The original 378 case identities are retained. Compare the complete case identity inventory. The [VAL-03 worksheet](reviews/L9-human-review.md#val-03-author-worksheet) covers the separate human assessment of understanding, manual discovery and timely booking decisions.
 
 ### L9-F05 reminder and booking terminology
 
@@ -56,7 +56,7 @@ The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and t
 | AC-05 / W13-W14, I06, I08-I09, CRV-02 | Check live own positions, owned ordered list, menu permissions, separate session factories and the single-session AppTest journey. Check both participant and organiser closed history without modifying status. In a single widget submission, change selected participant and click a Join control rendered for the previous actor. Require refusal and unchanged state. Verify current promotion via Refresh view. |
 | AC-07 / B01-B17, I07 | All 317 original cases and no-waiter fixtures remain. Retained constructors default to no queue sequence. No live migration or shared concurrency is exercised. |
 | QR-02 / CRV-03 | Inject failure during promotion after preparing the cancelled row. Check both direct business state and actual Streamlit state, including absence of partial writes and false success. |
-| R-08 / VAL-03A-E | Pending author-led human validation on a candidate. Pay particular attention to pre-cutoff promotion discovered after the cutoff, awareness, feasibility and the lack of alerts. |
+| R-08 / VAL-03A-E | Pending author-led human validation on a candidate. Pay particular attention to pre-cutoff promotion discovered after the cutoff, booking decision timing, and the lack of alerts. |
 
 The [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) record the tested SHA and all quality steps. The original implementation run is historical. The [L8 author checklist](reviews/L8-human-review.md#overall-l8-author-checklist) records completion for the revised P2 SHA.
 
@@ -120,7 +120,7 @@ On 19 November 2026 (Asia/Shanghai, UTC+08:00), the project author declared L6 U
 | VAL-02 / organiser | PASS 10/10 submitted scenarios; ACCEPTABLE_WITHIN_SCOPE | Stable rosters support equipment/activity preparation. Temporary Session State is acceptable for one-session demonstration, not reliable real-world operations. |
 | Personal UI/H01-H07; I06/I08/I09 judgement | COMPLETE by explicit author declaration | Role navigation/permissions/draft isolation and ordinary-rerun preservation work in the demo model. Independent sessions and restart do not share or durably recover records. |
 | R-08 baseline outdoor/timing needs | ACCEPTABLE_WITHIN_SCOPE | Human supplemental feedback respects unexpected circumstances: confirmed booking is a record, not guaranteed attendance or an obligation to participate unsafely. No emergency override or attendance feature is added. |
-| R-08 V1.1 / VAL-03A-03E | VALIDATION_PENDING / DEFERRED_TO_V1.1 | Baseline acceptance does not establish delayed-promotion discovery, preparation/arrival feasibility or waiting-state comprehension. |
+| R-08 V1.1 / VAL-03A-03E | VALIDATION_PENDING / DEFERRED_TO_V1.1 | Baseline acceptance leaves V1.1 waiting-state comprehension and timely manual promotion discovery open. |
 
 The 19 human scenarios are not additional pytest cases: the suite remains 317, with all L1-L5 regression identities unchanged. The accepted candidate's run/artifact is identified above; the acceptance-record commit receives an independently checked exact-HEAD run. Full feedback and dispositions are in [current human acceptance](reviews/L6-human-review.md#current-human-acceptance). No remaining human loop check is inferred from AI evidence. ACCEPT_LOOP does not authorise main merge, tag, V1.0 release or L7.
 
@@ -352,12 +352,12 @@ Validation examines whether the intended users can complete useful tasks and acc
 |---|---|
 | **VAL-01** | Find a suitable workshop, identify S/C and complete pre-C booking/cancellation. Explain post-C restrictions and the single-session, non-authenticated demonstration. |
 | **VAL-02** | Create a >24h workshop and inspect owned rosters. Assess whether the 24h freeze supports preparation and whether the prototype demonstrates the organising task coherently. |
-| **VAL-03** | Complete waiting, withdrawal and promotion; explain C/S differences and assess preparation, awareness and participation feasibility. |
+| **VAL-03** | Complete waiting, withdrawal and promotion; explain C/S differences and assess whether manual status discovery supports an informed booking decision. |
 | Scenario | Task and acceptance question |
 |---|---|
 | **VAL-03A** | After Join, record understanding separately of WAITLISTED, C/S, manual checking and alerts with the reminder closed and then after reading it. [Two-pass worksheet](reviews/L9-human-review.md#val-03a-comprehension-with-the-reminder-closed-and-open). |
 | **VAL-03B** | Locate confirmation after ordinary pre-C promotion and explain the next action. |
-| **VAL-03C** | S=10 December 09:00, C=9 December 09:00, promotion=9 December 08:59. Separately assess comprehension, preparation/arrival feasibility and latest useful confirmation with reasons. |
+| **VAL-03C** | S=10 December 09:00, C=9 December 09:00, promotion=9 December 08:59. Check the same confirmation ID and remaining actions. Record the latest useful time for a booking decision and its reason. |
 | **VAL-03D** | In one preserved demo session simulate pre-C promotion discovered after C. Explain closed confirmed cancellation versus permitted waiting withdrawal. A recreated session follows reset limits, not recovered prior data. |
 | **VAL-03E** | Withdraw during C<=t<S without changing confirmed records or promoting another waiter; explain closure at S and assess whether this is understandable/useful. |
 
@@ -365,7 +365,7 @@ Validation examines whether the intended users can complete useful tasks and acc
 
 Record actual tester/role label, version, task, intended need, observations, feedback, issue, owner and decision. Distinguish external testers from author role-play; do not invent participants or claim real multi-user operation.
 
-Task comprehension is acceptable when the tester correctly identifies state, applicable deadline and next permitted action without unresolved critical confusion. Product suitability is a separate human judgement supported by feedback and preparation/arrival constraints.
+Task comprehension is acceptable when the tester correctly identifies state, applicable deadline and next permitted action without unresolved critical confusion. R-08 suitability is a separate human judgement supported by observed manual discovery and its timing against the intended booking decision. Outdoor constraints can explain that timing.
 
 Use ACCEPTABLE_WITHIN_SCOPE, CHANGES_REQUIRED or UNRESOLVED, with rationale. A critical unmet need prevents the relevant release. The baseline VAL-01/02 author declaration and scoped judgement are now recorded above; R-08 waiting/promotion scenarios remain pending until their own actual validation occurs.
 
@@ -431,7 +431,7 @@ The [risk register](../requirements.md#risk-controls) is canonical for R-01 thro
 | VAL-02 | FR-06, FR-07; BR-15, BR-16; R-08 | Author-reported PASS 10/10; creation lead/preparation/session model ACCEPTABLE_WITHIN_SCOPE, 19 November 2026 |
 | VAL-03A | FR-08, FR-11; R-08 | Comprehension with the reminder closed and open. Compare understanding of the unconfirmed state, C/S, manual checking and notification expectations. |
 | VAL-03B | FR-09, FR-10, FR-11; R-08 | State comprehension and next action |
-| VAL-03C | FR-10, FR-11; R-08 | Near-C promotion feasibility |
+| VAL-03C | FR-10, FR-11; R-08 | Near-C status discovery and booking decision timing |
 | VAL-03D | FR-04, FR-09, FR-11; R-08 | Delayed discovery and distinct cancellation/withdrawal deadlines |
 | VAL-03E | FR-09, FR-11; BR-11, BR-16; R-08 | Post-C withdrawal without promotion and closure at S |
 

@@ -10,9 +10,9 @@ The results above verify the CR-01 business candidate before the P1 presentation
 
 ## L9 integration follow-through
 
-The [L9 integration review and worksheet](../reviews/L9-human-review.md) provide the actual author tasks for VAL-03A-E. The integrated test exercises a pre-C promotion and a first post-C check in the same session. The author records timed replay evidence separately from a practical checking plan, observed or estimated discovery, and realistic preparation and travel deadlines. Guided checks establish action and display behaviour. The author judges practical feasibility from their VAL-03 observations. R-08 remains `PENDING_VAL_03`.
+The [L9 integration review and worksheet](../reviews/L9-human-review.md) provide the actual author tasks for VAL-03A-E. The integrated test exercises a pre-C promotion and a first post-C check in the same session. The author records timed replay evidence separately from a prewritten checking plan, observed or estimated discovery and the latest useful time for a booking decision. Guided checks establish action and display behaviour. The author judges whether discovery supports that booking decision. R-08 remains `PENDING_VAL_03`.
 
-L9-F05 changes the reminder and status guidance. Use the revised UI for VAL-03A-E. In VAL-03A, keep the default-collapsed reminder closed for the first pass. Record interpretation and cues, including the public policy where applicable. Ask the same questions after reading the reminder and assess both sets of answers. Use the prewritten checking plan for the later comparison of discovery time against the latest useful preparation deadline.
+L9-F05 changes the reminder and status guidance. Use the revised UI for VAL-03A-E. In VAL-03A, keep the default-collapsed reminder closed for the first pass. Record interpretation and cues, including the public policy where applicable. Ask the same questions after reading the reminder and assess both sets of answers. Use the prewritten checking plan for the later comparison of discovery time against the latest useful booking decision time.
 
 ## Revision 4 verification amendment
 
@@ -91,17 +91,17 @@ After each refusal, compare the whole pre-action snapshot and all counters. Meas
 
 ### Human validation and R-08 closure
 
-Keep baseline VAL-01/VAL-02 as historical author validation. When directed to validate a real V1.1 candidate, execute VAL-03A-E and record the candidate SHA, environment, tester role, observed actions, comprehension, feasibility, feedback and human decision. Author role-play, external participant evidence and AI technical smoke must be identified separately.
+Keep baseline VAL-01/VAL-02 as historical author validation. When directed to validate a real V1.1 candidate, execute VAL-03A-E and record the candidate SHA, environment, tester role, observed actions, comprehension, discovery method and timing, booking decision and human feedback. Author role-play, external participant evidence and AI technical smoke must be identified separately.
 
 | Scenario | Task and acceptance question |
 |---|---|
 | VAL-03A | After Join, capture two separately recorded sets of answers to the same questions about WAITLISTED, C/S, manual checking and alerts. Record the first set while the reminder is closed and the second after reading it. |
 | VAL-03B | Find the confirmation after a normal pre-C promotion. Explain the participant's next action. |
-| VAL-03C | Use the canonical scenario: S is 10 December 09:00 and C is 9 December 09:00, Asia/Singapore. Promotion is at 08:59 on 9 December. Assess comprehension separately from preparation, travel feasibility and the latest useful confirmation. A 08:59 promotion on the workshop day is already after C and is out of policy. |
-| VAL-03D | Consider a promotion before C discovered after C in the same preserved session. Explain why confirmed cancellation is closed while a still-waiting participant can withdraw. Assess what the absence of a notification means for the intended task. |
+| VAL-03C | Use the canonical scenario: S is 10 December 09:00 and C is 9 December 09:00, Asia/Singapore. Promotion is at 08:59 on 9 December. Check the same confirmation ID, status and applicable actions. State the latest useful booking decision time and reason. A 08:59 promotion on the workshop day is already after C and is out of policy. |
+| VAL-03D | Consider a promotion before C discovered after C in the same preserved session. Explain why confirmed cancellation is closed while a still-waiting participant can withdraw. Compare the ordinary check with the stated booking decision time and the guided refresh. Record whether the lack of an alert could cause the participant to miss an action such as confirmed cancellation. |
 | VAL-03E | Withdraw an owned waiting entry in the final 24 hours, observe an unchanged confirmed roster and no promotion, and explain what changes at S. |
 
-Classify observations as ACCEPTABLE_WITHIN_SCOPE, CHANGES_REQUIRED or UNRESOLVED, with an author rationale. A technical pass supplies verification evidence. Validation of awareness or feasibility requires a human outcome. R-08 V1.1 remains open until those observations justify its disposition.
+Classify observations as ACCEPTABLE_WITHIN_SCOPE, CHANGES_REQUIRED or UNRESOLVED, with an author rationale. A technical pass supplies verification evidence. Use actual human observations to validate booking comprehension and timely manual discovery for the intended decision. Prompted checks and simulated discovery are recorded separately. R-08 V1.1 remains open until the author can justify the disposition.
 
 ### Required evidence at later gates
 
