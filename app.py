@@ -17,7 +17,6 @@ from booking import (
     DemoUser,
     RegistrationStatus,
     Role,
-    book_workshop,
     browse_workshops,
     check_permission,
     confirmed_count,
@@ -95,6 +94,21 @@ def show_refusal(outcome: str) -> None:
     st.error(f"{outcome}: {explanations.get(outcome, 'Refresh the view and try again.')}")
 
 
+def book_from_view(workshop_id: str, rendered_user_id: str) -> None:
+    state = st.session_state.demo_state
+    selected_id = st.session_state.get("selected_user_id")
+    if selected_id != rendered_user_id:
+        st.session_state.book_feedback = (selected_id, workshop_id, "INVALID_ACTOR", None)
+        return
+    actor = resolve_actor(state, selected_id)
+    outcome, candidate = booking.book_workshop(state, actor, workshop_id, now=booking.server_now())
+    registration_id = None
+    if outcome == "OK":
+        registration_id = candidate.registrations[-1].registration_id
+        st.session_state.demo_state = candidate
+    st.session_state.book_feedback = (selected_id, workshop_id, outcome, registration_id)
+
+
 def join_from_view(workshop_id: str, rendered_user_id: str) -> None:
     # Handle the original click before rendering hides a now-ineligible control.
     state = st.session_state.demo_state
@@ -112,9 +126,9 @@ def join_from_view(workshop_id: str, rendered_user_id: str) -> None:
 def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> None:
     now = now.astimezone(UTC)
     st.info("Browse workshops below. Times are shown in Asia/Singapore.")
-    message = st.session_state.pop("booking_message", None)
-    if message and actor is not None and message[0] == actor.user_id:
-        st.success(message[1])
+    book_feedback = st.session_state.pop("book_feedback", None)
+    if book_feedback and book_feedback[0] != (actor.user_id if actor is not None else None):
+        book_feedback = None
     feedback = st.session_state.pop("join_feedback", None)
     if feedback and feedback[0] == (actor.user_id if actor is not None else None):
         result = feedback[1]
@@ -125,6 +139,8 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
         else:
             show_refusal(result)
     workshops = browse_workshops(state)
+    if book_feedback and not any(w.workshop_id == book_feedback[1] for w in workshops):
+        show_refusal(book_feedback[2])
     if not workshops:
         st.write("No workshops have been created in this session.")
     for workshop in workshops:
@@ -163,11 +179,13 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                         "Check My Bookings for updates. There are no notifications."
                     )
                 with st.container(horizontal=True):
-                    book_clicked = st.button(
+                    st.button(
                         "Book workshop",
                         key=f"book_{workshop.workshop_id}",
                         disabled=closed,
                         type="secondary" if full else "primary",
+                        on_click=book_from_view,
+                        args=(workshop.workshop_id, actor.user_id),
                     )
                     if full:
                         st.button(
@@ -178,21 +196,15 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                             on_click=join_from_view,
                             args=(workshop.workshop_id, actor.user_id),
                         )
-                if book_clicked:
-                    outcome, candidate = book_workshop(
-                        state, actor, workshop.workshop_id, now=server_now()
+            if book_feedback and book_feedback[1] == workshop.workshop_id:
+                _, _, result, registration_id = book_feedback
+                if result == "OK":
+                    st.success(
+                        f"Booked {workshop.title}: {registration_id} (CONFIRMED). "
+                        "Open My Bookings for details."
                     )
-                    if outcome == "OK":
-                        registration = candidate.registrations[-1]
-                        st.session_state.demo_state = candidate
-                        st.session_state.booking_message = (
-                            actor.user_id,
-                            f"Booked {workshop.title}: {registration.registration_id} (CONFIRMED). "
-                            "Open My Bookings for details.",
-                        )
-                        st.rerun()
-                    else:
-                        show_refusal(outcome)
+                else:
+                    show_refusal(result)
 
 
 def cancel_from_view(registration_id: str, workshop_id: str) -> None:

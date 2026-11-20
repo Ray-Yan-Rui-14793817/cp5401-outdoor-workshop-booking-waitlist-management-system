@@ -32,6 +32,8 @@ The first full suite exposed five presentation assertions tied to the old sideba
 
 Codex captured actual before and after Chrome screenshots and checked the layout at 1440px and 390px. Review moved the FULL message below the action row so both Book and Join remain adjacent. These tool and browser checks are technical evidence. The author owns H01-H07, VAL-03, `ACCEPT_LOOP` and any future publication decision. P2 remains `NOT_STARTED`.
 
+For the P1 deep review, Codex reproduced two stale Book failures on the 363-case intake: wrong-participant booking and missing feedback after a role switch. Codex added a rendered-identity check in the Book callback, then reran the two cases with complete state assertions. The cutoff test now captures the earlier Book control before advancing to C. The 363 test identities remain, including all 317 V1.0 identities. Browser checks and the separate 8523 review preview provide technical evidence for the revised candidate. The [P1 deep review](reviews/L8-human-review.md#p1-deep-review) records the author checks and the still-pending human gates.
+
 ## Historical L0-L6 and V1.0 preparation records
 
 At the L6 release-readiness checkpoint, L0-L6 had been accepted, RH01-RH07 had been declared complete and the author had supplied scoped `ACCEPT_RELEASE`. The author personally executes all actual merges and deployment-branch fast-forwards. On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation and risk feedback. The entries below describe the stage and authorisation in force when each activity occurred. V1.0 publication and L7 acceptance followed this checkpoint.

@@ -18,7 +18,22 @@ P1 refines presentation and interaction feedback on the L8 candidate based on `f
 
 The focused local run passed 113 cases, including 12 new P1 cases and the selected regression cases. The complete local run passed 363 cases under Python 3.12.14 and PyArrow 24.0.0, retaining all 351 intake identities. Ruff, formatting, Bandit and pip check passed locally. Exact GitHub CI and delivery evidence are recorded in the local receipt and on the [candidate Actions page](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist). The older CR-01 execution evidence below retains its original scope.
 
-Local preview for human review is [http://127.0.0.1:8522/](http://127.0.0.1:8522/). Browser verification exercised the four badges, FULL and Join, withdrawal and rejoin, promotion of the same ID, section order and role switching. A fresh 390px browser checked the public card layout. See the [P1 test map](../test-plan.md#l8-p1-presentation-verification). Technical checks provide no author acceptance or human VAL-03 observations.
+The original P1 browser verification exercised the four badges, FULL and Join, withdrawal and rejoin, promotion of the same ID, section order and role switching. A fresh 390px browser checked the public card layout. See the [P1 test map](../test-plan.md#l8-p1-presentation-verification). Technical checks provide no author acceptance or human VAL-03 observations.
+
+### P1 deep review
+
+Review intake: `46eba1d20df09b9ae849f1808549a5b2e866dcb3`. Its 363-case single-job [Actions run](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44546334817) remains evidence for that exact SHA. The revised [local review preview](http://127.0.0.1:8523/) uses a separate port so the original 8522 session stays available.
+
+| Requirement | Deep-review result |
+|---|---|
+| P1-01 | Card title, schedule, ID, meeting point, notes and counts remain visible. Desktop and 390px public-card checks passed. |
+| P1-02 | AppTest checks full and available cards at C-1s, C, C+1s, S-1s, S and S+1s, including disabled controls and unchanged state. |
+| P1-03 | Confirmed, waiting and historical sections render in order. Live position appears only while waiting before S. Withdrawal and promotion preserve history and the expected IDs. |
+| P1-04 | A stale Book click submitted alongside an identity switch could book for the newly selected participant or lose feedback after a switch to organiser. Both AppTest variants failed on intake. The callback now binds the rendered identity, rejects the mismatch with INVALID_ACTOR and preserves state. The existing stale cutoff test captures an enabled control before advancing its clock. Cancel and Withdraw retain the established no-op and status-change outcomes. |
+| P1-05 | AppTest and Chrome verified participant, organiser and guest transitions. The main badge and the role-specific views follow the selected identity, and the authentication limit remains visible. |
+| P1-06 | C/S and no-notification guidance remain next to the relevant actions. Waiting withdrawal stays available at C and is refused at S. Human awareness and preparation feasibility remain pending under VAL-03. |
+
+L8-F01, L8-F02 and L8-F03 remain covered by the original stale Join capacity, stale Join identity and organiser closed-queue cases. The review preserves the published 317 V1.0 cases and all 363 intake JUnit identities, with two additional P1 review cases. The sole existing test-body adaptation preserves the stale Book cutoff outcome and full-state check under the new callback order. Business rules in `booking.py`, dependency locks and CI configuration remain byte-identical. Exact-commit CI and packaging evidence are in the local delivery receipt.
 
 ## Technical evidence
 
@@ -42,11 +57,11 @@ The 16 November 10:45 transcript pp. 2 and 8-10 supports the three-file adaptati
 
 ## Author checklist
 
-- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the P1 SHA and verify the 317 baseline cases, 34 intake L8 cases and 12 P1 additions.
+- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the revised P1 SHA and verify the 317 baseline cases, 34 earlier L8 cases, 12 initial P1 cases and two review additions.
 - [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian and open Outdoor Photography Walk, which starts full. Check the role badge and workshop states. Book should report FULL. Join should create a WAITLISTED record. Verify position 1, the original confirmed count and the absence of another participant's private entries in My Bookings.
 - [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Leo/Willy test evidence for FIFO, sequence gaps and multi-waiter ordering.
 - [ ] **L8-H04 - Check promotion.** With Xingjian queued, switch to Sam in the same session and cancel Sam's confirmed Outdoor Photography Walk booking. Return to Xingjian and use Refresh view. Verify the same queued ID is CONFIRMED. Check Alex's owned roster and queue, and check Rui Yan's workshop selector for owner scope.
-- [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
+- [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S. Review both stale Book identity-switch cases and the retained stale Join cases. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
 - [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#p1-ui-contribution-and-review-boundary), fixture-only identities and L8-F01-F03 dispositions. Confirm the C/S guidance, section order and visible no-notification explanation. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
 - [ ] **L8-H07 - Record the decision.** Record the exact reviewed SHA, observations, issues and ACCEPT_LOOP or CHANGES_REQUIRED. Subsequent integration and release decisions are separate. All actual merges and deployment fast-forwards are author-only.
 

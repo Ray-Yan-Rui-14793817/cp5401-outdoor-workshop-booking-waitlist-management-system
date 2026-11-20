@@ -2090,9 +2090,10 @@ def test_l4_stale_booking_ui_uses_fresh_time_at_the_operation(
     before = deepcopy(demo_data)
     app = app_with_state(demo_data)
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
-    times = iter([NOW, demo_data.workshops[0].registration_cutoff])
-    monkeypatch.setattr(booking, "server_now", lambda: next(times))
-    app.button(key="book_workshop-1").click().run()
+    rendered = app.button(key="book_workshop-1")
+    assert not rendered.disabled
+    monkeypatch.setattr(booking, "server_now", lambda: demo_data.workshops[0].registration_cutoff)
+    rendered.click().run()
     assert not app.exception and not app.success
     assert any("REGISTRATION_CLOSED" in e.value for e in app.error)
     assert app.session_state.demo_state is demo_data and demo_data == before
@@ -4018,3 +4019,23 @@ def test_p1_stale_cancel_preserves_intent_when_active_control_disappears(
     assert not any(button.key == "cancel_registration-2" for button in app.button)
     assert not app.exception and not app.success
     assert app.session_state.demo_state is current and current == before
+
+
+@pytest.mark.parametrize("next_identity", ["participant-willy", "organiser-2"])
+def test_p1_review_stale_book_keeps_rendered_identity(
+    l8_state: DemoState, monkeypatch: pytest.MonkeyPatch, next_identity: str
+) -> None:
+    workshop = replace(l8_state.workshops[0], capacity=2)
+    state = replace(l8_state, workshops=[workshop, *l8_state.workshops[1:]])
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    stale_book = app.button(key="book_workshop-1")
+    assert not stale_book.disabled
+    app.sidebar.selectbox(key="selected_user_id").set_value(next_identity)
+    stale_book.click().run()
+    assert not app.exception and not app.success
+    assert any(item.value.startswith("INVALID_ACTOR:") for item in app.error)
+    assert app.sidebar.selectbox(key="selected_user_id").value == next_identity
+    assert app.session_state.demo_state is state and state == before
