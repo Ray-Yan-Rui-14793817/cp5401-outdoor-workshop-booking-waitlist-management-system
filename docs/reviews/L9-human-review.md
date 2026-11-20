@@ -11,9 +11,16 @@
 
 ## Integration verification
 
-The new AppTest fixes the local test clock to the canonical Asia/Singapore schedule. A normal Streamlit cancellation at C minus one minute changes the confirmed booking and promotes the head waiter with the original ID. At C plus five minutes the same session shows the promotion and a closed confirmation cancellation. The remaining waiter may still withdraw, with the confirmed seat and the other registrations preserved. The test checks full state changes, the rendered update timestamp, and the no-notification guidance. Existing cases cover the exact C and S boundaries, D-01, owner scope, FIFO variants, and fault injection.
+The new AppTest fixes the local test clock to the canonical Asia/Singapore schedule. A normal Streamlit cancellation at C minus one minute changes the confirmed booking and promotes the head waiter with the original ID. At C plus five minutes the same session shows the promotion and a closed confirmation cancellation. The remaining waiter may still withdraw, with the confirmed seat and the other registrations preserved. The test checks full state changes, the rendered update timestamp, and the no-notification guidance. The L9 test now also submits a previously enabled Cancel control at exact C with two active waiters in a separate session. The attempt returns REGISTRATION_CLOSED and preserves the entire queued state. It verifies that successful promotion and withdrawal leave the previous state objects intact. Existing cases also cover the S boundary, D-01, owner scope, FIFO variants and fault injection.
 
 This is integrated technical evidence for the app's behaviour. The VAL-03 scenarios below measure whether someone understands and can act on that behaviour.
+
+## Deep review findings
+
+| Finding | Disposition |
+|---|---|
+| L9-F01. Exact-C coverage used a domain test with an active queue and an older stale-control UI test with an empty queue. | The L9 integration test combines a stale Cancel submission with an active queue at exact C. It keeps the existing case identity and strengthens transition checks on retained state objects. |
+| L9-F02. A scheduled check at C plus five minutes demonstrated the expected page and controls, while giving the participant a prompt to discover promotion. | Retain that replay for boundary verification. The author separately records their intended checking behaviour before the exercise, then assesses likely or observed discovery and a realistic plan with time-sensitive constraints. |
 
 ## VAL-03 author worksheet
 
@@ -34,7 +41,23 @@ Use fictional identities and workshop details. Record the candidate commit, sess
 3. Use the time shown on the card and a separate clock. Cancel at about one minute before C. For C, observe Leo's result before C and note the actual time. For D, leave Leo's view unopened until about five minutes after C. Use the sidebar and Refresh view while preserving that session. Record the actual times if they differ. Setting S in the organiser form uses the application's real clock and existing creation rules.
 4. The controlled reference uses S = 10 December 2026 09:00, C = 9 December 2026 09:00, promotion = 9 December 08:59, and discovery in D = 9 December 09:05, all in Asia/Singapore. This gives 24 h 1 min from promotion to S and 23 h 55 min from discovery to S. The 08:59 event is on the day before the workshop. Use this as a labelled role-play if a live timed run is impractical. Record which method you used.
 
-For each timed scenario, estimate how long your actual plan would take, allowing for steps that overlap and steps that must be done in order. Compare your latest useful confirmation time with discovery time. Record whether a manual refresh was realistic without an alert, whether you could meet the preparation and arrival requirements, and what you would do if you could not. Record uncertainty or missed observations explicitly.
+### Check discovery and preparation separately
+
+Before the timed setup, write down when you would next look at the waitlist in ordinary use and why. Record whether you would set your own reminder, which device or preserved session you would check, and any period when you could not access it. Base the plan on your normal commitments. Record it before reading the reference timestamps or learning when Sam cancels.
+
+Use the C-plus-five-minute check as a **guided boundary replay**. Record it as prompted. For the practical assessment, use the prewritten checking plan and record the first check you actually made, the later check you would make under the plan, or a missed check. A second person may operate Sam in the same fictional session without telling the participant when the change occurs, while you personally do the participant check. For a solo run with a known promotion time, label the practical estimate as a role-play. Record whether the time was observed, prompted or estimated and how the person learned of the confirmation.
+
+Build a short worked plan for the outdoor workshop. Use credible times for obtaining gear, reading safety information, reaching the meeting point, and arriving by check-in. Include fixed constraints such as opening hours, transport departures and prior commitments. Record the latest time you could discover confirmation and still complete that plan. Compare that deadline with your first check or planned check. If a check would be missed or late, record which step becomes infeasible and what action you would take with confirmed cancellation already closed.
+
+| Evidence for C and D | Author entry |
+|---|---|
+| Planned check time or frequency, reason, user-set reminder and session access | Pending |
+| Promotion time, first observed or estimated discovery time, and prompt source | Pending |
+| Gear, safety, travel and check-in steps, durations and fixed deadlines | Pending |
+| Latest useful discovery time, comparison with the first check, and intended action | Pending |
+| Confidence and limitations of the evidence | Pending |
+
+Mark discovery and preparation outcomes separately. A guided replay establishes how to check and what the controls do at that time. Use the practical observations and a grounded plan to judge feasibility within the intended scope. Choose `UNRESOLVED` if discovery or feasibility remains unsubstantiated.
 
 ### Author observation record
 
@@ -58,9 +81,9 @@ Use `ACCEPTABLE_WITHIN_SCOPE`, `CHANGES_REQUIRED` or `UNRESOLVED` with the obser
 - [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and full inventory of all 377 retained tests plus the L9 integration case.
 - [ ] **L9-H02** Personally perform VAL-03A and B. Record the initial status interpretation, how you discover a promotion and the registration ID.
 - [ ] **L9-H03** Perform VAL-03C. Record C, S, the near-C promotion and preparation and travel feasibility.
-- [ ] **L9-H04** Perform VAL-03D. Record when you discover promotion after C, availability of actions and your expected behaviour without alerts.
+- [ ] **L9-H04** Perform VAL-03D. Record the guided post-C result separately from your prewritten checking plan. Compare observed or estimated discovery against the latest useful time and record preparation feasibility without an alert.
 - [ ] **L9-H05** Perform VAL-03E. Check withdrawal, history and confirmed-roster stability and explain the boundary at S.
-- [ ] **L9-H06** Review the AI and technical evidence, then assess R-08 from the author observations. Record the reasoning and any required changes.
+- [ ] **L9-H06** Review the AI and technical evidence, then assess R-08 from the author observations. Record the reasoning, evidence limitations and any required changes.
 - [ ] **L9-H07** Supply the exact reviewed commit and author decision. L9 acceptance, L10 authorisation, integration to main and publication have separate gates.
 
 | Decision field | Author entry |

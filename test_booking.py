@@ -4488,8 +4488,18 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
         assert list(waiting["Position"]) == [position]
         assert any("There are no notifications." in notice.value for notice in app.caption)
 
-    queued = deepcopy(app.session_state.demo_state)
+    waiting_state = app.session_state.demo_state
+    queued = deepcopy(waiting_state)
     now = cutoff - timedelta(minutes=1)
+
+    # A separate copy exercises a pre-C control submitted at C with both waiters active.
+    cutoff_state = deepcopy(queued)
+    cutoff_app = app_with_state(cutoff_state)
+    cutoff_app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    cutoff_app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    stale_cancel = cutoff_app.button(key="cancel_registration-2")
+    assert not stale_cancel.disabled
+
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
     app.button(key="cancel_registration-2").click().run()
     changes = {
@@ -4507,6 +4517,14 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
     )
     assert app.session_state.demo_state == expected
     assert confirmed_count(expected, "workshop-2") == 1
+    assert waiting_state == queued
+
+    now = cutoff
+    stale_cancel.click().run()
+    assert not cutoff_app.exception and not cutoff_app.success
+    assert any("REGISTRATION_CLOSED" in error.value for error in cutoff_app.error)
+    assert cutoff_app.button(key="cancel_registration-2").disabled
+    assert cutoff_app.session_state.demo_state is cutoff_state and cutoff_state == queued
 
     # The participant first checks again after C, with the released seat already assigned.
     now = cutoff + timedelta(minutes=5)
@@ -4526,7 +4544,9 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
     assert list(still_waiting["Status"]) == ["WAITLISTED"]
     assert list(still_waiting["Position"]) == [1]
     assert not app.button(key="withdraw_registration-6").disabled
+    before_withdrawal = app.session_state.demo_state
     app.button(key="withdraw_registration-6").click().run()
+    assert before_withdrawal == expected
     history = app.dataframe[0].value
     assert list(history["Registration ID"]) == ["registration-6"]
     assert list(history["Status"]) == ["CANCELLED"]
