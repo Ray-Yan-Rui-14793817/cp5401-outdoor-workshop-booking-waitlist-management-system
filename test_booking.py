@@ -4132,3 +4132,45 @@ def test_p1_acceptance_last_seat_disables_same_workshop_join(
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-willy").run()
     assert not app.button(key="join_workshop-1").disabled
     assert not app.exception and app.session_state.demo_state is booked and state == before
+
+
+def test_p1_review_started_waitlist_card_points_only_its_owner_to_history(
+    l8_state: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    leo = booking.resolve_actor(l8_state, "participant-leo")
+    outcome, state = booking.join_waitlist(l8_state, leo, "workshop-1", now=NOW)
+    assert outcome == "OK"
+    row = state.registrations[-1]
+    before = deepcopy(state)
+    start = state.workshops[0].starts_at
+    monkeypatch.setattr(booking, "server_now", lambda: start - timedelta(seconds=1))
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    assert app.button(key="join_workshop-1").disabled
+    card = rendered_workshop(app, "workshop-1")
+    assert any("for your position" in item.value for item in card.get("caption"))
+
+    monkeypatch.setattr(booking, "server_now", lambda: start)
+    app.sidebar.button(key="refresh_view").click().run()
+    card = rendered_workshop(app, "workshop-1")
+    assert any(
+        "Your waitlist entry is in Booking History." in item.value for item in card.get("caption")
+    )
+    assert not any("for your position" in item.value for item in card.get("caption"))
+    assert app.button(key="join_workshop-1").disabled
+    app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    assert len(app.dataframe) == 1
+    history = app.dataframe[0].value
+    assert list(history["Registration ID"]) == [row.registration_id]
+    assert list(history["Status"]) == ["WAITLISTED"]
+    assert "Position" not in history and not any(
+        str(b.key).startswith("withdraw_") for b in app.button
+    )
+
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-willy").run()
+    assert not app.dataframe
+    app.sidebar.radio(key="current_view").set_value("Workshops").run()
+    card = rendered_workshop(app, "workshop-1")
+    assert not any("Your waitlist entry" in item.value for item in card.get("caption"))
+    assert app.button(key="join_workshop-1").disabled
+    assert not app.exception and app.session_state.demo_state is state and state == before

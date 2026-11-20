@@ -157,9 +157,10 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
         active_status = active_by_workshop.get(workshop.workshop_id)
         cutoff = workshop.registration_cutoff
         closed = now >= cutoff
+        started = now >= workshop.starts_at
         with st.container(border=True, key=f"workshop_card_{workshop.workshop_id}"):
             st.markdown(f"### {workshop.title}")
-            if now >= workshop.starts_at:
+            if started:
                 st.badge("STARTED", color="grey")
             elif closed:
                 st.badge("BOOKING CLOSED", color="blue")
@@ -188,9 +189,12 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                             "Open My Bookings to view it."
                         )
                     elif active_status == RegistrationStatus.WAITLISTED:
-                        st.caption(
-                            "You are already on this waitlist. Open My Bookings for your position."
-                        )
+                        if started:
+                            st.caption("Your waitlist entry is in Booking History.")
+                        else:
+                            st.caption(
+                                "You are already on this waitlist. Open My Bookings for your position."
+                            )
                     elif not closed:
                         st.caption(
                             "WAITLISTED means unconfirmed. A place may be assigned before cutoff (C). "

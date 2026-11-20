@@ -47,6 +47,18 @@ The author reported that a participant with a booking could still see an enabled
 
 Both focused reproduction cases failed on intake and passed after correction. The revised [preview](http://127.0.0.1:8524/) keeps earlier preview sessions available. The original 365 test identities are retained and two acceptance-feedback cases extend them. This is a P1 technical correction. The author still owns acceptance and VAL-03.
 
+### P1 ownership and feedback review
+
+The review intake was `933d5506fd36b3c69dbfff20732288da4d093ccf`. Its [367-case Actions run](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44669772713) has one successful job and 18 successful steps. The revised [review preview](http://127.0.0.1:8525/) uses a separate local port so the 8524 session stays available.
+
+| Check | Review result |
+|---|---|
+| Participant records and feedback | Card reasons use the selected participant's own registration for the target workshop. My Bookings returns only that participant's IDs. Success and rejection are scoped by both actor and workshop. Public cards retain workshop-level capacity and remaining-place counts. |
+| Same and different workshops | A full workshop disables Join for the selected participant's own confirmed or waiting entry. An eligible participant can still join a different full workshop before C. A delayed duplicate is rejected by the domain. |
+| Position guidance at S | The intake still pointed a waiting participant to a current position at S. The card now points that participant to Booking History at and after S. The fixture checks S-1s and S, the stored WAITLISTED status and ID, the absence of a live position or withdrawal at S, and the absence of the private card message for a different participant. |
+
+The repair changes presentation and adds one case while retaining all 367 intake test identities, including 317 V1.0 cases. The business module, dependency locks and single-job workflow remain byte-identical. Technical checks preserve the author's pending H01-H07 and R-08 VAL-03.
+
 ## Technical evidence
 
 The [test map](../test-plan.md#l8-cr-01-verification) covers 317 exact V1.0 JUnit identities, 31 first-candidate L8 identities and three review additions. The original [L8 push run 44536979502](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44536979502) passed 348 cases at `a0f3121453b3a99280ecd18400252971c31889ab`. Use the [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) and the separately saved local review evidence for the revised candidate's exact SHA, job and reports. The tests exercise serial in-session behaviour and controlled time. Human acceptance and VAL-03 need separate author evidence.
@@ -69,11 +81,11 @@ The 16 November 10:45 transcript pp. 2 and 8-10 supports the three-file adaptati
 
 ## Author checklist
 
-- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the revised P1 SHA and verify the 317 baseline cases, 34 earlier L8 cases, 12 initial P1 cases and two review additions.
+- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the revised P1 SHA and verify the 367 intake identities, including 317 V1.0 cases, plus the S-boundary addition.
 - [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian, who already has a different booking, then open the full Outdoor Photography Walk. Book should report FULL on its card. Join should show WAITLISTED and the registration ID on the same card, then become disabled with a reason. In a separate session, cancel Sam's seed booking and book that last seat again. Verify Join is disabled for Sam with the confirmed-booking explanation and is available to eligible Xingjian.
 - [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Leo/Willy test evidence for FIFO, sequence gaps and multi-waiter ordering.
 - [ ] **L8-H04 - Check promotion.** With Xingjian queued, switch to Sam in the same session and cancel Sam's confirmed Outdoor Photography Walk booking. Return to Xingjian and use Refresh view. Verify the same queued ID is CONFIRMED. Check Alex's owned roster and queue, and check Rui Yan's workshop selector for owner scope.
-- [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S. Review both stale Book identity-switch cases and the retained stale Join cases. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
+- [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S, including the owner-only move from position guidance to Booking History at S. Review both stale Book identity-switch cases and the retained stale Join cases. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
 - [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#p1-ui-contribution-and-review-boundary), fixture-only identities and L8-F01-F03 dispositions. Confirm the C/S guidance, section order and visible no-notification explanation. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
 - [ ] **L8-H07 - Record the decision.** Record the exact reviewed SHA, observations, issues and ACCEPT_LOOP or CHANGES_REQUIRED. Subsequent integration and release decisions are separate. All actual merges and deployment fast-forwards are author-only.
 
