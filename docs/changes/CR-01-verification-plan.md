@@ -12,7 +12,7 @@ The results above verify the CR-01 business candidate before the P1 presentation
 
 The [L9 integration review and worksheet](../reviews/L9-human-review.md) provide the actual author tasks for VAL-03A-E. The integrated test exercises a pre-C promotion and a first post-C check in the same session. The author records timed replay evidence separately from a practical checking plan, observed or estimated discovery, and realistic preparation and travel deadlines. Guided checks establish action and display behaviour. The author judges practical feasibility from their VAL-03 observations. R-08 remains `PENDING_VAL_03`.
 
-L9-F05 changes the reminder and status guidance. Use the revised UI for VAL-03A-E. Record the first interpretation, how the reminder affected it, a prewritten checking plan, and a comparison of discovery time against the latest useful preparation deadline.
+L9-F05 changes the reminder and status guidance. Use the revised UI for VAL-03A-E. Record the first interpretation and the cues already used, including the public policy where applicable. Record what the separately opened reminder adds, a prewritten checking plan, and a comparison of discovery time against the latest useful preparation deadline.
 
 ## Revision 4 verification amendment
 

@@ -705,6 +705,13 @@ def main() -> None:
 
     st.caption("Booking counts show reserved places and do not measure attendance.")
 
+    st.markdown("**Registration policy**")
+    st.write(
+        "The registration cutoff (C) is 24 elapsed hours before the workshop start (S). "
+        "Booking, confirmed cancellation, waitlist joining and automatic promotion close at C. "
+        "A waiting entry can be withdrawn until S."
+    )
+
     with st.container(key=identity_view_key(selected_id)):
         if actor is not None and actor.role == Role.PARTICIPANT:
             show_booking_reminder()
@@ -727,13 +734,6 @@ def main() -> None:
                     show_my_bookings(state, actor, server_now())
             else:
                 st.error("This view is unavailable. Please refresh and try again.")
-
-    st.markdown("**Registration policy**")
-    st.write(
-        "The registration cutoff (C) is 24 elapsed hours before the workshop start (S). "
-        "Booking, confirmed cancellation, waitlist joining and automatic promotion close at C. "
-        "A waiting entry can be withdrawn until S."
-    )
 
 
 if __name__ == "__main__":

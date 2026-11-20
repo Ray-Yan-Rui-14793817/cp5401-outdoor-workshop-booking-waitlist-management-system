@@ -7,7 +7,7 @@
 | L9 decision | `HUMAN_ACCEPTANCE_PENDING` |
 | Risk R-08 | `PENDING_VAL_03`. The project author assesses discovery and preparation after personally performing the scenarios. |
 | L10 and V1.1 release | L10 `NOT_STARTED`. V1.1 `NOT_RELEASED`. |
-| Preview | [Revised L9 local preview](http://127.0.0.1:8529/) for VAL-03. The prior L9 preview runs on port 8528. |
+| Preview | [L9 policy-order revision](http://127.0.0.1:8530/) for VAL-03. The 88f7dbf and earlier L9 previews remain on ports 8529 and 8528. |
 
 ## Integration verification
 
@@ -38,6 +38,12 @@ The author requested participant-focused support for booking awareness under R-0
 
 The UI uses the existing selected-identity scope, statuses and C/S comparison. [Test adaptations](../changes/CR-01-test-adaptations.md#l9-f05-reminder-and-booking-count-assertions) record the visible assertion changes and unchanged behavior checks. R-08 remains PENDING_VAL_03 because guidance reduces confusion but participants still have to check for themselves and assess available preparation and travel time.
 
+### Policy placement follow-up to 88f7dbf
+
+The public Registration policy appeared below the work area. Move the existing text immediately above the participant reminder, outside the selected-identity container. Guest and organiser views still show the public policy. Only participants see the reminder, on Workshops and My Bookings.
+
+The existing read-only UI test now requires one policy title and paragraph in each role and requires both to precede the reminder on both participant views. It retains organiser tabs, owned roster choices, both saved drafts and whole-state assertions. The five time cases and retained booking-count and permission assertions still verify the same outcomes. For the revision's exact CI and browser evidence, see the candidate Actions and the local policy review report.
+
 ## Assessment 3 and lecture cross-check
 
 | Criterion and source | Evidence and remaining gate |
@@ -50,11 +56,11 @@ The UI uses the existing selected-identity scope, statuses and C/S comparison. [
 
 ## VAL-03 author worksheet
 
-Use fictional identities and workshop details. Record the candidate commit, session type, timezone and tester role. Use Asia/Singapore (UTC+08:00) when recording C, S and observations. Use the revised Booking & Waitlist Reminder preview on port 8529 for VAL-03A-E. Preserve the browser session through each live sequence. Switch identities through the sidebar and use **Refresh view**. Prepare a separate fresh session for the normal-promotion exercise so the waitlist starts clean. Write down what you understood and would do before consulting the technical evidence. Before reading the scenario rows or timed instructions, prewrite when and where you would normally check without any app alert, including your reason and any user-set reminder. Use that plan in the practical assessment below.
+Use fictional identities and workshop details. Record the candidate commit, session type, timezone and tester role. Use Asia/Singapore (UTC+08:00) when recording C, S and observations. Use the revised Booking & Waitlist Reminder preview on port 8530 for VAL-03A-E. Preserve the browser session through each live sequence. Switch identities through the sidebar and use **Refresh view**. Prepare a separate fresh session for the normal-promotion exercise so the waitlist starts clean. Write down what you understood and would do before consulting the technical evidence. Before reading the scenario rows or timed instructions, prewrite when and where you would normally check without any app alert, including your reason and any user-set reminder. Use that plan in the practical assessment below.
 
 | Scenario | Author task | What to record |
 |---|---|---|
-| VAL-03A | As Leo, open the full Outdoor Photography Walk, join the waitlist and find your entry in My Bookings. Explain the meaning of the current status, the difference between C and S, and how you would learn about a promotion. After recording your first interpretation, locate the Booking & Waitlist Reminder and say what, if anything, it clarified. | First interpretation, where you found C and S, the entry ID, and how and when you would check again. |
+| VAL-03A | As Leo, open the full Outdoor Photography Walk, join the waitlist and find your entry in My Bookings. Explain the meaning of the current status, the difference between C and S, and how you would learn about a promotion. Record your initial interpretation and any cues you already used, including the public Registration policy if you noticed it. Then open the Booking & Waitlist Reminder and record what, if anything, it adds. | First interpretation, where you found C and S, the entry ID, and how and when you would check again. |
 | VAL-03B | In a fresh session, join the full Outdoor Photography Walk as Leo, then join it as Willy. Verify both positions before switching to Sam and cancelling before C. Switch back to Leo and use Refresh view. Identify the status and practical next step. | Time of cancellation and first check, retained registration ID, location of the current status, and what you would do next. |
 | VAL-03C | Use the timed exercise below to promote Leo close to C. First observe the outcome before C in a dedicated repeat or role-play the canonical 08:59 timeline. Assess whether the remaining lead is enough to prepare and travel. | Actual or simulated promotion and discovery times, lead until S, essential preparation, travel, check-in and buffer, and your latest useful confirmation time. |
 | VAL-03D | Repeat the timed setup in a new session. After Sam cancels close to C, leave Leo's view unopened until after C. Return to Leo and check manually. Contrast his confirmed booking with Willy's still-waiting entry. | Discovery lag, confirmation and action availability, where you looked for a notice, whether you would realistically check in time, and what you would do if preparation or travel were no longer feasible. |
@@ -104,7 +110,7 @@ Use `ACCEPTABLE_WITHIN_SCOPE`, `CHANGES_REQUIRED` or `UNRESOLVED` with the obser
 
 ## Author acceptance checklist
 
-- [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and the 378 retained case identities plus the five reminder boundary cases.
+- [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and the 378 retained case identities plus the five reminder boundary cases. Verify that the public policy appears before the reminder on both participant views and that guest and organiser views show the policy without the reminder.
 - [ ] **L9-H02** Personally perform VAL-03A and B. Record your initial status interpretation, what the revised reminder contributes, how you discover a promotion and the registration ID.
 - [ ] **L9-H03** Perform VAL-03C. Record C, S, the near-C promotion and preparation and travel feasibility.
 - [ ] **L9-H04** Perform VAL-03D. Record the guided post-C result separately from your prewritten checking plan. Compare observed or estimated discovery against the latest useful time and record preparation feasibility without an alert.

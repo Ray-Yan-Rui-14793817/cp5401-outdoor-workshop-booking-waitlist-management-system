@@ -4362,14 +4362,37 @@ def test_p2_demo_guide_and_organiser_tabs_are_read_only() -> None:
         "organiser-2": {"draft": {"new_title": "Alex draft"}},
     }
     app.session_state.creation_forms = deepcopy(drafts)
+    policy_title = "**Registration policy**"
+    policy_text = (
+        "The registration cutoff (C) is 24 elapsed hours before the workshop start (S). "
+        "Booking, confirmed cancellation, waitlist joining and automatic promotion close at C. "
+        "A waiting entry can be withdrawn until S."
+    )
     assert not app.expander
+    assert [item.value for item in app.markdown].count(policy_title) == 1
+    assert [item.value for item in app.markdown].count(policy_text) == 1
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
-    assert [item.label for item in app.expander] == ["Booking & Waitlist Reminder"]
-    reminder = app.expander[0]
-    assert [item.type for item in reminder] == ["expander", "markdown"]
-    assert "No automatic notifications." in reminder.markdown[0].value
-    assert "Use Refresh view in My Bookings" in reminder.markdown[0].value
-    assert app.session_state.creation_forms == drafts
+    for view in ("Workshops", "My Bookings"):
+        app.sidebar.radio(key="current_view").set_value(view).run()
+        assert [item.label for item in app.expander] == ["Booking & Waitlist Reminder"]
+        reminder = app.expander[0]
+        assert [item.type for item in reminder] == ["expander", "markdown"]
+        assert "No automatic notifications." in reminder.markdown[0].value
+        assert "Use Refresh view in My Bookings" in reminder.markdown[0].value
+        nodes = list(app.main)
+        titles = [
+            i
+            for i, item in enumerate(nodes)
+            if item.type == "markdown" and item.value == policy_title
+        ]
+        paragraphs = [
+            i
+            for i, item in enumerate(nodes)
+            if item.type == "markdown" and item.value == policy_text
+        ]
+        assert len(titles) == len(paragraphs) == 1
+        assert titles[0] < paragraphs[0] < nodes.index(reminder)
+        assert app.session_state.creation_forms == drafts
 
     for organiser_id, saved_title, owned, foreign in (
         ("organiser-2", "Alex draft", "workshop-2", "workshop-1"),
@@ -4378,6 +4401,8 @@ def test_p2_demo_guide_and_organiser_tabs_are_read_only() -> None:
         app.sidebar.selectbox(key="selected_user_id").set_value(organiser_id).run()
         app.sidebar.radio(key="current_view").set_value("Organiser").run()
         assert not app.expander
+        assert [item.value for item in app.markdown].count(policy_title) == 1
+        assert [item.value for item in app.markdown].count(policy_text) == 1
         assert [tab.label for tab in app.tabs] == ["Create Workshop", "Manage My Workshops"]
         assert app.tabs[0].button(key="create_workshop")
         assert app.tabs[0].text_input(key="new_title").value == saved_title
