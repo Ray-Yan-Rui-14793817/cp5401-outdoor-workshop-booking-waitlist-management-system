@@ -1,6 +1,97 @@
 # AI Use and Human Contributions
 
-**Current: L0-L6 accepted; RH01-RH07 declared complete; scoped ACCEPT_RELEASE received. All actual merges/deployment fast-forwards HUMAN_ONLY. No release published; L7 NOT_STARTED.** On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation/risk feedback. Earlier pending gates and holds below retain their historical technical-stage meaning and are superseded only by the explicit later author decision; ACCEPT_LOOP does not imply ACCEPT_RELEASE.
+**Project status.** V1.0 is published and L7 planning has the author's `ACCEPT_LOOP`. P1 has passed human acceptance at `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. The author accepted the revised P2 and L8 at [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). L9 has the author's `ACCEPT_LOOP`. R-08 is accepted as residual within the classroom scope. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and the [P1 human acceptance and author feedback](reviews/L8-human-review.md#p1-human-acceptance).
+
+## L9 integration and validation preparation
+
+The author directed L9 from accepted L8 `2531b0d`. Codex retained the application and single-job workflow, appended one test of the near-C promotion and first check after C using the controlled AppTest clock, and prepared five [VAL-03 author scenarios](reviews/L9-human-review.md#val-03-author-worksheet). The test covers displayed status, stable IDs, closed cancellation, valid withdrawal and state preservation. Its result is technical evidence. At the integration checkpoint, the author still had to review VAL-03 and decide R-08 and L9 acceptance. L10 remains `NOT_STARTED` and V1.1 remains a candidate.
+
+### L9 deep review
+
+Codex compared the 378-case intake and 377-case L8 inventory and inspected the cutoff, stale-action and state-isolation assertions. It strengthened the existing L9 case to check exact-C refusal with an active queue through Streamlit and retention of both pre-transition snapshots. Codex also identified the prompting effect of a scheduled check and separated that technical replay from the author's assessment of ordinary checking behaviour, access and time-sensitive preparation in the [VAL-03 worksheet](reviews/L9-human-review.md#check-discovery-against-the-booking-decision). The author supplies all VAL-03 observations and the R-08 decision.
+
+### L9 course and oracle cross-check
+
+The author asked Codex to compare the L9 revision with accepted L8, the Assessment 3 HD rubric and the lectures, then correct gaps in the L9 evidence. Codex reviewed the original PDF and 16 November lecture transcriptions, the seminar slide criteria, and the actual C/S and ownership paths. The L9 case now names the expected confirmed ID directly, checks the old Withdraw control after C against the promoted state, and tests FORBIDDEN for a different participant. An initial replay hit a retired widget after rerender. The final test keeps an independent old render and installs the current promoted state before submitting that control. The author worksheet now makes both B joins and the E boundary fixture explicit. All earlier L8 test source stays intact. The [course cross-check and findings](reviews/L9-human-review.md#assessment-3-and-lecture-cross-check) record the evidence and the outstanding author work.
+
+### L9-F05 booking-awareness refinement
+
+The author asked Codex to replace Demo Guide with a participant reminder, clarify status and available actions by time phase, and use booking allocation terminology. Codex revised app.py display logic and the affected UI assertions, retained historical test identities, and added five independently expected time-boundary cases. The guidance assumes the classroom session stays available for manual checking and the user can act on what they read. The [finding and before/after table](reviews/L9-human-review.md#l9-f05-booking--waitlist-reminder) explain the change. The author supplies VAL-03 observations, R-08 judgement and acceptance.
+
+For the follow-up to `88f7dbf`, the author requested that the public Registration policy sit above the reminder. Codex moved the existing display block and strengthened the retained read-only AppTest for both participant views and the guest and organiser roles. Codex reviewed the C/S messages, count vocabulary, privacy scope and verification artifacts. The author owns the comprehension observations, practical preparation assessment and L9 decision. See the [policy placement review](reviews/L9-human-review.md#policy-placement-follow-up-to-88f7dbf) and [VAL-03 worksheet](reviews/L9-human-review.md#val-03-author-worksheet).
+
+The author then identified two L9 review points: assessment should measure comprehension before and after reading the collapsed reminder, and the CR-01 impact record still described two participants and Demo Guide as current. Codex added the two-pass record and reconciled current descriptions with the accepted L7/L8 history and L9-F05. This was a documentation-only change. No VAL-03 responses or L9 acceptance have been entered on the author's behalf.
+
+The author supplied both VAL-03A passes in Chinese. Codex translated the ten responses into English and compared them with the documented C/S and notification rules. The [responses](reviews/L9-human-review.md#author-submitted-val-03a-responses) preserve the author's first-pass uncertainty and second-pass clarifications. The author supplied the answers. Codex supplied the translation and comparison. At this earlier checkpoint, the exercise metadata, VAL-03B-E, the R-08 decision and L9 acceptance had yet to be supplied.
+
+### L9 author scope clarification and evidence classification
+
+The author supplied H01-H06 review feedback, identified the VAL-03A answers as simulated and directed R-08 to cover booking and waitlist outcomes. Codex recorded the feedback and evidence type, aligned the CR-01 and VAL-03 criteria, and kept preparation as optional context for the latest useful booking decision. The separate acceptance below records the author's later decision. This record changes documentation only. See the [feedback and worksheet](reviews/L9-human-review.md#l9-author-feedback-and-scope-decision).
+
+### L9 human acceptance and R-08 disposition
+
+The author declared validation complete, supplied `ACCEPT_LOOP` and accepted the residual R-08 risk within the fictional classroom booking prototype. Codex recorded the author-declared findings and exact acceptance wording in the [L9 decision](reviews/L9-human-review.md#l9-acceptance-and-residual-risk-decision), aligned the current status in the English project records and prepared the local archive. Earlier simulated answers stay labelled as such. The author's validation and decision are separate from AI assistance, automated checks, integration and release authority.
+
+## L8-P2 author acceptance and records update
+
+On 20 November 2026 (Asia/Shanghai), the project author declared UI and H01-H07 complete and supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). The five [author observations](reviews/L8-human-review.md#l8-p2-author-feedback) are recorded verbatim. They address regression identity retention and CI, explicit Join and ownership, withdrawal and rejoin history, FIFO and P2-F05, and deadline and state-integrity coverage.
+
+Codex transcribed the decision, checked the seven author-declared items, aligned the current status references and prepared the candidate-branch update and local-only archive. The accepted revision's browser and [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754) evidence remains technical verification. This update carries the author decision forward through English Markdown records. R-08 remains `PENDING_VAL_03`. L9 and the separate integration and release gates remain on hold.
+
+## L8-P2 contribution and author oversight
+
+The author approved P1 at the recorded SHA and supplied the P2 amendment, exact identities, independent FIFO oracle, organiser layout and human gate. Codex scoped the diff, wrote the default identity and presentation changes, adapted fixture-related assertions and preserved historical test labels. Codex designed and ran technical checks, exercised the real browser flow and prepared candidate evidence. The staged AppTest initially predicted an unchanged update time for Sam's cancelled record. Codex corrected the new oracle to use an independent fresh cancellation instant and compare both changed records and all untouched state. Review also kept roster authorisation ahead of the organiser capacity display and exercised the retained foreign selection test.
+
+The author decides the overall L8 outcome and conducts VAL-03. Read the [Revision 4 intake](changes/CR-01-ai-review-intake.md#revision-4-intake-and-review-controls), [technical findings and checklist](reviews/L8-human-review.md#p2-amendment-review) and [adaptation log](changes/CR-01-test-adaptations.md). Browser and CI are technical evidence.
+
+## L8-P2 identity transition review
+
+The author requested an independent check of the original P2 candidate `2c6bc8f93740807858c1684c734d0c8c15d4972c` before deciding L8 acceptance. Codex reproduced a visible old organiser roster by delaying normal local browser replies during the identity switch. Codex used a keyed Streamlit view and a static CSS selection guard, kept booking and permission operations intact, and added one AppTest for identity view scope and unchanged state. The browser oracle measures whether an old roster canvas is drawn after the identity control shows the new selection, including while replies arrive. Existing queue, owner, cutoff and stale-action tests exercise the domain rules.
+
+These are AI-assisted technical observations from before the [author's L8 decision](reviews/L8-human-review.md#l8-p2-human-acceptance). R-08 remains PENDING_VAL_03.
+
+
+## L8 CR-01 AI use
+
+The author accepted [L7 planning, D-01 and High review depth](reviews/L7-human-review.md) and directed L8 implementation from published V1.0 while holding publication. The author explicitly required the additional test participants Leo and Willy to be valid users in the same fixture state.
+
+| Area | Codex contribution and review evidence |
+|---|---|
+| `booking.py` | Implemented explicit full-only Join, status-based withdrawal, and confirmed cancellation with one FIFO promotion. Reused the existing owner and role checks. Proposed deriving the per-workshop sequence high-water mark from retained registration history, so it survives withdrawal and promotion without a separate mutable counter. Constructed complete candidate states before adoption. |
+| `app.py` | Added separate Join and Withdraw controls, own position/history, owned waitlist and cutoff/notification copy. Withdraw preserves action intent through a callback using current state, identity and the clock at submission. Existing role menus, forms, roster and session model remain in scope. |
+| `test_booking.py` | Added independent FIFO and time oracles, scoped roles, replay/status precedence, fault-injection and actual-control AppTests. Registered Leo and Willy as test-only participant records. Compared the original test source and stored 317 baseline JUnit identities against the candidate. |
+| Review | A targeted stale-withdrawal AppTest initially exercised an earlier clock function binding. The callback now resolves the clock through the booking module when invoked. The test distinguishes a stale active waiting action at S from an already-cancelled repeat. A Windows temporary-directory permission error in the first local baseline attempt was isolated by using a fresh workspace test directory. |
+| Delivery | Copied the five accepted L7 records as evidence, updated the English candidate records, verified the unchanged single-job workflow and locks, and retained the personal ZIP locally. |
+
+Codex supplied implementation, technical tests and packaging. The author's L7 acceptance supplies the approved contract. At this implementation checkpoint L8 human review and VAL-03 were pending. The [subsequent author declaration](reviews/L8-human-review.md#l8-p2-human-acceptance) records L8 acceptance.
+
+### Deep review of the L8 candidate
+
+The author requested a review against accepted L7, Assessment 3 HD and lecture evidence, with specific attention to FIFO, C/S, D-01, fixture identities, permissions, state integrity and the 317-case regression. Codex inspected the implementation, original regression sources, CI artifacts and the cited course material. The [review findings](reviews/L8-human-review.md#deep-review-findings-and-dispositions) record the stale Join reproduction, callback identity safeguard and clarity changes.
+
+The pre-P1 review patch changed `app.py`, `test_booking.py` and the verification and review records. It preserved the business module, dependency locks, workflow, accepted L7 evidence and the source of the 317 V1.0 tests at that checkpoint. Codex added three review cases and adapted the existing L8 cutoff harness to the callback order while retaining the required refusal and state integrity assertions. Local browser exercises use fictional demo data and count as technical verification. The author owns L8 acceptance, any future PR decision and VAL-03.
+
+### P1 UI contribution and review boundary
+
+The author requested six presentation refinements in the existing Streamlit app, with the CR-01 outcomes, C/S policy, permission and state safeguards, L8-F01/F02/F03 fixes and regression identities protected. Codex audited the established UI tests, revised `app.py` and `test_booking.py`, and updated the [P1 review](reviews/L8-human-review.md#p1-ui-verification), test map and verification-plan pointer.
+
+Codex added native status badges and grouped cards, moved the fictional identity disclosure into the main content, grouped active controls by record status, and made feedback consistent with the returned domain outcomes. A previously rendered Cancel button can now reach the original cancellation operation when its row moves to history. The callback uses the current state and trusted time and only adopts an OK candidate. The promotion message checks for an actual waiting-to-confirmed transition. The accepted business implementation in `booking.py`, workflow and locks were preserved byte for byte.
+
+The first full suite exposed five presentation assertions tied to the old sidebar location. The adapted assertions check the exact fixed identities and role and authentication disclosure in the main content, alongside the existing permission and menu assertions. Other targeted adaptations cover the new card and section wording, the placement of controls, and the cutoff callback timing. The underlying business assertions and all 351 intake JUnit identities remain. Twelve P1 cases add display boundaries, section/action order, identity changes, operation guidance and stale Cancel checks.
+
+Codex captured actual before and after Chrome screenshots and checked the layout at 1440px and 390px. Review moved the FULL message below the action row so both Book and Join remain adjacent. These tool and browser checks are technical evidence. The author owns H01-H07, VAL-03, `ACCEPT_LOOP` and any future publication decision. P2 remains `NOT_STARTED`.
+
+For the P1 deep review, Codex reproduced two stale Book failures on the 363-case intake: wrong-participant booking and missing feedback after a role switch. Codex added a rendered-identity check in the Book callback, then reran the two cases with complete state assertions. The cutoff test now captures the earlier Book control before advancing to C. The 363 test identities remain, including all 317 V1.0 identities. Browser checks and the separate 8523 review preview provide technical evidence for the revised candidate. The [P1 deep review](reviews/L8-human-review.md#p1-deep-review) records the author checks and the still-pending human gates.
+
+The author then reported three Join issues during acceptance. Codex ran the two reproduction cases, scoped Join feedback by selected identity and workshop, and disabled Join when that participant already has an active registration for the workshop. Codex adapted the existing duplicate test to submit the earlier enabled control as a stale click, retaining the exact refusal and state check. AppTest and Chrome verified eligibility for a different workshop, same-workshop disablement and card-local feedback. The author findings and technical dispositions are recorded in the [acceptance feedback correction](reviews/L8-human-review.md#p1-acceptance-feedback-correction). Acceptance and VAL-03 remain pending.
+
+For the subsequent ownership and feedback review, Codex checked the 367-case intake and reproduced an inaccurate position instruction at the workshop start. Codex scoped the corrected Booking History guidance to the owner and added an AppTest case spanning S-1s, S and an identity switch. The rationale, verification and pending human checks are in the [P1 ownership and feedback review](reviews/L8-human-review.md#p1-ownership-and-feedback-review).
+
+On 20 November 2026 (Asia/Shanghai), the author personally accepted the revised P1 and supplied three observations on Join eligibility and feedback, withdrawal and rejoin history, and FIFO promotion. Codex transcribed the supplied decision and feedback into the English record and updated the local delivery ZIP. The prior AppTest, browser and Actions evidence remains technical evidence attributed to the verified implementation SHA. At that P1 checkpoint the author held P2. The [later L8 decision](reviews/L8-human-review.md#l8-p2-human-acceptance) covers the revised P2.
+
+## Historical L0-L6 and V1.0 preparation records
+
+At the L6 release-readiness checkpoint, L0-L6 had been accepted, RH01-RH07 had been declared complete and the author had supplied scoped `ACCEPT_RELEASE`. The author personally executes all actual merges and deployment-branch fast-forwards. On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared personal L6 UI/H01-H07 and VAL-01/02 complete, accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e and supplied substantive validation and risk feedback. The entries below describe the stage and authorisation in force when each activity occurred. V1.0 publication and L7 acceptance followed this checkpoint.
 
 Tool: Codex assistant with local Python and Git/GitHub tools. No unverified model version is claimed. Inputs were supplied course/design materials and public Demo code; fictional data is used in the prototype.
 
@@ -192,7 +283,7 @@ At the earlier L5 acceptance stage, status was ACCEPT_LOOP for b597babb5a648d3a5
 | Automated CI | The acceptance-record commit receives its own single-job regression/security/artifact verification, tied to its exact HEAD. The prior 317-case result remains attributed to accepted candidate 5c1e3ff92168b34397e2bee2ace85431ae4d124e; human 19-scenario validation is not added to pytest counts. |
 | Evidence limits | The author supplied aggregate validation outcomes and observations. No individual scenario execution logs, exact test times/commands, external tester identities, personal code edits, rejected suggestions or new numerical residual-risk ratings were supplied; none are invented. Original numbered item 7 was blank. A later separate message supplies genuine L6-HF-07; H07 completion already follows the explicit H01-H07 declaration. |
 
-See [verbatim human feedback and dispositions](reviews/L6-human-review.md#current-human-acceptance). This receipt is a human-in-the-loop decision record; earlier AI Browser Testing remains technical verification. L6 is accepted, while services stay available and L7/main merge/tag/release stay held.
+The author accepted L6 at this checkpoint and kept later L7, merge, tag and release work on hold at that time. Earlier AI browser testing supplied technical verification. See [verbatim human feedback and dispositions](reviews/L6-human-review.md#current-human-acceptance).
 
 ## V1.0 pre-release preparation contribution (historical plan stage)
 
@@ -220,6 +311,6 @@ All application/test/config/dependency bytes and seven historical L0-L6 reviews 
 
 Stage 2 requires the author's personal main PR merge report, then Codex verifies actual M and main CI. Stage 3 requires safe-ancestry guidance and the author's own deployment fast-forward, never a Codex ref move. Stage 4 verifies real cloud M, hashes/Python/Streamlit/Arrow/all 34 runtime pins and core flows without extra restart/delete/recreate. Stage 5 annotated v1.0/Release is conditionally authorised only after those real gates pass. L7 remains held. No future event or success is invented.
 
-## Current L6 gate
+## Historical V1.0 Stage 1 gate
 
-L6 remains ACCEPT_LOOP with its accepted actual feedback/history unchanged. The separate RH01-RH07/ACCEPT_RELEASE declaration is received for P under the Human-only Merge Requirement. Codex prepares/verifies Q and the PR, then stops for the author's personal main merge. Tag/Release permission is conditional; actual M, deployment, publication and L7 are not completed. Preserve services and the local-only ZIP. Neither READY_TO_MERGE nor ACCEPT_RELEASE authorises Codex to merge or fast-forward a deployment branch.
+Stage 1 recorded the author's separate RH01-RH07 and `ACCEPT_RELEASE` decision for P under the Human-only Merge Requirement. Codex prepared and verified Q and the PR, then stopped for the author's main merge. The main merge, deployment and publication were handled in subsequent stages. Actual merges and deployment-branch fast-forwards remain author-only. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0).

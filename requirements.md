@@ -1,5 +1,11 @@
 # Project Requirements Business Rules and Risks
 
+## L8 candidate status
+
+Published V1.0 is baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. L7 planning is accepted. The L8 candidate applies FR-08 through FR-11 and D-01 from the [accepted CR-01](docs/changes/CR-01.md), with the existing baseline rules retained. The author supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). At L9 the author declared VAL-03 complete, supplied `ACCEPT_LOOP` and accepted R-08 as a residual risk within the classroom booking scope. [L9 author acceptance](docs/reviews/L9-human-review.md#l9-acceptance-and-residual-risk-decision). [L8 human acceptance](docs/reviews/L8-human-review.md#l8-p2-human-acceptance). The dated sections below retain the earlier baseline history.
+
+## Historical V1.0 baseline records
+
 L0 revision 3 and L1-L6 are accepted. On 19 November 2026 (Asia/Shanghai, UTC+08:00), the author declared L6 UI/H01-H07 and VAL-01/02 complete and supplied ACCEPT_LOOP for 5c1e3ff92168b34397e2bee2ace85431ae4d124e. Current: L6 ACCEPT_LOOP; L7 NOT_STARTED / HELD_BY_AUTHOR; main merge/tag/release NOT_AUTHORISED. Canonical FR/BR/QR/risk definitions remain unchanged. [Current L6 acceptance](docs/reviews/L6-human-review.md#current-human-acceptance) | [Accepted L5](docs/reviews/L5-human-review.md#current-human-acceptance) | [Tests](docs/test-plan.md).
 
 ## L6 integration and deployment subset
@@ -267,7 +273,7 @@ Selection is not identity security. Early allocation without notification does n
 
 ## Risk controls
 
-The following is the accepted risk-control plan. V1.0 implementation/technical execution and the author's 19 November acceptance are in the [L6 review](docs/reviews/L6-human-review.md#current-human-acceptance); V1.1 controls remain planned. The author owns risk judgements. Initial ratings below are retained planning assessments, not new residual ratings. Actual VAL-01/02 feedback accepts the baseline cutoff and temporary-session model within classroom scope. The cutoff supports equipment/activity, transport and safety preparation; booking records do not guarantee attendance or require unsafe participation, and private emergencies may affect attendance. This feedback adds no attendance-tracking feature, emergency override or cancellation-policy change. R-08 baseline suitability is ACCEPTABLE_WITHIN_SCOPE, while V1.1 near-C promotion/discovery remains VALIDATION_PENDING.
+The following is the accepted risk-control plan. V1.0 implementation/technical execution and the author's 19 November acceptance are in the [L6 review](docs/reviews/L6-human-review.md#current-human-acceptance); The later L9 review records the implemented V1.1 controls and the author disposition. The author owns risk judgements. Initial ratings below are retained planning assessments, not new residual ratings. Actual VAL-01/02 feedback accepts the baseline cutoff and temporary-session model within classroom scope. The cutoff supports equipment/activity, transport and safety preparation; booking records do not guarantee attendance or require unsafe participation, and private emergencies may affect attendance. This feedback adds no attendance-tracking feature, emergency override or cancellation-policy change. R-08 baseline suitability is ACCEPTABLE_WITHIN_SCOPE, while the [L9 author acceptance](docs/reviews/L9-human-review.md#l9-acceptance-and-residual-risk-decision) records the later V1.1 residual risk judgement as ACCEPTABLE_WITHIN_SCOPE.
 
 ### Controls and planned acceptance
 
@@ -280,7 +286,7 @@ The following is the accepted risk-control plan. V1.0 implementation/technical e
 | **R-05** / Both | Wrong timing, particularly blocking withdrawal at C or allowing it after S. Use fresh trusted time and operation-specific deadlines. Isolate C/S boundaries with fresh active records and test late form submission. | B03/B05/B06/B15/B16; W08/W12/W16; I10 |
 | **R-06** / AI-assisted work | Unchecked AI assumptions, changed policy or unrelated complexity. Bound intent/files, preserve contracts, inspect oracles/dependencies and record human corrections and decisions. | AI-use, loop review, CR-01, PR and findings records |
 | **R-07** / Both | Weak tests, false-positive denials or baseline regressions. Derive oracles from requirements; isolate each rejection cause, retain baseline tests and inspect collected/skipped/mocked scope. Protect full rejection, empty-queue cancellation and no-op safety. | B01-B17, W01-W16 and applicable I checks; especially B08/B11/B12/B15/B16, W06/W07/W10/W12 and I05 |
-| **R-08** / Both | Misunderstood states, delayed confirmation awareness, cutoff restrictions or temporary data. Explain S/C, no notification, permitted waiting withdrawal, closed confirmed cancellation and session limits; validate actual tasks and feasibility. | VAL-01/VAL-02/VAL-03A-VAL-03E |
+| **R-08** / Both | Misunderstood states, delayed confirmation awareness, cutoff restrictions or temporary data. Explain S/C, no notification, permitted waiting withdrawal, closed confirmed cancellation and session limits. For V1.1, validate actual status comprehension, manual promotion discovery in time for the intended booking decision, and understanding of the remaining actions. Outdoor preparation and travel are context for the decision. [L9 scope and acceptance basis](docs/reviews/L9-human-review.md#scope-and-acceptance-basis). | VAL-01/VAL-02/VAL-03A-VAL-03E |
 
 Acceptance requires the specified outcomes and state assertions in the linked scenarios, not merely a green report or a helper function's presence.
 
@@ -297,7 +303,7 @@ M means Medium; H means High. Unknown means evidence is still required.
 | R-05 | M / H | C and S deliberately permit different actions. |
 | R-06 | M / H | Generated work can retain superseded assumptions or change tests to fit code. |
 | R-07 | M / H | An error can pass through weak assertions or a denial caused by the wrong precondition. |
-| R-08 | Unknown / H | Preparation, arrival and restriction acceptability have not been observed. |
+| R-08 | Unknown / H | Initial planning considered preparation, arrival and restrictions. The V1.1 follow-up measures booking comprehension and action timing. See the L9 author declaration for the scoped residual risk decision. |
 
 ### Monitoring and human decisions
 

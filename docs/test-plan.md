@@ -1,5 +1,65 @@
 # Test Plan and Traceability
 
+## L9 V1.1 integration verification
+
+Use accepted L8 `2531b0d` and its [377-case evidence](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44682855711) as the regression baseline. L9 adds `test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff`. It verifies the integrated Streamlit flow at C minus one minute and C plus five minutes, including whole state, the unchanged promoted ID, delayed discovery, and effective withdrawal of the remaining waiting entry. The deep review applies a stale Cancel control at exact C with an active queue and confirms identity and equality of the state. The course cross-check adds post-C D-01 stale-control and different-owner checks in the same L9 case and requires the exact confirmed registration ID. The original 378 case identities are retained. Compare the complete case identity inventory. The [VAL-03 worksheet](reviews/L9-human-review.md#val-03-author-worksheet) covers the separate human assessment of understanding, manual discovery and timely booking decisions.
+
+### L9-F05 reminder and booking terminology
+
+Retain all 378 intake JUnit identities. The historical Demo Guide test checks the replacement read-only participant reminder, organiser tabs, owned roster options and independent drafts. The policy placement follow-up requires one public policy title and paragraph above the reminder on both participant views, and public policy without a reminder for guest and organiser. The adapted count captions still assert the same values. Five new UI cases in test_l9_status_guidance_respects_confirmed_and_waiting_boundaries check the literal time points C minus one second, C, S minus one second, S and S plus one second. The fixture uses the known confirmed seed registration and an explicit waiting row. Assert the expected caption, availability of each control, retained history without a live position after S and exact state equality. Refer to the [adaptation log](changes/CR-01-test-adaptations.md#l9-f05-reminder-and-booking-count-assertions) and the [author's revised worksheet](reviews/L9-human-review.md#val-03-author-worksheet).
+
+## L8 P2 verification
+
+The accepted reviewed SHA [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314) passed 377 tests in the [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754). The 376 original P2 case identities include the 368 P1 and 317 V1.0 cases. The identity-view scope AppTest was added for P2-F05. [Author acceptance](reviews/L8-human-review.md#l8-p2-human-acceptance) records UI and H01-H07. R-08 stays pending VAL-03.
+
+Reference accepted P1 `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e` (368 JUnit identities) and immutable V1.0 `36e7bff3c1d3f74bb29c1900373726ecffdd176b` (317). The 317 are included in the 368. Compare the exact `(classname, name)` pairs, multiplicity, skips, failures and errors against the local and hosted candidate reports. Review the [test adaptation log](changes/CR-01-test-adaptations.md) for each changed assertion and the [single-job Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-p2) for the candidate-tested SHA.
+
+| Scenario | Coverage and expected evidence |
+|---|---|
+| P2-01 / AC-08, B01/B02 | Exact six stable fictional IDs, labels and roles, clean seed and selector with guest, and absent synthetic IDs. Specialised FIFO fixture has eight unique users. |
+| P2-02 / AC-05/08, W13/W14, CRV-02 | All four default participants use the same role checks and Book path. Verify exact owned records, forbidden other-owner cancellation and organiser reads, and no state mutation. Switch selected participants and organisers in the normal AppTest and browser journey. |
+| P2-03 / AC-01/02/03/08, W05-W11 | Actual Streamlit controls queue Leo as 1 and Willy as 2 against Sam's capacity-one confirmed workshop. Confirm that Sam's cancellation promotes Leo with the original ID, leaves Willy at position 1 and allocates no extra ID. Retain the reversed-order and equal-names fixtures. |
+| P2-04 / AC-03/04/05/06/07, I05/I06/I08/I09/I10, CRV-01/03 | Verify a valid switched actor cannot inherit a stale Join, then withdraw and rejoin with new ID/sequence and retained private history. Compare exact state after refusal, through reruns and across a fresh session. Retain D-01, C/S, promotion failure and P1/F01-F03 probes. |
+| P2-05 / AC-07/08, B02/B06/B13/B14 | Inspect read-only Demo Guide, creation and management tabs, named confirmed and waiting tables, owner restrictions, draft/error isolation and success-only reset. R-08 stays pending VAL-03. |
+
+Earlier P1 results below describe their historical SHA and original identity counts.
+
+## L8 P1 presentation verification
+
+P1 begins at `fbbc86c2de7dcc9960097a0b6f6caf0dc1823606`. Its suite retains all 351 intake identities, including the 317 published V1.0 cases and 34 L8 cases, and adds 12 focused AppTest cases. Legacy UI assertions still cover the same outcomes at the revised render locations. See the [P1 review](reviews/L8-human-review.md#p1-ui-verification) and the [candidate Actions runs](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist).
+
+| Requirement | Technical evidence |
+|---|---|
+| P1-01 and P1-02 | Scoped card assertions cover title, time, location, availability and workshop ID. Six AppTest boundaries check C-1s, C, C+1s, S-1s, S and S+1s with both full and available workshops. Check all labels and enabled controls against unchanged state. |
+| P1-03 | Check headings and table order, exact visible IDs and statuses, position placement, matching Cancel and Withdraw controls in their own groups, history without controls, and state preservation during rendering. |
+| P1-04 | Exercise FULL and separate Join, duplicate Join, confirmed Book, effective Cancel with and without promotion, withdrawal, and stale Cancel at start or after cancellation. Original L8 cases retain USE_BOOKING, STATUS_CHANGED, cutoff and start outcomes and test state adoption failures. |
+| P1-05 | Compare the main identity through guest, participant, organiser and deselection. Retain all four fixed sidebar identities, role menus, independent scope checks and no real authentication claim. |
+| P1-06 | Check contextual C/S and unconfirmed/no-notification guidance. The existing AppTest verifies actual withdrawal at C and the refusal and history at S. R-08 remains pending human VAL-03. |
+| L8-F01/F02/F03 | Retain the original replay, selected-actor change and closed organiser queue cases. Check the actual promoted ID and the correct history label. |
+
+The P1 deep review adds two stale Book cases, covering a switch to another eligible participant and a switch to organiser. Both require INVALID_ACTOR, no success message and exact state preservation. The earlier cutoff case captures an enabled Book control and then submits at C through the callback. The reviewed suite retains all 363 initial P1 identities and adds these two cases.
+
+The P1 acceptance correction adds two cases for a booking followed by a separate full workshop's Join and for same-workshop disablement after booking the last seat. The retained duplicate path submits the earlier enabled control, expects card-local DUPLICATE_ACTIVE, and checks state and counters. All 365 intake identities remain, including the 317 V1.0 cases.
+
+The ownership and feedback review adds one case that compares the owner's card at S-1s and S, checks the original ID and WAITLISTED status in Booking History without a live position, switches to a different participant, and verifies unchanged state. All 367 intake identities remain.
+
+## L8 CR-01 verification
+
+The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and the frozen V1.0 test suite defined the expected results for the pre-P1 CR-01 candidate. That candidate retained the original source prefix and 317 exact V1.0 case identities. Its deep review retained the first candidate's 31 case identities and added three cases. The pre-P1 adjustment to the stale-Join cutoff test advances the clock after capturing an open control, which exercises the callback's fresh decision and retains the exact refusal and state assertions.
+
+| Requirement and planned evidence | L8 verification |
+|---|---|
+| AC-01, AC-06 / W01-W04, W15, I01-I02 | Separate FULL and Join, USE_BOOKING with spare capacity, active duplicates across both statuses, and spare-capacity queue integrity guard. Check exact records and allocation counters. Submit a stale Join after availability changes and assert USE_BOOKING and unchanged state. |
+| AC-02 / W05-W07, W10-W11, I03-I05 | Use registered Leo and Willy fixtures with conflicting alphabetical, timestamp and stored-list orders, a withdrawn lower sequence and another workshop. Assert one exact promotion, shared decision instant, correct capacity and unchanged input. Cover no-waiter cancellation, both serial action orders, repeated cancellation and a promotion fault before adoption. |
+| AC-03 / W08-W09, W12, W16 | Withdraw the head and tail, keep the confirmation and history, and rejoin with a fresh ID above the historic sequence maximum. Check equal names and distinct IDs, allowed withdrawal at C and refusal at S. |
+| AC-04 and D-01 / W12, I10, CRV-01 | Use independent active records at C-1s, C, C+1s, S-1s, S and S+1s. Submit stale Join/Withdraw controls and assert fresh trusted time. Check actor, owner, unknown reference, cancelled no-op and active mismatch ordering and full state equality. |
+| AC-05 / W13-W14, I06, I08-I09, CRV-02 | Check live own positions, owned ordered list, menu permissions, separate session factories and the single-session AppTest journey. Check both participant and organiser closed history without modifying status. In a single widget submission, change selected participant and click a Join control rendered for the previous actor. Require refusal and unchanged state. Verify current promotion via Refresh view. |
+| AC-07 / B01-B17, I07 | All 317 original cases and no-waiter fixtures remain. Retained constructors default to no queue sequence. No live migration or shared concurrency is exercised. |
+| QR-02 / CRV-03 | Inject failure during promotion after preparing the cancelled row. Check both direct business state and actual Streamlit state, including absence of partial writes and false success. |
+| R-08 / VAL-03A-E | Author-declared complete at L9 and acceptable within the classroom booking scope. Manual discovery after pre-cutoff promotion and the lack of alerts remain residual exposure. |
+
+The [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) record the tested SHA and all quality steps. The original implementation run is historical. The [L8 author checklist](reviews/L8-human-review.md#overall-l8-author-checklist) records completion for the revised P2 SHA.
+
 ## L6 integration and verification
 
 L6 ACCEPT_LOOP by author declaration on 19 November 2026 (UTC+08:00); L7 NOT_STARTED / HELD_BY_AUTHOR. Merge/tag/release NOT_AUTHORISED. Accepted L5 is 8a5c9723afe6a81bbafc634acc09b65dac436ee4; deep-review intake is fc964bb7bde9476e98aaabfee85ff8ab15156300. All 308 intake case identities, 116 test ASTs/decorators and seven existing helper definitions remain unchanged. Current: 317 cases/119 test functions; all 51 canonical scenario rows below retain their content. [Current evidence](reviews/L6-human-review.md) | [Human validation](reviews/L6-human-review.md#validation-record).
@@ -60,7 +120,7 @@ On 19 November 2026 (Asia/Shanghai, UTC+08:00), the project author declared L6 U
 | VAL-02 / organiser | PASS 10/10 submitted scenarios; ACCEPTABLE_WITHIN_SCOPE | Stable rosters support equipment/activity preparation. Temporary Session State is acceptable for one-session demonstration, not reliable real-world operations. |
 | Personal UI/H01-H07; I06/I08/I09 judgement | COMPLETE by explicit author declaration | Role navigation/permissions/draft isolation and ordinary-rerun preservation work in the demo model. Independent sessions and restart do not share or durably recover records. |
 | R-08 baseline outdoor/timing needs | ACCEPTABLE_WITHIN_SCOPE | Human supplemental feedback respects unexpected circumstances: confirmed booking is a record, not guaranteed attendance or an obligation to participate unsafely. No emergency override or attendance feature is added. |
-| R-08 V1.1 / VAL-03A-03E | VALIDATION_PENDING / DEFERRED_TO_V1.1 | Baseline acceptance does not establish delayed-promotion discovery, preparation/arrival feasibility or waiting-state comprehension. |
+| R-08 V1.1 / VAL-03A-03E | ACCEPTABLE_WITHIN_SCOPE by the author at L9 | [Author-declared completion and rationale](reviews/L9-human-review.md#l9-acceptance-and-residual-risk-decision). Automatic alerts are absent and manual checking is required. |
 
 The 19 human scenarios are not additional pytest cases: the suite remains 317, with all L1-L5 regression identities unchanged. The accepted candidate's run/artifact is identified above; the acceptance-record commit receives an independently checked exact-HEAD run. Full feedback and dispositions are in [current human acceptance](reviews/L6-human-review.md#current-human-acceptance). No remaining human loop check is inferred from AI evidence. ACCEPT_LOOP does not authorise main merge, tag, V1.0 release or L7.
 
@@ -292,12 +352,12 @@ Validation examines whether the intended users can complete useful tasks and acc
 |---|---|
 | **VAL-01** | Find a suitable workshop, identify S/C and complete pre-C booking/cancellation. Explain post-C restrictions and the single-session, non-authenticated demonstration. |
 | **VAL-02** | Create a >24h workshop and inspect owned rosters. Assess whether the 24h freeze supports preparation and whether the prototype demonstrates the organising task coherently. |
-| **VAL-03** | Complete waiting, withdrawal and promotion; explain C/S differences and assess preparation, awareness and participation feasibility. |
+| **VAL-03** | Complete waiting, withdrawal and promotion; explain C/S differences and assess whether manual status discovery supports an informed booking decision. |
 | Scenario | Task and acceptance question |
 |---|---|
-| **VAL-03A** | After Join, explain that WAITLISTED is unconfirmed and identify C, refresh requirements and lack of notifications. |
+| **VAL-03A** | After Join, record understanding separately of WAITLISTED, C/S, manual checking and alerts with the reminder closed and then after reading it. [Two-pass worksheet](reviews/L9-human-review.md#val-03a-comprehension-with-the-reminder-closed-and-open). |
 | **VAL-03B** | Locate confirmation after ordinary pre-C promotion and explain the next action. |
-| **VAL-03C** | S=10 December 09:00, C=9 December 09:00, promotion=9 December 08:59. Separately assess comprehension, preparation/arrival feasibility and latest useful confirmation with reasons. |
+| **VAL-03C** | S=10 December 09:00, C=9 December 09:00, promotion=9 December 08:59. Check the same confirmation ID and remaining actions. Record the latest useful time for a booking decision and its reason. |
 | **VAL-03D** | In one preserved demo session simulate pre-C promotion discovered after C. Explain closed confirmed cancellation versus permitted waiting withdrawal. A recreated session follows reset limits, not recovered prior data. |
 | **VAL-03E** | Withdraw during C<=t<S without changing confirmed records or promoting another waiter; explain closure at S and assess whether this is understandable/useful. |
 
@@ -305,7 +365,7 @@ Validation examines whether the intended users can complete useful tasks and acc
 
 Record actual tester/role label, version, task, intended need, observations, feedback, issue, owner and decision. Distinguish external testers from author role-play; do not invent participants or claim real multi-user operation.
 
-Task comprehension is acceptable when the tester correctly identifies state, applicable deadline and next permitted action without unresolved critical confusion. Product suitability is a separate human judgement supported by feedback and preparation/arrival constraints.
+Task comprehension is acceptable when the tester correctly identifies state, applicable deadline and next permitted action without unresolved critical confusion. R-08 suitability is a separate human judgement supported by observed manual discovery and its timing against the intended booking decision. Outdoor constraints can explain that timing.
 
 Use ACCEPTABLE_WITHIN_SCOPE, CHANGES_REQUIRED or UNRESOLVED, with rationale. A critical unmet need prevents the relevant release. The baseline VAL-01/02 author declaration and scoped judgement are now recorded above; R-08 waiting/promotion scenarios remain pending until their own actual validation occurs.
 
@@ -369,9 +429,9 @@ The [risk register](../requirements.md#risk-controls) is canonical for R-01 thro
 |---|---|---|
 | VAL-01 | FR-02, FR-03, FR-04, FR-05; R-08 | Author-reported PASS 9/9; baseline tasks/cutoff/prototype limits ACCEPTABLE_WITHIN_SCOPE, 19 November 2026 |
 | VAL-02 | FR-06, FR-07; BR-15, BR-16; R-08 | Author-reported PASS 10/10; creation lead/preparation/session model ACCEPTABLE_WITHIN_SCOPE, 19 November 2026 |
-| VAL-03A | FR-08, FR-11; R-08 | Unconfirmed state, C and notification expectations |
+| VAL-03A | FR-08, FR-11; R-08 | Comprehension with the reminder closed and open. Compare understanding of the unconfirmed state, C/S, manual checking and notification expectations. |
 | VAL-03B | FR-09, FR-10, FR-11; R-08 | State comprehension and next action |
-| VAL-03C | FR-10, FR-11; R-08 | Near-C promotion feasibility |
+| VAL-03C | FR-10, FR-11; R-08 | Near-C status discovery and booking decision timing |
 | VAL-03D | FR-04, FR-09, FR-11; R-08 | Delayed discovery and distinct cancellation/withdrawal deadlines |
 | VAL-03E | FR-09, FR-11; BR-11, BR-16; R-08 | Post-C withdrawal without promotion and closure at S |
 
