@@ -1,5 +1,19 @@
 # Test Plan and Traceability
 
+## L8 P2 verification
+
+Reference accepted P1 `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e` (368 JUnit identities) and immutable V1.0 `36e7bff3c1d3f74bb29c1900373726ecffdd176b` (317). The 317 are included in the 368. Compare the exact `(classname, name)` pairs, multiplicity, skips, failures and errors against the local and hosted candidate reports. Review the [test adaptation log](changes/CR-01-test-adaptations.md) for each changed assertion and the [single-job Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-p2) for the candidate-tested SHA.
+
+| Scenario | Coverage and expected evidence |
+|---|---|
+| P2-01 / AC-08, B01/B02 | Exact six stable fictional IDs, labels and roles, clean seed and selector with guest, and absent synthetic IDs. Specialised FIFO fixture has eight unique users. |
+| P2-02 / AC-05/08, W13/W14, CRV-02 | All four default participants use the same role checks and Book path. Verify exact owned records, forbidden other-owner cancellation and organiser reads, and no state mutation. Switch selected participants and organisers in the normal AppTest and browser journey. |
+| P2-03 / AC-01/02/03/08, W05-W11 | Actual Streamlit controls queue Leo as 1 and Willy as 2 against Sam's capacity-one confirmed workshop. Confirm that Sam's cancellation promotes Leo with the original ID, leaves Willy at position 1 and allocates no extra ID. Retain the reversed-order and equal-names fixtures. |
+| P2-04 / AC-03/04/05/06/07, I05/I06/I08/I09/I10, CRV-01/03 | Verify a valid switched actor cannot inherit a stale Join, then withdraw and rejoin with new ID/sequence and retained private history. Compare exact state after refusal, through reruns and across a fresh session. Retain D-01, C/S, promotion failure and P1/F01-F03 probes. |
+| P2-05 / AC-07/08, B02/B06/B13/B14 | Inspect read-only Demo Guide, creation and management tabs, named confirmed and waiting tables, owner restrictions, draft/error isolation and success-only reset. R-08 stays pending VAL-03. |
+
+Earlier P1 results below describe their historical SHA and original identity counts.
+
 ## L8 P1 presentation verification
 
 P1 begins at `fbbc86c2de7dcc9960097a0b6f6caf0dc1823606`. Its suite retains all 351 intake identities, including the 317 published V1.0 cases and 34 L8 cases, and adds 12 focused AppTest cases. Legacy UI assertions still cover the same outcomes at the revised render locations. See the [P1 review](reviews/L8-human-review.md#p1-ui-verification) and the [candidate Actions runs](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist).

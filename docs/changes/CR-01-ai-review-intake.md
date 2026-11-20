@@ -2,13 +2,23 @@
 
 | Field | Recorded value |
 |---|---|
-| Review scope | L7 planning and deep review through revision 2. Revision 3 records the author's acceptance and FIFO fixture requirement. |
+| Review scope | This historical intake covers L7 planning and review through Revision 3. The Revision 4 intake below covers the author-directed P2 amendment. |
 | Reviewed baseline | [Published V1.0](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), commit `36e7bff3c1d3f74bb29c1900373726ecffdd176b` |
 | Tool | Codex assistant, with read-only GitHub inspection in the deep review and local file tools for English documentation and ZIP verification |
 | Author request, English summary | Use the published and verified V1.0 baseline to prepare CR-01 for waitlist and FIFO promotion, impact analysis, risk classification, this intake, test mapping and regression planning. Preserve the baseline and current deployment. Stop for author acceptance before implementation. |
 | Actual AI contribution | Drafted the five L7 records. During the deep review, checked the published baseline, rules, core code, rubric and lecture passages, and both stored CI reports. Revised the decision table, oracles, risk triage, regression comparison and human checklist. In revision 3, transcribed the author's decision, translated the fixture note, checked the identity model and synchronized the documents and local ZIP. |
 | Implementation evidence | V1.1 source and test changes, candidate CI, PR review and VAL-03 remain future work. |
 | Risk triage | The author approved High change classification and review depth under Week 6, slide 17. A change to an ordinary registration action affects allocation, ownership, deadlines and state integrity. Open policy and verification questions remain separate blockers. |
+
+## Revision 4 intake and review controls
+
+| Area | Recorded basis |
+|---|---|
+| Author direction and authority | The author confirmed human P1 acceptance at `52ce8d74` and then supplied the L8-P2 development requirements. Six selectable default identities and separate FIFO fixtures are authorised. L8 acceptance, VAL-03, integration and release remain separate decisions. |
+| Scope and actual AI work | Codex edited only default data in the business module, laid out the Organiser tabs and read-only guide in Streamlit, adapted fixture actor references, added focused tests, compared exact JUnit identities and performed independent browser checks. Codex documented revisions and findings for author review. |
+| High review | Inspect actual diff for duplicate/stale actor IDs, protected owner access, C/S and D-01 precedence, same-workshop FIFO, unchanged counters and no aliasing or partial adoption. Compare old and revised assertions and check reset behaviour separately from normal reruns. |
+| Independent expectations | Zulu wins with sequence 3 even when Alpha at sequence 8 appears first and has an equal or earlier timestamp. The ordinary browser starts with Sam confirmed, promotes Leo's same ID after Sam cancels, keeps Willy waiting and shows the result to Alex only within his ownership. |
+| Evidence and author decision | See the [P2 review](../reviews/L8-human-review.md#p2-amendment-review), [test adaptation log](CR-01-test-adaptations.md) and [P2 test map](../test-plan.md#l8-p2-verification). Technical checks leave H01-H07 and VAL-03 for the author. |
 
 ## Significant author interactions
 

@@ -8,6 +8,12 @@
 
 The results above verify the CR-01 business candidate before the P1 presentation round. See the [P1 UI verification](../reviews/L8-human-review.md#p1-ui-verification) and [current P1 test map](../test-plan.md#l8-p1-presentation-verification) for that round's evidence.
 
+## Revision 4 verification amendment
+
+The six-user default state and two fixture-only FIFO actors supersede the earlier two-participant demo assumption in the historical plan below. AC-08 checks exact unique IDs, roles, private access, seeded record/counter preservation and exclusion of fixture-only users from normal UI. The specialised fixture contains eight users. Its ordering probe assigns sequence 3 to Zulu and 8 to Alpha, with Alpha stored first. Keep both time variants and the separate equal-name probe.
+
+Use the existing W/I/CRV rules and P1/F01-F03 regressions, then compare every P2 JUnit identity with immutable V1.0 and accepted P1 reports. Confirm that the changed assertions are limited to the approved default identity/fixture amendment and that all business checks remain. The normal browser journey uses the actual Streamlit controls and includes both waiter positions, same-ID promotion, owner-only roster and waitlist, and independent fresh-session seed. The [P2 test map](../test-plan.md#l8-p2-verification), [adaptation log](CR-01-test-adaptations.md) and [review](../reviews/L8-human-review.md#p2-amendment-review) provide scope and evidence references. R-08 remains pending author-led VAL-03.
+
 ## Accepted L7 verification plan
 
 Revision 3 records the author's [L7 planning acceptance](../reviews/L7-human-review.md#human-decision-record). The L7 review checked the stored V1.0 baseline evidence and the planned test expectations. The sections below retain those expectations and procedures from L7. The [change contract](CR-01.md) and [impact and risks](CR-01-impact-and-risks.md) provide the rule and risk references for each oracle. The canonical scenario IDs come from the [V1.0 test plan](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/36e7bff3c1d3f74bb29c1900373726ecffdd176b/docs/test-plan.md).

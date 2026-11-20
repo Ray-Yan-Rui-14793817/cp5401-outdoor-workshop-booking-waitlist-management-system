@@ -409,9 +409,8 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
     message = form.pop("message", None)
     if message:
         st.success(message)
-    creation, rosters = st.columns(2)
+    creation, rosters = st.tabs(["Create Workshop", "Manage My Workshops"])
     with creation:
-        st.markdown("#### Create a workshop")
         if form.get("feedback"):
             st.error(form["feedback"])
         with st.form("create_workshop_form", clear_on_submit=False):
@@ -509,7 +508,6 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
                 st.rerun()
 
     with rosters:
-        st.markdown("#### My workshops and confirmed rosters")
         outcome, workshops = list_owned_workshops(state, actor)
         if outcome != "OK":
             st.error("Your workshop list is unavailable. Refresh and try again.")
@@ -530,6 +528,11 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
         if outcome != "OK":
             st.error(f"{outcome}: The confirmed roster is unavailable for this identity.")
             return
+        target = next(workshop for workshop in workshops if workshop.workshop_id == target_id)
+        st.subheader("Confirmed Roster")
+        st.caption(
+            f"Capacity: {target.capacity} | Remaining places: {target.capacity - len(registrations)}"
+        )
         st.caption(f"Confirmed participants: {len(registrations)}")
         st.caption("Only confirmed participants are listed; cancelled history consumes no place.")
         names = {user.user_id: user.display_name for user in state.users}
@@ -553,8 +556,7 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
         if outcome != "OK":
             st.error(f"{outcome}: The waitlist is unavailable for this identity.")
             return
-        st.markdown("#### Workshop waitlist")
-        target = next(workshop for workshop in workshops if workshop.workshop_id == target_id)
+        st.subheader("Workshop Waitlist")
         closed = display_now >= target.starts_at
         if closed:
             st.caption("Waitlist closed at workshop start. Remaining entries are historical.")
@@ -634,6 +636,17 @@ def main() -> None:
         "Confirmed records in this session",
         sum(record.status == RegistrationStatus.CONFIRMED for record in state.registrations),
     )
+
+    with st.expander("Demo Guide"):
+        st.markdown(
+            "1. Select a fictional identity. Participants manage only the selected identity's "
+            "records. Organisers create workshops and manage their own rosters and waitlists.\n"
+            "2. To try FIFO in a fresh session, join the full Outdoor Photography Walk as Leo, "
+            "then as Willy. Switch to Sam, open My Bookings and cancel the seed booking "
+            "before the cutoff. Check the result as Leo, Willy and organiser Alex.\n"
+            "3. Check My Bookings or use Refresh view for updates. Waiting is unconfirmed "
+            "and there are no notifications. Waiting participants can withdraw until start."
+        )
 
     st.subheader(view)
     if view not in ("Workshops", "My Bookings", "Organiser"):

@@ -1,8 +1,33 @@
 # L8 CR-01 candidate human review
 
-Status: **HUMAN_ACCEPTANCE_PENDING**. Scope: **P1**. P2: **NOT_STARTED**. Human decision: **PENDING**. R-08: **PENDING_VAL_03**. V1.1 release: **NOT_RELEASED**.
+L8 status: **HUMAN_ACCEPTANCE_PENDING**. P1: **ACCEPTED**. P2: **TECHNICAL_CANDIDATE_FOR_AUTHOR_REVIEW**. Overall L8 human decision: **PENDING**. R-08: **PENDING_VAL_03**. V1.1 release: **NOT_RELEASED**.
 
 The candidate starts from published V1.0 commit `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. The author's [L7 decision](L7-human-review.md#human-decision-record) approved D-01 and High review depth. The [change contract](../changes/CR-01.md) governs the candidate. The existing V1.0 deployment remains on its released baseline.
+
+## P1 human acceptance
+
+On 20 November 2026 (Asia/Shanghai), the project author confirmed human acceptance of P1 at `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. The author confirmed that participants see their own records, the Join disablement reason and card-local feedback are correct, and waitlist history is available after the workshop starts. The accepted implementation is linked to the [368-case single-job Actions run](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44670962151).
+
+### Author feedback
+
+1. The two reported Join usability problems have been corrected. An eligible participant can join the waitlist of a different full workshop and receives card-local feedback. A participant who already holds an active registration for the same workshop cannot join again. The UI explains the disabled action, while the business layer continues to reject stale duplicates.
+2. Waiting withdrawal preserves the original registration as CANCELLED without changing the confirmed roster. Rejoining creates a new registration ID and queue sequence. The existing FIFO and multi-waiter tests remain intact. The UI correction does not alter the accepted withdrawal or historical-ordering contracts.
+3. Automatic promotion continues to select the earliest active waiter when a confirmed participant cancels before C. The promoted record retains its registration ID. Confirmed capacity and organiser ownership remain protected. No promotion rule was changed by the P1 feedback correction.
+
+The decision covers P1. The author subsequently directed P2. Overall L8 H01-H07, R-08 VAL-03 and future integration or release decisions remain separate.
+
+## P2 amendment review
+
+The author directed [Revision 4](../changes/CR-01.md) after accepting `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. Candidate branch: `codex/cr-01-p2`. See the [single-job candidate run](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-p2), [adaptation log](../changes/CR-01-test-adaptations.md) and [P2 test map](../test-plan.md#l8-p2-verification). Use the delivery receipt and CI artifact for the exact candidate and Tested SHA.
+
+| Finding or review concern | Disposition |
+|---|---|
+| P2-F01 - Default/fixture identity collision and oracle drift | Replaced test-only Leo/Willy with FIFO Test Alpha and Zulu in the specialised fixture. Verified exact four participants/two organisers in the default state and stable unique IDs in both states. Kept historic parameter case labels for inventory matching. Retained same-name and reversed list/time oracles. |
+| P2-F02 - Incomplete new AppTest time oracle | Initial focused run exposed an omitted cancellation update time in the expected record. The independently selected decision instant now applies to Sam's cancelled row and Leo's promoted row. Whole-state expectations preserve counters, dates of creation and unaffected records. |
+| P2-F03 - Scope and display review | Creation and management are separate tabs. Roster and waitlist continue to check the actual target owner. Guide is read-only. Retain P1, role/session isolation and existing C/S/D-01, fault injection and state integrity verification. |
+| P2-F04 - Owner guard order in management | Keep business roster validation before the new capacity display resolves workshop metadata. An unexpected foreign selection is rejected by the owner guard before any capacity, roster or waitlist is rendered. The retained forced-selection regression covers this path. |
+
+Residual scope is a fictional, serial, temporary demo. Technical proofs do not assess recognising a promotion in time to prepare or travel. R-08 remains PENDING_VAL_03.
 
 ## P1 UI verification
 
@@ -79,17 +104,17 @@ Assessment 3 pp. 4-5 and 8 require the change request, impact, retained and new 
 
 The 16 November 10:45 transcript pp. 2 and 8-10 supports the three-file adaptation and narrow behavioural changes. The 10:46 transcript pp. 3-7 supports precise AI disclosure, risk-specific review, traceable proof and author judgement. Week 6 slides 11/17 inform the intake and High classification. Week 7 slide 25 informs independent oracles and object ownership. Week 8 slides 14-16 and Week 9 slides 1/5/10/12 inform finding dispositions, escalation and the author-led decision. See the [accepted intake](../changes/CR-01-ai-review-intake.md) and [actual AI contribution](../ai-use.md#l8-cr-01-ai-use).
 
-## Author checklist
+## Overall L8 author checklist
 
-- [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the revised P1 SHA and verify the 367 intake identities, including 317 V1.0 cases, plus the S-boundary addition.
+- [ ] **L8-H01 - Check the baseline and delivery.** Confirm ancestry from published M and accepted P1, the exact P2 diff and all six default identities. Inspect exact-P2 single-job evidence for all 368 retained identities (including 317 V1.0 cases) and the new P2 cases. Review each changed assertion in the adaptation log.
 - [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian, who already has a different booking, then open the full Outdoor Photography Walk. Book should report FULL on its card. Join should show WAITLISTED and the registration ID on the same card, then become disabled with a reason. In a separate session, cancel Sam's seed booking and book that last seat again. Verify Join is disabled for Sam with the confirmed-booking explanation and is available to eligible Xingjian.
-- [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Leo/Willy test evidence for FIFO, sequence gaps and multi-waiter ordering.
-- [ ] **L8-H04 - Check promotion.** With Xingjian queued, switch to Sam in the same session and cancel Sam's confirmed Outdoor Photography Walk booking. Return to Xingjian and use Refresh view. Verify the same queued ID is CONFIRMED. Check Alex's owned roster and queue, and check Rui Yan's workshop selector for owner scope.
+- [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Alpha/Zulu independent fixture for sequence gaps and multi-waiter ordering. Test Willy withdrawing and rejoining in a separate normal session.
+- [ ] **L8-H04 - Check promotion.** In a fresh six-user session, join the Outdoor Photography Walk as Leo and then Willy, and record positions 1 and 2. Cancel Sam's confirmed booking before C. Check Leo's unchanged ID and CONFIRMED status and Willy's unchanged ID and position 1. Check Alex's owned roster and queue, and Rui Yan's selector for owner scope.
 - [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S, including the owner-only move from position guidance to Booking History at S. Review both stale Book identity-switch cases and the retained stale Join cases. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
-- [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#p1-ui-contribution-and-review-boundary), fixture-only identities and L8-F01-F03 dispositions. Confirm the C/S guidance, section order and visible no-notification explanation. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
+- [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#l8-p2-contribution-and-author-oversight), fixture-only identities and L8-F01-F03 dispositions. Check the Create/Manage tabs, per-organiser draft restoration and success-only reset, read-only Demo Guide, C/S guidance and visible no-notification explanation. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
 - [ ] **L8-H07 - Record the decision.** Record the exact reviewed SHA, observations, issues and ACCEPT_LOOP or CHANGES_REQUIRED. Subsequent integration and release decisions are separate. All actual merges and deployment fast-forwards are author-only.
 
-## Author decision record
+## Overall L8 author decision record
 
 | Field | Value |
 |---|---|

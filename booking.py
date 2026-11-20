@@ -179,6 +179,8 @@ def create_demo_state() -> DemoState:
         users=[
             DemoUser("participant-1", "Xingjian", Role.PARTICIPANT),
             DemoUser("participant-2", "Sam", Role.PARTICIPANT),
+            DemoUser("participant-leo", "Leo", Role.PARTICIPANT),
+            DemoUser("participant-willy", "Willy", Role.PARTICIPANT),
             DemoUser("organiser-1", "Rui Yan", Role.ORGANISER),
             DemoUser("organiser-2", "Alex", Role.ORGANISER),
         ]

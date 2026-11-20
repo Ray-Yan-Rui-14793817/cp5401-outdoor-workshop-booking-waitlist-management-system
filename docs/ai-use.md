@@ -1,6 +1,12 @@
 # AI Use and Human Contributions
 
-**Project status.** V1.0 is published, L7 planning has the author's `ACCEPT_LOOP`, and L8 awaits human acceptance. R-08 remains pending human VAL-03 validation. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and [L8 execution evidence](changes/CR-01-verification-plan.md#l8-execution-evidence).
+**Project status.** V1.0 is published and L7 planning has the author's `ACCEPT_LOOP`. P1 has passed human acceptance at `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. P2 implements the author's Revision 4 amendment. Overall L8 acceptance and R-08 VAL-03 remain pending. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and the [P1 human acceptance and author feedback](reviews/L8-human-review.md#p1-human-acceptance).
+
+## L8-P2 contribution and author oversight
+
+The author approved P1 at the recorded SHA and supplied the P2 amendment, exact identities, independent FIFO oracle, organiser layout and human gate. Codex scoped the diff, wrote the default identity and presentation changes, adapted fixture-related assertions and preserved historical test labels. Codex designed and ran technical checks, exercised the real browser flow and prepared candidate evidence. The staged AppTest initially predicted an unchanged update time for Sam's cancelled record. Codex corrected the new oracle to use an independent fresh cancellation instant and compare both changed records and all untouched state. Review also kept roster authorisation ahead of the organiser capacity display and exercised the retained foreign selection test.
+
+The author decides the overall L8 outcome and conducts VAL-03. Read the [Revision 4 intake](changes/CR-01-ai-review-intake.md#revision-4-intake-and-review-controls), [technical findings and checklist](reviews/L8-human-review.md#p2-amendment-review) and [adaptation log](changes/CR-01-test-adaptations.md). Browser and CI are technical evidence.
 
 ## L8 CR-01 AI use
 
@@ -37,6 +43,8 @@ For the P1 deep review, Codex reproduced two stale Book failures on the 363-case
 The author then reported three Join issues during acceptance. Codex ran the two reproduction cases, scoped Join feedback by selected identity and workshop, and disabled Join when that participant already has an active registration for the workshop. Codex adapted the existing duplicate test to submit the earlier enabled control as a stale click, retaining the exact refusal and state check. AppTest and Chrome verified eligibility for a different workshop, same-workshop disablement and card-local feedback. The author findings and technical dispositions are recorded in the [acceptance feedback correction](reviews/L8-human-review.md#p1-acceptance-feedback-correction). Acceptance and VAL-03 remain pending.
 
 For the subsequent ownership and feedback review, Codex checked the 367-case intake and reproduced an inaccurate position instruction at the workshop start. Codex scoped the corrected Booking History guidance to the owner and added an AppTest case spanning S-1s, S and an identity switch. The rationale, verification and pending human checks are in the [P1 ownership and feedback review](reviews/L8-human-review.md#p1-ownership-and-feedback-review).
+
+On 20 November 2026 (Asia/Shanghai), the author personally accepted the revised P1 and supplied three observations on Join eligibility and feedback, withdrawal and rejoin history, and FIFO promotion. Codex transcribed the supplied decision and feedback into the English record and updated the local delivery ZIP. The prior AppTest, browser and Actions evidence remains technical evidence attributed to the verified implementation SHA. Overall L8 acceptance and VAL-03 belong to the author. P2 remains held.
 
 ## Historical L0-L6 and V1.0 preparation records
 

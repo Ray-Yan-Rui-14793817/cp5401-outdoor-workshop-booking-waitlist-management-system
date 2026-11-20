@@ -1,6 +1,6 @@
 # CR-01 impact analysis and risk classification
 
-Status: revision 3, L7 planning accepted. The author approved **High** change classification and review depth. One action in the planned change can affect records for two participants. The change also validates a new operation against two time boundaries and exposes private waiting records to selected owners. Errors could occur in ordinary demo journeys and be hard to detect from a green UI or aggregate confirmed count. This corresponds to the validation and authorisation triggers in Week 6, slide 17. High sets the review priority for the fictional, serial classroom prototype. Findings need separate evidence and disposition. R-08 remains pending VAL-03.
+Status: Revision 4 follows the author-accepted L7 Revision 3 and P1. The author approved **High** change classification and review depth. One action in the planned change can affect records for two participants. The change also validates a new operation against two time boundaries and exposes private waiting records to selected owners. Errors could occur in ordinary demo journeys and be hard to detect from a green UI or aggregate confirmed count. This corresponds to the validation and authorisation triggers in Week 6, slide 17. High sets the review priority for the fictional, serial classroom prototype. Findings need separate evidence and disposition. R-08 remains pending VAL-03.
 
 ## Impact map
 
@@ -14,6 +14,18 @@ Status: revision 3, L7 planning accepted. The author approved **High** change cl
 | `test_booking.py` | 317 accepted parameterized V1.0 cases, including real Streamlit controls, boundary and fault probes. | Retain baseline case identities, business assertions and the no-waiter fixtures. Add independent oracles and targeted new cases. Any necessary copy-only test adaptation must document the old assertion, new equivalent claim and reason. Keep original tests at the immutable tag for comparison. | B01-B17, W01-W16, applicable I checks and CRV-01-CRV-03 |
 | Docs and tracking | Released records at M and local Stage 5 evidence. | CR/impact/intake/test map/human review are the L7 delta. Add PR, findings, test outcomes, validation, decisions and release data in later authorised work. Refer to immutable V1.0 records. | Assessment 3 pp. 4-5, 8 and 12 |
 | Workflow, dependencies and hosting | One Actions job with pinned Python, locked dependencies, quality and security checks. Existing Streamlit service follows the V1.0 deployment branch. | No workflow, lock or cloud configuration change planned for CR-01. Future branch uses existing `codex/**` push trigger and PR to main. Review a separately configured candidate or local demonstration only when authorised. Preserve the existing V1.0 service throughout L7. | QR-04; R-04/R-06/R-07; exact commit build and verification plan |
+
+## Revision 4 impact
+
+| Area | Risk and verification |
+|---|---|
+| Default and fixture identities | Duplicate IDs could cause the canonical actor lookup to select the wrong row. AC-08 verifies the exact six defaults and the two separately named FIFO test identities, unique IDs in both states, and default role and owner parity. R-03/R-07, P2-01/P2-02. |
+| Private actions and state | A stale action from one participant could write under another participant. Verify the rendered-ID guard and D-01 with legitimate actors, scoped personal reads, organiser owner restrictions, exact state and counters, an injected promotion fault, and independent reruns/new sessions. R-01/R-03/R-04/R-05, P2-02/P2-04, W12/W14/W16 and CRV-01/02/03. |
+| FIFO fixture and oracles | A default actor could accidentally replace an independent fixture actor, or alphabetical order could agree with a flawed selector. Keep Alpha first in storage at sequence 8 and Zulu at sequence 3, test equal and conflicting timestamps, and preserve the equal-display-name case. Review each changed assertion and compare exact JUnit identities. R-02/R-07, P2-03, W05/W06/W09. |
+| Organiser tabs and Demo Guide | Moving controls could affect draft restoration or hide management views. Use existing rendering paths, preserve the identity-scoped form and roster lookup, and exercise the tabs, status guidance and owner checks in a browser and AppTest. R-03/R-04/R-06/R-08, P2-04/P2-05. |
+| Residual scope | The session is serial and temporary, and identities are fictional. Waiting status and notification disclosure can be verified technically. Review discovery and preparation feasibility under human VAL-03. R-08 remains PENDING_VAL_03. |
+
+High review depth remains appropriate due to allocation, identity and state-integrity effects. Revision 4 adds exposure to ordinary multi-waiter demo journeys and changes test oracles for intended identity data. It uses the same guards and policies.
 
 ## Risk review
 
