@@ -4,7 +4,7 @@
 
 **Technical verification completed.** The reviewed L8 implementation at `9cd862d32b4fc0e05dafe69d0885ecbef93cdc45` passed all 351 cases locally and in the single-job [GitHub Actions push run 44539537632](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44539537632). The JUnit report in artifact 14537756650 records each of the 317 original V1.0 case identities exactly once, plus 31 initial L8 cases and three deep-review additions. There were zero failures, errors or skips. See the [L8 test map](../test-plan.md#l8-cr-01-verification) for coverage of the planned scenarios and the [L8 review](../reviews/L8-human-review.md#technical-evidence) for the evidence and findings.
 
-**Human verification gates.** L8 human acceptance remains `HUMAN_ACCEPTANCE_PENDING`. R-08 remains `PENDING_VAL_03`. The author's L8 decision, later PR review and release approval are separate gates. V1.1 remains unreleased.
+**Human verification gates.** The author supplied `ACCEPT_LOOP` for revised P2 [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314) after UI and H01-H07. [Author acceptance](../reviews/L8-human-review.md#l8-p2-human-acceptance). R-08 remains `PENDING_VAL_03`. L9, later PR review and release have separate gates. V1.1 remains unreleased.
 
 The results above verify the CR-01 business candidate before the P1 presentation round. See the [P1 UI verification](../reviews/L8-human-review.md#p1-ui-verification) and [current P1 test map](../test-plan.md#l8-p1-presentation-verification) for that round's evidence.
 

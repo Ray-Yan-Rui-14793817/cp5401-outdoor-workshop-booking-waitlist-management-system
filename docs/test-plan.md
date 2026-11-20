@@ -2,6 +2,8 @@
 
 ## L8 P2 verification
 
+The accepted reviewed SHA [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314) passed 377 tests in the [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754). The 376 original P2 case identities include the 368 P1 and 317 V1.0 cases. The identity-view scope AppTest was added for P2-F05. [Author acceptance](reviews/L8-human-review.md#l8-p2-human-acceptance) records UI and H01-H07. R-08 stays pending VAL-03.
+
 Reference accepted P1 `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e` (368 JUnit identities) and immutable V1.0 `36e7bff3c1d3f74bb29c1900373726ecffdd176b` (317). The 317 are included in the 368. Compare the exact `(classname, name)` pairs, multiplicity, skips, failures and errors against the local and hosted candidate reports. Review the [test adaptation log](changes/CR-01-test-adaptations.md) for each changed assertion and the [single-job Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-p2) for the candidate-tested SHA.
 
 | Scenario | Coverage and expected evidence |
@@ -48,7 +50,7 @@ The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and t
 | QR-02 / CRV-03 | Inject failure during promotion after preparing the cancelled row. Check both direct business state and actual Streamlit state, including absence of partial writes and false success. |
 | R-08 / VAL-03A-E | Pending author-led human validation on a candidate. Pay particular attention to pre-cutoff promotion discovered after the cutoff, awareness, feasibility and the lack of alerts. |
 
-The [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) record the tested SHA and all quality steps. L8 review remains pending the author's checklist. Prior sections below are historical.
+The [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) record the tested SHA and all quality steps. The original implementation run is historical. The [L8 author checklist](reviews/L8-human-review.md#overall-l8-author-checklist) records completion for the revised P2 SHA.
 
 ## L6 integration and verification
 

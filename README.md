@@ -1,6 +1,6 @@
 # Outdoor Workshop Booking and Waitlist Management System
 
-**L8-P2 CR-01 Revision 4 candidate. HUMAN_ACCEPTANCE_PENDING.** L7 planning and P1 were accepted. The published [V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0) and existing Streamlit deployment use baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. V1.1 remains unreleased.
+**L8-P2 CR-01 Revision 4 candidate. ACCEPT_LOOP.** The author accepted the revised candidate at [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314) after completing UI and H01-H07. [Author decision](docs/reviews/L8-human-review.md#l8-p2-human-acceptance). R-08 remains `PENDING_VAL_03`. L9 remains `NOT_STARTED`. The published [V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0) and existing Streamlit deployment use baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. V1.1 remains unreleased.
 
 ## Review the CR-01 candidate
 
@@ -15,7 +15,7 @@ python -m pytest test_booking.py
 python -m streamlit run app.py --server.address 127.0.0.1 --server.port 8526 --server.headless true
 ```
 
-Review the [accepted change request](docs/changes/CR-01.md), the [L8 test map](docs/test-plan.md#l8-cr-01-verification), the [AI record](docs/ai-use.md#l8-cr-01-ai-use), and the [human checklist](docs/reviews/L8-human-review.md). The [P2 candidate Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-p2) use the existing single job and locks. See the [P2 test map](docs/test-plan.md#l8-p2-verification) and [test adaptation log](docs/changes/CR-01-test-adaptations.md).
+Review the [accepted change request](docs/changes/CR-01.md), the [L8 test map](docs/test-plan.md#l8-cr-01-verification), the [AI record](docs/ai-use.md#l8-cr-01-ai-use), and the [human checklist](docs/reviews/L8-human-review.md). The reviewed P2 SHA passed 377 tests in the [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754). See the [P2 test map](docs/test-plan.md#l8-p2-verification) and [test adaptation log](docs/changes/CR-01-test-adaptations.md).
 
 ## Historical V1.0 preparation notes
 

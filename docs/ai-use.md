@@ -1,6 +1,12 @@
 # AI Use and Human Contributions
 
-**Project status.** V1.0 is published and L7 planning has the author's `ACCEPT_LOOP`. P1 has passed human acceptance at `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. P2 implements the author's Revision 4 amendment. Overall L8 acceptance and R-08 VAL-03 remain pending. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and the [P1 human acceptance and author feedback](reviews/L8-human-review.md#p1-human-acceptance).
+**Project status.** V1.0 is published and L7 planning has the author's `ACCEPT_LOOP`. P1 has passed human acceptance at `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. The author accepted the revised P2 and L8 at [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). R-08 awaits VAL-03. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and the [P1 human acceptance and author feedback](reviews/L8-human-review.md#p1-human-acceptance).
+
+## L8-P2 author acceptance and records update
+
+On 20 November 2026 (Asia/Shanghai), the project author declared UI and H01-H07 complete and supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). The five [author observations](reviews/L8-human-review.md#l8-p2-author-feedback) are recorded verbatim. They address regression identity retention and CI, explicit Join and ownership, withdrawal and rejoin history, FIFO and P2-F05, and deadline and state-integrity coverage.
+
+Codex transcribed the decision, checked the seven author-declared items, aligned the current status references and prepared the candidate-branch update and local-only archive. The accepted revision's browser and [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754) evidence remains technical verification. This update carries the author decision forward through English Markdown records. R-08 remains `PENDING_VAL_03`. L9 and the separate integration and release gates remain on hold.
 
 ## L8-P2 contribution and author oversight
 
@@ -12,7 +18,7 @@ The author decides the overall L8 outcome and conducts VAL-03. Read the [Revisio
 
 The author requested an independent check of the original P2 candidate `2c6bc8f93740807858c1684c734d0c8c15d4972c` before deciding L8 acceptance. Codex reproduced a visible old organiser roster by delaying normal local browser replies during the identity switch. Codex used a keyed Streamlit view and a static CSS selection guard, kept booking and permission operations intact, and added one AppTest for identity view scope and unchanged state. The browser oracle measures whether an old roster canvas is drawn after the identity control shows the new selection, including while replies arrive. Existing queue, owner, cutoff and stale-action tests exercise the domain rules.
 
-These are AI-assisted technical observations. The author still owns H01-H07, any VAL-03 decision and the L8 verdict. R-08 remains PENDING_VAL_03.
+These are AI-assisted technical observations from before the [author's L8 decision](reviews/L8-human-review.md#l8-p2-human-acceptance). R-08 remains PENDING_VAL_03.
 
 
 ## L8 CR-01 AI use
@@ -27,7 +33,7 @@ The author accepted [L7 planning, D-01 and High review depth](reviews/L7-human-r
 | Review | A targeted stale-withdrawal AppTest initially exercised an earlier clock function binding. The callback now resolves the clock through the booking module when invoked. The test distinguishes a stale active waiting action at S from an already-cancelled repeat. A Windows temporary-directory permission error in the first local baseline attempt was isolated by using a fresh workspace test directory. |
 | Delivery | Copied the five accepted L7 records as evidence, updated the English candidate records, verified the unchanged single-job workflow and locks, and retained the personal ZIP locally. |
 
-Codex supplied implementation, technical tests and packaging. The author's L7 acceptance supplies the approved contract. L8 human review and the author-led VAL-03 observations remain pending. No merge, deployment update or release decision is recorded.
+Codex supplied implementation, technical tests and packaging. The author's L7 acceptance supplies the approved contract. At this implementation checkpoint L8 human review and VAL-03 were pending. The [subsequent author declaration](reviews/L8-human-review.md#l8-p2-human-acceptance) records L8 acceptance.
 
 ### Deep review of the L8 candidate
 
@@ -51,7 +57,7 @@ The author then reported three Join issues during acceptance. Codex ran the two 
 
 For the subsequent ownership and feedback review, Codex checked the 367-case intake and reproduced an inaccurate position instruction at the workshop start. Codex scoped the corrected Booking History guidance to the owner and added an AppTest case spanning S-1s, S and an identity switch. The rationale, verification and pending human checks are in the [P1 ownership and feedback review](reviews/L8-human-review.md#p1-ownership-and-feedback-review).
 
-On 20 November 2026 (Asia/Shanghai), the author personally accepted the revised P1 and supplied three observations on Join eligibility and feedback, withdrawal and rejoin history, and FIFO promotion. Codex transcribed the supplied decision and feedback into the English record and updated the local delivery ZIP. The prior AppTest, browser and Actions evidence remains technical evidence attributed to the verified implementation SHA. Overall L8 acceptance and VAL-03 belong to the author. P2 remains held.
+On 20 November 2026 (Asia/Shanghai), the author personally accepted the revised P1 and supplied three observations on Join eligibility and feedback, withdrawal and rejoin history, and FIFO promotion. Codex transcribed the supplied decision and feedback into the English record and updated the local delivery ZIP. The prior AppTest, browser and Actions evidence remains technical evidence attributed to the verified implementation SHA. At that P1 checkpoint the author held P2. The [later L8 decision](reviews/L8-human-review.md#l8-p2-human-acceptance) covers the revised P2.
 
 ## Historical L0-L6 and V1.0 preparation records
 

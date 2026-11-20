@@ -2,7 +2,7 @@
 
 ## L8 candidate status
 
-Published V1.0 is baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. L7 planning is accepted. The L8 candidate applies FR-08 through FR-11 and D-01 from the [accepted CR-01](docs/changes/CR-01.md), with the existing baseline rules retained. L8 human acceptance and VAL-03 are pending. The dated sections below retain the earlier baseline history.
+Published V1.0 is baseline `36e7bff3c1d3f74bb29c1900373726ecffdd176b`. L7 planning is accepted. The L8 candidate applies FR-08 through FR-11 and D-01 from the [accepted CR-01](docs/changes/CR-01.md), with the existing baseline rules retained. The author supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). R-08 remains `PENDING_VAL_03`. [L8 human acceptance](docs/reviews/L8-human-review.md#l8-p2-human-acceptance). The dated sections below retain the earlier baseline history.
 
 ## Historical V1.0 baseline records
 

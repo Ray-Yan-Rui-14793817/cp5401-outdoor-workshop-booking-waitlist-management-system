@@ -18,7 +18,7 @@
 | Scope and actual AI work | Codex edited only default data in the business module, laid out the Organiser tabs and read-only guide in Streamlit, adapted fixture actor references, added focused tests, compared exact JUnit identities and performed independent browser checks. Codex documented revisions and findings for author review. |
 | High review | Inspect actual diff for duplicate/stale actor IDs, protected owner access, C/S and D-01 precedence, same-workshop FIFO, unchanged counters and no aliasing or partial adoption. Compare old and revised assertions and check reset behaviour separately from normal reruns. |
 | Independent expectations | Zulu wins with sequence 3 even when Alpha at sequence 8 appears first and has an equal or earlier timestamp. The ordinary browser starts with Sam confirmed, promotes Leo's same ID after Sam cancels, keeps Willy waiting and shows the result to Alex only within his ownership. |
-| Evidence and author decision | See the [P2 review](../reviews/L8-human-review.md#p2-amendment-review), [test adaptation log](CR-01-test-adaptations.md) and [P2 test map](../test-plan.md#l8-p2-verification). Technical checks leave H01-H07 and VAL-03 for the author. |
+| Evidence and author decision | See the [P2 review](../reviews/L8-human-review.md#p2-amendment-review), [test adaptation log](CR-01-test-adaptations.md) and [P2 test map](../test-plan.md#l8-p2-verification). The author subsequently completed H01-H07 and supplied [L8 acceptance](../reviews/L8-human-review.md#l8-p2-human-acceptance). VAL-03 remains an author-led task. |
 
 ## Significant author interactions
 
