@@ -8,6 +8,13 @@ The author approved P1 at the recorded SHA and supplied the P2 amendment, exact 
 
 The author decides the overall L8 outcome and conducts VAL-03. Read the [Revision 4 intake](changes/CR-01-ai-review-intake.md#revision-4-intake-and-review-controls), [technical findings and checklist](reviews/L8-human-review.md#p2-amendment-review) and [adaptation log](changes/CR-01-test-adaptations.md). Browser and CI are technical evidence.
 
+## L8-P2 identity transition review
+
+The author requested an independent check of the original P2 candidate `2c6bc8f93740807858c1684c734d0c8c15d4972c` before deciding L8 acceptance. Codex reproduced a visible old organiser roster by delaying normal local browser replies during the identity switch. Codex used a keyed Streamlit view and a static CSS selection guard, kept booking and permission operations intact, and added one AppTest for identity view scope and unchanged state. The browser oracle measures whether an old roster canvas is drawn after the identity control shows the new selection, including while replies arrive. Existing queue, owner, cutoff and stale-action tests exercise the domain rules.
+
+These are AI-assisted technical observations. The author still owns H01-H07, any VAL-03 decision and the L8 verdict. R-08 remains PENDING_VAL_03.
+
+
 ## L8 CR-01 AI use
 
 The author accepted [L7 planning, D-01 and High review depth](reviews/L7-human-review.md) and directed L8 implementation from published V1.0 while holding publication. The author explicitly required the additional test participants Leo and Willy to be valid users in the same fixture state.

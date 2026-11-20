@@ -29,6 +29,19 @@ The author directed [Revision 4](../changes/CR-01.md) after accepting `52ce8d74e
 
 Residual scope is a fictional, serial, temporary demo. Technical proofs do not assess recognising a promotion in time to prepare or travel. R-08 remains PENDING_VAL_03.
 
+## L8-P2 identity transition deep review
+
+The original [P2 candidate](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/2c6bc8f93740807858c1684c734d0c8c15d4972c) is the review baseline.
+
+| Finding | Disposition |
+|---|---|
+| P2-F05. A normal identity switch could leave the previous organiser's roster drawn while the selector already showed the next identity. | A controlled local browser replay confirmed the old canvas was visible before the server responded. The protected view now has an identity-specific container. CSS checks the selected label in the browser and hides the prior view while its identity differs. The existing server-side actor and owner checks continue to govern all reads and writes. |
+| Review of P2 FIFO and ownership | Verify Leo and Willy's positions, retained IDs and Sam's pre-cutoff cancellation in the normal six-user UI. Review the actual workshop owner for roster and waitlist access, plus the retained C/S and D-01 checks. The correction changes presentation only. |
+| Evidence boundary | Browser measurements use fictional data and controlled response latency. Hidden elements may still be present in the browser DOM during the rerun. The transition mask supports display isolation within the demo, and domain permissions enforce ownership. Identity selection remains freely switchable. |
+
+Use the local delivery evidence for the browser replay and exact-SHA test reports. R-08 remains PENDING_VAL_03.
+
+
 ## P1 UI verification
 
 P1 refines presentation and interaction feedback on the L8 candidate based on `fbbc86c2de7dcc9960097a0b6f6caf0dc1823606`. The source delta covers `app.py`, `test_booking.py`, this review, `docs/ai-use.md`, `docs/test-plan.md` and a P1 pointer in `docs/changes/CR-01-verification-plan.md`. The business module, dependencies, workflow, published deployment and accepted L7 evidence remain intact.
@@ -106,10 +119,10 @@ The 16 November 10:45 transcript pp. 2 and 8-10 supports the three-file adaptati
 
 ## Overall L8 author checklist
 
-- [ ] **L8-H01 - Check the baseline and delivery.** Confirm ancestry from published M and accepted P1, the exact P2 diff and all six default identities. Inspect exact-P2 single-job evidence for all 368 retained identities (including 317 V1.0 cases) and the new P2 cases. Review each changed assertion in the adaptation log.
+- [ ] **L8-H01 - Check the baseline and delivery.** Confirm ancestry from the original P2 candidate and published M, and review the display-only correction. Check that all 376 original P2 case identities and the new scope check pass on the reviewed SHA. The 376 include all 368 P1 and 317 V1.0 cases.
 - [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian, who already has a different booking, then open the full Outdoor Photography Walk. Book should report FULL on its card. Join should show WAITLISTED and the registration ID on the same card, then become disabled with a reason. In a separate session, cancel Sam's seed booking and book that last seat again. Verify Join is disabled for Sam with the confirmed-booking explanation and is available to eligible Xingjian.
 - [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Alpha/Zulu independent fixture for sequence gaps and multi-waiter ordering. Test Willy withdrawing and rejoining in a separate normal session.
-- [ ] **L8-H04 - Check promotion.** In a fresh six-user session, join the Outdoor Photography Walk as Leo and then Willy, and record positions 1 and 2. Cancel Sam's confirmed booking before C. Check Leo's unchanged ID and CONFIRMED status and Willy's unchanged ID and position 1. Check Alex's owned roster and queue, and Rui Yan's selector for owner scope.
+- [ ] **L8-H04 - Check promotion.** In a fresh six-user session, join the Outdoor Photography Walk as Leo and then Willy, and record positions 1 and 2. Cancel Sam's confirmed booking before C. Check Leo's unchanged ID and CONFIRMED status and Willy's unchanged ID and position 1. Check Alex's owned roster and queue, then switch directly to Rui Yan. Check that Alex's previous records disappear when the new identity is selected and that Rui Yan's settled view shows only his own workshop options and records. Repeat switching from a populated My Bookings view to another participant.
 - [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S, including the owner-only move from position guidance to Booking History at S. Review both stale Book identity-switch cases and the retained stale Join cases. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
 - [ ] **L8-H06 - Review AI use, risk and disclosure.** Check the [AI record](../ai-use.md#l8-p2-contribution-and-author-oversight), fixture-only identities and L8-F01-F03 dispositions. Check the Create/Manage tabs, per-organiser draft restoration and success-only reset, read-only Demo Guide, C/S guidance and visible no-notification explanation. Keep R-08 pending human VAL-03 awareness and feasibility evidence.
 - [ ] **L8-H07 - Record the decision.** Record the exact reviewed SHA, observations, issues and ACCEPT_LOOP or CHANGES_REQUIRED. Subsequent integration and release decisions are separate. All actual merges and deployment fast-forwards are author-only.

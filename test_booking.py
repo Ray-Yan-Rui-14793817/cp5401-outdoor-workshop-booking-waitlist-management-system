@@ -4428,3 +4428,29 @@ def test_p2_default_waiter_can_withdraw_and_rejoin_without_leaking_history(
     assert fresh.session_state.demo_state == initial
     assert fresh.session_state.demo_state is not app.session_state.demo_state
     assert fresh.sidebar.selectbox(key="selected_user_id").value is None
+
+
+def test_p2_review_identity_switch_replaces_the_view_scope_without_changing_state() -> None:
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    original = deepcopy(app.session_state.demo_state)
+    styles = None
+    for actor_id, label, view in (
+        ("organiser-2", "Alex (ORGANISER)", "Organiser"),
+        ("organiser-1", "Rui Yan (ORGANISER)", "Organiser"),
+        ("participant-2", "Sam (PARTICIPANT)", "My Bookings"),
+    ):
+        key = "identity_view_" + actor_id.encode().hex()
+        app.sidebar.selectbox(key="selected_user_id").set_value(actor_id).run()
+        app.sidebar.radio(key="current_view").set_value(view).run()
+        assert [
+            block.key
+            for block in app.get("flex_container")
+            if str(block.key).startswith("identity_view_")
+        ] == [key]
+        css = app.get("html")[0].proto.body
+        assert f'[value="{label}"])) .st-key-{key}' in css
+        assert "{ display: none; }" in css
+        assert styles is None or css == styles
+        styles = css
+        assert app.session_state.demo_state == original
+        assert not app.exception

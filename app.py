@@ -579,6 +579,24 @@ def show_organiser(state: DemoState, actor: DemoUser) -> None:
             )
 
 
+def identity_view_key(user_id: str | None) -> str:
+    return "identity_view_" + (user_id.encode().hex() if user_id is not None else "guest")
+
+
+def hide_other_identity_views(identity_labels: dict[str | None, str]) -> None:
+    """Hide prior identity content as soon as the browser selection changes."""
+    control = '[data-testid="stSidebar"] input[aria-label="Select demo identity"]'
+    selectors = []
+    for user_id, label in identity_labels.items():
+        # Escape CSS strings and prevent the label from ending the style element.
+        value = "".join(
+            f"\\{ord(char):x} " if char in '<"\\' or ord(char) < 32 else char for char in label
+        )
+        key = identity_view_key(user_id)
+        selectors.append(f'body:not(:has({control}[value="{value}"])) .st-key-{key}')
+    st.html("<style>" + ",\n".join(selectors) + " { display: none; }</style>")
+
+
 def main() -> None:
     st.set_page_config(page_title="Outdoor Workshop Booking", page_icon="🌿", layout="wide")
 
@@ -624,6 +642,7 @@ def main() -> None:
             "Other sessions do not share it. Browser reload or server restart may reset it."
         )
 
+    hide_other_identity_views(identity_labels)
     st.title("Outdoor Workshop Booking and Waitlist Management System")
     if actor is None:
         st.badge("Fictional identity: None selected", color="grey")
@@ -648,25 +667,26 @@ def main() -> None:
             "and there are no notifications. Waiting participants can withdraw until start."
         )
 
-    st.subheader(view)
-    if view not in ("Workshops", "My Bookings", "Organiser"):
-        st.error("This view is unavailable. Please refresh and try again.")
-    elif view == "Workshops":
-        show_workshops(state, server_now(), actor)
-    else:
-        required_role = required_roles[view]
-        permission = check_permission(state, actor, required_role)
-        if permission == "INVALID_ACTOR":
-            st.warning("Select a demo identity to use this view.")
-        elif permission == "FORBIDDEN":
-            st.warning(f"This view is available to {required_role.value.lower()}s only.")
-        elif permission == "OK":
-            if view == "Organiser":
-                show_organiser(state, actor)
-            else:
-                show_my_bookings(state, actor, server_now())
-        else:
+    with st.container(key=identity_view_key(selected_id)):
+        st.subheader(view)
+        if view not in ("Workshops", "My Bookings", "Organiser"):
             st.error("This view is unavailable. Please refresh and try again.")
+        elif view == "Workshops":
+            show_workshops(state, server_now(), actor)
+        else:
+            required_role = required_roles[view]
+            permission = check_permission(state, actor, required_role)
+            if permission == "INVALID_ACTOR":
+                st.warning("Select a demo identity to use this view.")
+            elif permission == "FORBIDDEN":
+                st.warning(f"This view is available to {required_role.value.lower()}s only.")
+            elif permission == "OK":
+                if view == "Organiser":
+                    show_organiser(state, actor)
+                else:
+                    show_my_bookings(state, actor, server_now())
+            else:
+                st.error("This view is unavailable. Please refresh and try again.")
 
     st.markdown("**Registration policy**")
     st.write(
