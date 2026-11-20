@@ -114,39 +114,47 @@ def join_from_view(workshop_id: str, rendered_user_id: str) -> None:
     state = st.session_state.demo_state
     selected_id = st.session_state.get("selected_user_id")
     if selected_id != rendered_user_id:
-        st.session_state.join_feedback = (selected_id, "INVALID_ACTOR")
+        st.session_state.join_feedback = (selected_id, workshop_id, "INVALID_ACTOR", None)
         return
     actor = resolve_actor(state, selected_id)
     outcome, candidate = booking.join_waitlist(state, actor, workshop_id, now=booking.server_now())
+    registration_id = None
     if outcome == "OK":
+        registration_id = candidate.registrations[-1].registration_id
         st.session_state.demo_state = candidate
-    st.session_state.join_feedback = (selected_id, outcome)
+    st.session_state.join_feedback = (selected_id, workshop_id, outcome, registration_id)
 
 
 def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> None:
     now = now.astimezone(UTC)
     st.info("Browse workshops below. Times are shown in Asia/Singapore.")
+    selected_id = actor.user_id if actor is not None else None
+    active_by_workshop = {}
+    if actor is not None and actor.role == Role.PARTICIPANT:
+        outcome, registrations = list_own_registrations(state, actor)
+        if outcome == "OK":
+            active_by_workshop = {
+                row.workshop_id: row.status
+                for row in registrations
+                if row.status in (RegistrationStatus.CONFIRMED, RegistrationStatus.WAITLISTED)
+            }
     book_feedback = st.session_state.pop("book_feedback", None)
-    if book_feedback and book_feedback[0] != (actor.user_id if actor is not None else None):
+    if book_feedback and book_feedback[0] != selected_id:
         book_feedback = None
-    feedback = st.session_state.pop("join_feedback", None)
-    if feedback and feedback[0] == (actor.user_id if actor is not None else None):
-        result = feedback[1]
-        if result == "OK":
-            st.success(
-                "Joined the waitlist (WAITLISTED). Open My Bookings for your position and status."
-            )
-        else:
-            show_refusal(result)
+    join_feedback = st.session_state.pop("join_feedback", None)
+    if join_feedback and join_feedback[0] != selected_id:
+        join_feedback = None
     workshops = browse_workshops(state)
-    if book_feedback and not any(w.workshop_id == book_feedback[1] for w in workshops):
-        show_refusal(book_feedback[2])
+    for feedback in (book_feedback, join_feedback):
+        if feedback and not any(w.workshop_id == feedback[1] for w in workshops):
+            show_refusal(feedback[2])
     if not workshops:
         st.write("No workshops have been created in this session.")
     for workshop in workshops:
         confirmed = confirmed_count(state, workshop.workshop_id)
         remaining = workshop.capacity - confirmed
         full = remaining <= 0
+        active_status = active_by_workshop.get(workshop.workshop_id)
         cutoff = workshop.registration_cutoff
         closed = now >= cutoff
         with st.container(border=True, key=f"workshop_card_{workshop.workshop_id}"):
@@ -173,11 +181,21 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                 "Preparation:", workshop.preparation_notes or "No additional preparation notes."
             )
             if actor is not None and actor.role == Role.PARTICIPANT:
-                if full and not closed:
-                    st.caption(
-                        "WAITLISTED means unconfirmed. A place may be assigned before cutoff (C). "
-                        "Check My Bookings for updates. There are no notifications."
-                    )
+                if full:
+                    if active_status == RegistrationStatus.CONFIRMED:
+                        st.caption(
+                            "You already have a confirmed booking for this workshop. "
+                            "Open My Bookings to view it."
+                        )
+                    elif active_status == RegistrationStatus.WAITLISTED:
+                        st.caption(
+                            "You are already on this waitlist. Open My Bookings for your position."
+                        )
+                    elif not closed:
+                        st.caption(
+                            "WAITLISTED means unconfirmed. A place may be assigned before cutoff (C). "
+                            "Check My Bookings for updates. There are no notifications."
+                        )
                 with st.container(horizontal=True):
                     st.button(
                         "Book workshop",
@@ -191,7 +209,7 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                         st.button(
                             "Join Waitlist",
                             key=f"join_{workshop.workshop_id}",
-                            disabled=closed,
+                            disabled=closed or active_status is not None,
                             type="primary",
                             on_click=join_from_view,
                             args=(workshop.workshop_id, actor.user_id),
@@ -202,6 +220,15 @@ def show_workshops(state: DemoState, now: datetime, actor: DemoUser | None) -> N
                     st.success(
                         f"Booked {workshop.title}: {registration_id} (CONFIRMED). "
                         "Open My Bookings for details."
+                    )
+                else:
+                    show_refusal(result)
+            if join_feedback and join_feedback[1] == workshop.workshop_id:
+                _, _, result, registration_id = join_feedback
+                if result == "OK":
+                    st.success(
+                        f"Joined the waitlist (WAITLISTED). Registration ID: {registration_id}. "
+                        "Open My Bookings for your position and status."
                     )
                 else:
                     show_refusal(result)

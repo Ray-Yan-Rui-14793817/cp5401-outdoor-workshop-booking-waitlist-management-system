@@ -3938,7 +3938,9 @@ def test_p1_full_book_and_explicit_join_report_outcomes_and_next_actions(
         entry.value.startswith("FULL:") and "Join Waitlist" in entry.value for entry in app.error
     )
     assert not app.success and app.session_state.demo_state is state and state == before
-    app.button(key="join_workshop-2").click().run()
+    rendered_join = app.button(key="join_workshop-2")
+    assert not rendered_join.disabled
+    rendered_join.click().run()
     assert any(
         "WAITLISTED" in entry.value and "Open My Bookings" in entry.value for entry in app.success
     )
@@ -3953,13 +3955,25 @@ def test_p1_full_book_and_explicit_join_report_outcomes_and_next_actions(
         before, registrations=[*before.registrations, waiting], next_registration_id=6
     )
     joined_before = deepcopy(joined)
-    app.button(key="join_workshop-2").click().run()
+    assert app.button(key="join_workshop-2").disabled
+    assert any(
+        "You are already on this waitlist" in item.value
+        for item in rendered_workshop(app, "workshop-2").get("caption")
+    )
+
+    stale_view = app_with_state(state)
+    stale_view.sidebar.selectbox(key="selected_user_id").set_value("participant-1").run()
+    stale_join = stale_view.button(key="join_workshop-2")
+    assert not stale_join.disabled
+    stale_view.session_state.demo_state = joined
+    stale_join.click().run()
     assert any(
         entry.value.startswith("DUPLICATE_ACTIVE:") and "My Bookings" in entry.value
-        for entry in app.error
+        for entry in rendered_workshop(stale_view, "workshop-2").get("error")
     )
-    assert not app.success and not app.exception
-    assert app.session_state.demo_state is joined and joined == joined_before and state == before
+    assert not stale_view.success and not stale_view.exception
+    assert stale_view.session_state.demo_state is joined and joined == joined_before
+    assert state == before
 
 
 def test_p1_successful_book_and_cancel_with_no_waiter_report_the_released_place(
@@ -4039,3 +4053,82 @@ def test_p1_review_stale_book_keeps_rendered_identity(
     assert any(item.value.startswith("INVALID_ACTOR:") for item in app.error)
     assert app.sidebar.selectbox(key="selected_user_id").value == next_identity
     assert app.session_state.demo_state is state and state == before
+
+
+def test_p1_acceptance_join_feedback_stays_on_other_full_workshop_card(
+    l8_state: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    available = replace(l8_state.workshops[0], capacity=2)
+    state = replace(l8_state, workshops=[available, *l8_state.workshops[1:]])
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+
+    app.button(key="book_workshop-1").click().run()
+    booked = app.session_state.demo_state
+    assert booked.registrations[-1].status == RegistrationStatus.CONFIRMED
+    app.button(key="book_workshop-2").click().run()
+    assert any(
+        error.value.startswith("FULL:")
+        for error in rendered_workshop(app, "workshop-2").get("error")
+    )
+    assert app.session_state.demo_state is booked
+
+    join = app.button(key="join_workshop-2")
+    assert not join.disabled
+    join.click().run()
+    assert any(
+        "WAITLISTED" in item.value and "Registration ID: registration-4" in item.value
+        for item in rendered_workshop(app, "workshop-2").get("success")
+    )
+    assert not rendered_workshop(app, "workshop-1").get("success")
+    joined = app.session_state.demo_state
+    waiting = joined.registrations[-1]
+    assert (waiting.participant_id, waiting.workshop_id, waiting.status) == (
+        "participant-leo",
+        "workshop-2",
+        RegistrationStatus.WAITLISTED,
+    )
+    assert joined == replace(
+        booked,
+        registrations=[*booked.registrations, waiting],
+        next_registration_id=booked.next_registration_id + 1,
+    )
+    assert app.button(key="join_workshop-2").disabled
+    assert not app.exception and state == before
+
+
+def test_p1_acceptance_last_seat_disables_same_workshop_join(
+    l8_state: DemoState, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    available = replace(l8_state.workshops[0], capacity=2)
+    state = replace(l8_state, workshops=[available, *l8_state.workshops[1:]])
+    before = deepcopy(state)
+    monkeypatch.setattr(booking, "server_now", lambda: NOW)
+    app = app_with_state(state)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+
+    app.button(key="book_workshop-1").click().run()
+    booked = app.session_state.demo_state
+    row = booked.registrations[-1]
+    assert (row.workshop_id, row.participant_id, row.status) == (
+        "workshop-1",
+        "participant-leo",
+        RegistrationStatus.CONFIRMED,
+    )
+    assert booked == replace(
+        before,
+        registrations=[*before.registrations, row],
+        next_registration_id=before.next_registration_id + 1,
+    )
+    assert confirmed_count(booked, "workshop-1") == available.capacity
+    assert app.button(key="join_workshop-1").disabled
+    assert any(
+        "You already have a confirmed booking" in item.value
+        for item in rendered_workshop(app, "workshop-1").get("caption")
+    )
+    assert not app.button(key="join_workshop-2").disabled
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-willy").run()
+    assert not app.button(key="join_workshop-1").disabled
+    assert not app.exception and app.session_state.demo_state is booked and state == before

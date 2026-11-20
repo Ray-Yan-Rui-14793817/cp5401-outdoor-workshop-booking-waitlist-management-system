@@ -15,6 +15,8 @@ P1 begins at `fbbc86c2de7dcc9960097a0b6f6caf0dc1823606`. Its suite retains all 3
 
 The P1 deep review adds two stale Book cases, covering a switch to another eligible participant and a switch to organiser. Both require INVALID_ACTOR, no success message and exact state preservation. The earlier cutoff case captures an enabled Book control and then submits at C through the callback. The reviewed suite retains all 363 initial P1 identities and adds these two cases.
 
+The P1 acceptance correction adds two cases for a booking followed by a separate full workshop's Join and for same-workshop disablement after booking the last seat. The retained duplicate path submits the earlier enabled control, expects card-local DUPLICATE_ACTIVE, and checks state and counters. All 365 intake identities remain, including the 317 V1.0 cases.
+
 ## L8 CR-01 verification
 
 The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and the frozen V1.0 test suite defined the expected results for the pre-P1 CR-01 candidate. That candidate retained the original source prefix and 317 exact V1.0 case identities. Its deep review retained the first candidate's 31 case identities and added three cases. The pre-P1 adjustment to the stale-Join cutoff test advances the clock after capturing an open control, which exercises the callback's fresh decision and retains the exact refusal and state assertions.

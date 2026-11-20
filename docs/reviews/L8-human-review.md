@@ -35,6 +35,18 @@ Review intake: `46eba1d20df09b9ae849f1808549a5b2e866dcb3`. Its 363-case single-j
 
 L8-F01, L8-F02 and L8-F03 remain covered by the original stale Join capacity, stale Join identity and organiser closed-queue cases. The review preserves the published 317 V1.0 cases and all 363 intake JUnit identities, with two additional P1 review cases. The sole existing test-body adaptation preserves the stale Book cutoff outcome and full-state check under the new callback order. Business rules in `booking.py`, dependency locks and CI configuration remain byte-identical. Exact-commit CI and packaging evidence are in the local delivery receipt.
 
+### P1 acceptance feedback correction
+
+The author reported that a participant with a booking could still see an enabled Join control when the same workshop became full, and that joining a different full workshop or clicking Join could appear to produce no feedback. Reproduction showed that Join was gated by capacity and time alone. Its feedback rendered at the top of Workshops, outside the selected card.
+
+| Author observation | Correction and evidence |
+|---|---|
+| A participant books one workshop, then Book on another full workshop returns FULL. Join appears silent. | The separate Join action remains eligible for the other workshop. Its result now appears inside that workshop's card. Chrome verified FULL followed by WAITLISTED and a registration ID. |
+| Booking the last seat leaves Join enabled for the same participant. | A confirmed or waiting registration owned by the selected participant disables Join for that workshop, with a reason on the card. Chrome verified that another eligible participant can still join. |
+| Join feedback is missing near the button. | Success shows the created ID and directs the user to My Bookings. Refusals appear on the same card. A delayed duplicate is still refused by the business layer with no state or counter change. |
+
+Both focused reproduction cases failed on intake and passed after correction. The revised [preview](http://127.0.0.1:8524/) keeps earlier preview sessions available. The original 365 test identities are retained and two acceptance-feedback cases extend them. This is a P1 technical correction. The author still owns acceptance and VAL-03.
+
 ## Technical evidence
 
 The [test map](../test-plan.md#l8-cr-01-verification) covers 317 exact V1.0 JUnit identities, 31 first-candidate L8 identities and three review additions. The original [L8 push run 44536979502](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44536979502) passed 348 cases at `a0f3121453b3a99280ecd18400252971c31889ab`. Use the [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) and the separately saved local review evidence for the revised candidate's exact SHA, job and reports. The tests exercise serial in-session behaviour and controlled time. Human acceptance and VAL-03 need separate author evidence.
@@ -58,7 +70,7 @@ The 16 November 10:45 transcript pp. 2 and 8-10 supports the three-file adaptati
 ## Author checklist
 
 - [ ] **L8-H01 - Check the baseline and delivery.** Confirm candidate ancestry from published M and review the scoped P1 delta. Check the single-job Actions report against the revised P1 SHA and verify the 317 baseline cases, 34 earlier L8 cases, 12 initial P1 cases and two review additions.
-- [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian and open Outdoor Photography Walk, which starts full. Check the role badge and workshop states. Book should report FULL. Join should create a WAITLISTED record. Verify position 1, the original confirmed count and the absence of another participant's private entries in My Bookings.
+- [ ] **L8-H02 - Check explicit Join and ownership.** In a fresh local demo session, select Xingjian, who already has a different booking, then open the full Outdoor Photography Walk. Book should report FULL on its card. Join should show WAITLISTED and the registration ID on the same card, then become disabled with a reason. In a separate session, cancel Sam's seed booking and book that last seat again. Verify Join is disabled for Sam with the confirmed-booking explanation and is available to eligible Xingjian.
 - [ ] **L8-H03 - Check withdrawal and history.** Withdraw Xingjian's waiting record and verify retained CANCELLED history and unchanged roster. Rejoin before cutoff and verify the new ID. Review the Leo/Willy test evidence for FIFO, sequence gaps and multi-waiter ordering.
 - [ ] **L8-H04 - Check promotion.** With Xingjian queued, switch to Sam in the same session and cancel Sam's confirmed Outdoor Photography Walk booking. Return to Xingjian and use Refresh view. Verify the same queued ID is CONFIRMED. Check Alex's owned roster and queue, and check Rui Yan's workshop selector for owner scope.
 - [ ] **L8-H05 - Review C/S and D-01.** Inspect the independent boundary and stale-action tests for C and S. Review both stale Book identity-switch cases and the retained stale Join cases. Confirm a stale Withdraw targeting a promoted row reports STATUS_CHANGED, preserves the confirmation and follows actor/owner checks. Check the fault-injection assertions for no partial state.
