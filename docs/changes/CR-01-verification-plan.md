@@ -12,7 +12,7 @@ The results above verify the CR-01 business candidate before the P1 presentation
 
 The [L9 integration review and worksheet](../reviews/L9-human-review.md) provide the actual author tasks for VAL-03A-E. The integrated test exercises a pre-C promotion and a first post-C check in the same session. The author records timed replay evidence separately from a practical checking plan, observed or estimated discovery, and realistic preparation and travel deadlines. Guided checks establish action and display behaviour. The author judges practical feasibility from their VAL-03 observations. R-08 remains `PENDING_VAL_03`.
 
-L9-F05 changes the reminder and status guidance. Use the revised UI for VAL-03A-E. Record the first interpretation and the cues already used, including the public policy where applicable. Record what the separately opened reminder adds, a prewritten checking plan, and a comparison of discovery time against the latest useful preparation deadline.
+L9-F05 changes the reminder and status guidance. Use the revised UI for VAL-03A-E. In VAL-03A, keep the default-collapsed reminder closed for the first pass. Record interpretation and cues, including the public policy where applicable. Ask the same questions after reading the reminder and assess both sets of answers. Use the prewritten checking plan for the later comparison of discovery time against the latest useful preparation deadline.
 
 ## Revision 4 verification amendment
 
@@ -95,7 +95,7 @@ Keep baseline VAL-01/VAL-02 as historical author validation. When directed to va
 
 | Scenario | Task and acceptance question |
 |---|---|
-| VAL-03A | After Join, explain that WAITLISTED is unconfirmed, where C is, how to refresh and that alerts are absent. |
+| VAL-03A | After Join, capture two separately recorded sets of answers to the same questions about WAITLISTED, C/S, manual checking and alerts. Record the first set while the reminder is closed and the second after reading it. |
 | VAL-03B | Find the confirmation after a normal pre-C promotion. Explain the participant's next action. |
 | VAL-03C | Use the canonical scenario: S is 10 December 09:00 and C is 9 December 09:00, Asia/Singapore. Promotion is at 08:59 on 9 December. Assess comprehension separately from preparation, travel feasibility and the latest useful confirmation. A 08:59 promotion on the workshop day is already after C and is out of policy. |
 | VAL-03D | Consider a promotion before C discovered after C in the same preserved session. Explain why confirmed cancellation is closed while a still-waiting participant can withdraw. Assess what the absence of a notification means for the intended task. |

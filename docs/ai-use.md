@@ -20,6 +20,8 @@ The author asked Codex to replace Demo Guide with a participant reminder, clarif
 
 For the follow-up to `88f7dbf`, the author requested that the public Registration policy sit above the reminder. Codex moved the existing display block and strengthened the retained read-only AppTest for both participant views and the guest and organiser roles. Codex reviewed the C/S messages, count vocabulary, privacy scope and verification artifacts. The author owns the comprehension observations, practical preparation assessment and L9 decision. See the [policy placement review](reviews/L9-human-review.md#policy-placement-follow-up-to-88f7dbf) and [VAL-03 worksheet](reviews/L9-human-review.md#val-03-author-worksheet).
 
+The author then identified two L9 review points: assessment should measure comprehension before and after reading the collapsed reminder, and the CR-01 impact record still described two participants and Demo Guide as current. Codex added the two-pass record and reconciled current descriptions with the accepted L7/L8 history and L9-F05. This was a documentation-only change. No VAL-03 responses or L9 acceptance have been entered on the author's behalf.
+
 ## L8-P2 author acceptance and records update
 
 On 20 November 2026 (Asia/Shanghai), the project author declared UI and H01-H07 complete and supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). The five [author observations](reviews/L8-human-review.md#l8-p2-author-feedback) are recorded verbatim. They address regression identity retention and CI, explicit Join and ownership, withdrawal and rejoin history, FIFO and P2-F05, and deadline and state-integrity coverage.

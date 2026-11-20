@@ -7,7 +7,7 @@
 | L9 decision | `HUMAN_ACCEPTANCE_PENDING` |
 | Risk R-08 | `PENDING_VAL_03`. The project author assesses discovery and preparation after personally performing the scenarios. |
 | L10 and V1.1 release | L10 `NOT_STARTED`. V1.1 `NOT_RELEASED`. |
-| Preview | [L9 policy-order revision](http://127.0.0.1:8530/) for VAL-03. The 88f7dbf and earlier L9 previews remain on ports 8529 and 8528. |
+| Preview | [L9 policy-order revision](http://127.0.0.1:8530/) for VAL-03. The running preview uses application code from `fab46fa`. The VAL-03A and risk-record follow-up changes documentation only. The 88f7dbf and earlier L9 previews remain on ports 8529 and 8528. |
 
 ## Integration verification
 
@@ -44,6 +44,10 @@ The public Registration policy appeared below the work area. Move the existing t
 
 The existing read-only UI test now requires one policy title and paragraph in each role and requires both to precede the reminder on both participant views. It retains organiser tabs, owned roster choices, both saved drafts and whole-state assertions. The five time cases and retained booking-count and permission assertions still verify the same outcomes. For the revision's exact CI and browser evidence, see the candidate Actions and the local policy review report.
 
+### Author review follow-up
+
+The author noted that the public policy is always visible and the reminder starts collapsed. The VAL-03A worksheet now captures the same comprehension questions in both states. The author also identified stale descriptions of the current demo identities and Demo Guide in the [risk record](../changes/CR-01-impact-and-risks.md#l9-documentation-follow-up). This is a low-risk documentation finding. The High CR-01 review classification and the R-08 decision gate remain in place.
+
 ## Assessment 3 and lecture cross-check
 
 | Criterion and source | Evidence and remaining gate |
@@ -60,11 +64,24 @@ Use fictional identities and workshop details. Record the candidate commit, sess
 
 | Scenario | Author task | What to record |
 |---|---|---|
-| VAL-03A | As Leo, open the full Outdoor Photography Walk, join the waitlist and find your entry in My Bookings. Explain the meaning of the current status, the difference between C and S, and how you would learn about a promotion. Record your initial interpretation and any cues you already used, including the public Registration policy if you noticed it. Then open the Booking & Waitlist Reminder and record what, if anything, it adds. | First interpretation, where you found C and S, the entry ID, and how and when you would check again. |
+| VAL-03A | In a fresh session, join the full Outdoor Photography Walk as Leo and find your entry in My Bookings. Use the two-pass worksheet below. | Record the same answers before and after opening the reminder. Capture the registration ID once, and record cues, corrections and remaining uncertainty for each pass. |
 | VAL-03B | In a fresh session, join the full Outdoor Photography Walk as Leo, then join it as Willy. Verify both positions before switching to Sam and cancelling before C. Switch back to Leo and use Refresh view. Identify the status and practical next step. | Time of cancellation and first check, retained registration ID, location of the current status, and what you would do next. |
 | VAL-03C | Use the timed exercise below to promote Leo close to C. First observe the outcome before C in a dedicated repeat or role-play the canonical 08:59 timeline. Assess whether the remaining lead is enough to prepare and travel. | Actual or simulated promotion and discovery times, lead until S, essential preparation, travel, check-in and buffer, and your latest useful confirmation time. |
 | VAL-03D | Repeat the timed setup in a new session. After Sam cancels close to C, leave Leo's view unopened until after C. Return to Leo and check manually. Contrast his confirmed booking with Willy's still-waiting entry. | Discovery lag, confirmation and action availability, where you looked for a notice, whether you would realistically check in time, and what you would do if preparation or travel were no longer feasible. |
 | VAL-03E | Before S, record Alex's confirmed roster from D. Switch to still-waiting Willy, withdraw, then compare Alex's roster and Willy's history. For the at-S check, use a separate still-active WAITLISTED entry or a clearly labelled policy walkthrough. | Preserved entry ID, historical status, and the before and after roster. At S, distinguish the closed active entry from Willy's already cancelled record, which follows the repeat rule. Label a walkthrough separately from a live observation. |
+
+### VAL-03A comprehension with the reminder closed and open
+
+Use a fresh browser session so the reminder is collapsed by default. Keep it closed while you record the first pass. Read the normal interface as you would during ordinary use. The public Registration policy may be one of the cues you notice. Keep the first answers as written. Open the reminder, read it and answer the same questions again before consulting the technical evidence.
+
+For each pass, explain in your own words what your current status means for attending, which actions close at C and at S, whether you expect an automatic notification, and where, how and when you would check for a promotion.
+
+| Pass | Answers and cues | Comprehension finding |
+|---|---|---|
+| Reminder still collapsed | Pending. Record your answers, where you looked and the cues you actually used. | Pending. Record any unclear or incorrect point. |
+| After reading the reminder | Pending. Answer the same questions again and record what the reminder clarified, confirmed or left unresolved. | Pending. Assess these answers separately and compare with the first pass. |
+
+If both passes are correct, record that the default view supported understanding in this exercise and note what the reminder added. If understanding improves only after opening it, record which information depended on discoverability. Keep any remaining confusion visible. This evidence addresses comprehension. The later scenarios cover discovery and real preparation feasibility.
 
 ### Timed exercise for C and D
 
@@ -100,7 +117,7 @@ Mark discovery and preparation outcomes separately. A guided replay establishes 
 
 | Scenario | Observed actions, IDs and timestamps | Comprehension | Preparation and travel feasibility | Feedback and disposition |
 |---|---|---|---|---|
-| VAL-03A | Pending | Pending | Pending | Pending |
+| VAL-03A | Pending. Record the registration ID and when each pass was completed. | Pending. Use both separately recorded answers above. | Pending. Assess discovery and preparation feasibility in VAL-03C and D. | Pending |
 | VAL-03B | Pending | Pending | Pending | Pending |
 | VAL-03C | Pending | Pending | Pending | Pending |
 | VAL-03D | Pending | Pending | Pending | Pending |
@@ -111,7 +128,7 @@ Use `ACCEPTABLE_WITHIN_SCOPE`, `CHANGES_REQUIRED` or `UNRESOLVED` with the obser
 ## Author acceptance checklist
 
 - [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and the 378 retained case identities plus the five reminder boundary cases. Verify that the public policy appears before the reminder on both participant views and that guest and organiser views show the policy without the reminder.
-- [ ] **L9-H02** Personally perform VAL-03A and B. Record your initial status interpretation, what the revised reminder contributes, how you discover a promotion and the registration ID.
+- [ ] **L9-H02** Personally perform VAL-03A and B. Record the same answers with the reminder closed and after reading it, the cues and any change in understanding, how you discover a promotion and the registration ID.
 - [ ] **L9-H03** Perform VAL-03C. Record C, S, the near-C promotion and preparation and travel feasibility.
 - [ ] **L9-H04** Perform VAL-03D. Record the guided post-C result separately from your prewritten checking plan. Compare observed or estimated discovery against the latest useful time and record preparation feasibility without an alert.
 - [ ] **L9-H05** Perform VAL-03E. Check withdrawal, history and confirmed-roster stability and explain the boundary at S.

@@ -355,7 +355,7 @@ Validation examines whether the intended users can complete useful tasks and acc
 | **VAL-03** | Complete waiting, withdrawal and promotion; explain C/S differences and assess preparation, awareness and participation feasibility. |
 | Scenario | Task and acceptance question |
 |---|---|
-| **VAL-03A** | After Join, explain that WAITLISTED is unconfirmed and identify C, refresh requirements and lack of notifications. |
+| **VAL-03A** | After Join, record understanding separately of WAITLISTED, C/S, manual checking and alerts with the reminder closed and then after reading it. [Two-pass worksheet](reviews/L9-human-review.md#val-03a-comprehension-with-the-reminder-closed-and-open). |
 | **VAL-03B** | Locate confirmation after ordinary pre-C promotion and explain the next action. |
 | **VAL-03C** | S=10 December 09:00, C=9 December 09:00, promotion=9 December 08:59. Separately assess comprehension, preparation/arrival feasibility and latest useful confirmation with reasons. |
 | **VAL-03D** | In one preserved demo session simulate pre-C promotion discovered after C. Explain closed confirmed cancellation versus permitted waiting withdrawal. A recreated session follows reset limits, not recovered prior data. |
@@ -429,7 +429,7 @@ The [risk register](../requirements.md#risk-controls) is canonical for R-01 thro
 |---|---|---|
 | VAL-01 | FR-02, FR-03, FR-04, FR-05; R-08 | Author-reported PASS 9/9; baseline tasks/cutoff/prototype limits ACCEPTABLE_WITHIN_SCOPE, 19 November 2026 |
 | VAL-02 | FR-06, FR-07; BR-15, BR-16; R-08 | Author-reported PASS 10/10; creation lead/preparation/session model ACCEPTABLE_WITHIN_SCOPE, 19 November 2026 |
-| VAL-03A | FR-08, FR-11; R-08 | Unconfirmed state, C and notification expectations |
+| VAL-03A | FR-08, FR-11; R-08 | Comprehension with the reminder closed and open. Compare understanding of the unconfirmed state, C/S, manual checking and notification expectations. |
 | VAL-03B | FR-09, FR-10, FR-11; R-08 | State comprehension and next action |
 | VAL-03C | FR-10, FR-11; R-08 | Near-C promotion feasibility |
 | VAL-03D | FR-04, FR-09, FR-11; R-08 | Delayed discovery and distinct cancellation/withdrawal deadlines |
