@@ -69,6 +69,15 @@ For a later review, record the tool or reviewer and exact diff identity next to 
 
 Inspect the actual file diff, approved scope and business guards. Explain FIFO, the one-decision-time transaction model within the session, and the way independent oracles detect wrong behaviours. Review denied paths for identity, ownership, caller-controlled input, data exposure and configuration defaults as applicable. Check any AI-generated conclusions against source evidence and retain rejected suggestions or fixes with rationale. Record actual observations in the human record and later PR. The author supplies a justified risk judgement and a justified READY_TO_MERGE, CHANGES_REQUIRED or SPECIALIST_ADVICE_REQUIRED decision after verification. The project author personally performs all actual merges and deployment branch fast-forwards.
 
+### L9 course cross-check intake
+
+| Item | Record |
+|---|---|
+| Scope and intent | The author asked Codex to review L9-F01/F02, cutoff, roles, state, test independence, regression and evidence against accepted L8 and the original course materials. |
+| Affected evidence | L9 test assertions, test plan, human worksheet, AI ledger and this intake. Application behavior and business policy remain the accepted baseline. |
+| Assumptions and triage | The demo uses selectable fictional identities and a serial preserved session. Keep CR-01's author-approved High review depth for allocation, ownership and cutoff. Treat R-08 as open empirical validation of discovery and preparation. |
+| Human review and findings | Review L9-F01 through F04 and the independent expected IDs and outcomes in the [L9 review](../reviews/L9-human-review.md#deep-review-findings). H01-H07 and author assessment remain pending. |
+
 Course cross-check: Assessment 3 pp. 4-5, 8 and 12 cover change control, evidence links, AI disclosure and justified decisions. The 16 November 10:45 transcript pp. 2 and 8-10 emphasises the small three-file adaptation, bounded diffs and human review. The 10:46 transcript pp. 4-7 emphasises precise AI disclosure, checks, escalation and evidence for the defence. The Week 6 slides 11/17 support bounded intent, prompt-to-diff trace and triage; Week 7 slide 25 supports independent tests and object ownership; Week 8 slides 14-16 support findings and evidence; Week 9 slides 1/5/10/12 support author accountability and escalation. Source titles are listed in the [baseline source catalogue](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/blob/36e7bff3c1d3f74bb29c1900373726ecffdd176b/docs/demo-reuse.md#references).
 
 References: [CR-01](CR-01.md), [risk and impact](CR-01-impact-and-risks.md), [verification](CR-01-verification-plan.md) and [L7 human review](../reviews/L7-human-review.md).

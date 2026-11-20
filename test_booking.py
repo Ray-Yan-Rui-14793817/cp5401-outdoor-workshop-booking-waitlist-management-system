@@ -4492,6 +4492,12 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
     queued = deepcopy(waiting_state)
     now = cutoff - timedelta(minutes=1)
 
+    stale_app = app_with_state(deepcopy(queued))
+    stale_app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    stale_app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+    stale_withdraw = stale_app.button(key="withdraw_registration-5")
+    assert not stale_withdraw.disabled
+
     # A separate copy exercises a pre-C control submitted at C with both waiters active.
     cutoff_state = deepcopy(queued)
     cutoff_app = app_with_state(cutoff_state)
@@ -4516,7 +4522,11 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
         ],
     )
     assert app.session_state.demo_state == expected
-    assert confirmed_count(expected, "workshop-2") == 1
+    assert [
+        entry.registration_id
+        for entry in app.session_state.demo_state.registrations
+        if entry.workshop_id == "workshop-2" and entry.status is RegistrationStatus.CONFIRMED
+    ] == ["registration-5"]
     assert waiting_state == queued
 
     now = cutoff
@@ -4536,7 +4546,23 @@ def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff
     assert list(confirmed["Registration cutoff"]) == ["2026-12-09 09:00:00 (Asia/Singapore)"]
     assert list(confirmed["Updated"]) == ["2026-12-09 08:59:00 (Asia/Singapore)"]
     assert app.button(key="cancel_registration-5").disabled
-    assert app.session_state.demo_state == expected
+    promoted_state = app.session_state.demo_state
+    assert promoted_state == expected
+
+    # Keep this UI on the old render while its latest state already reflects promotion.
+    latest = deepcopy(promoted_state)
+    stale_app.session_state.demo_state = latest
+    stale_withdraw.click().run()
+    assert not stale_app.exception and not stale_app.success
+    assert any("STATUS_CHANGED" in error.value for error in stale_app.error)
+    assert stale_app.session_state.demo_state is latest and latest == expected
+
+    willy = resolve_actor(promoted_state, "participant-willy")
+    assert willy is not None
+    outcome, same_state = booking.withdraw_waitlist(
+        promoted_state, willy, "registration-5", now=now
+    )
+    assert outcome == "FORBIDDEN" and same_state is promoted_state and same_state == expected
 
     app.sidebar.selectbox(key="selected_user_id").set_value("participant-willy").run()
     still_waiting = app.dataframe[0].value
