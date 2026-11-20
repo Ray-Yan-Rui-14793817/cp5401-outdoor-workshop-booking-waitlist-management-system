@@ -22,6 +22,8 @@ For the follow-up to `88f7dbf`, the author requested that the public Registratio
 
 The author then identified two L9 review points: assessment should measure comprehension before and after reading the collapsed reminder, and the CR-01 impact record still described two participants and Demo Guide as current. Codex added the two-pass record and reconciled current descriptions with the accepted L7/L8 history and L9-F05. This was a documentation-only change. No VAL-03 responses or L9 acceptance have been entered on the author's behalf.
 
+The author supplied both VAL-03A passes in Chinese. Codex translated the ten responses into English and compared them with the documented C/S and notification rules. The [responses](reviews/L9-human-review.md#author-submitted-val-03a-responses) preserve the author's first-pass uncertainty and second-pass clarifications. The author supplied the answers. Codex supplied the translation and comparison. The exercise metadata, VAL-03B-E, the R-08 decision and L9 acceptance remain pending.
+
 ## L8-P2 author acceptance and records update
 
 On 20 November 2026 (Asia/Shanghai), the project author declared UI and H01-H07 complete and supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). The five [author observations](reviews/L8-human-review.md#l8-p2-author-feedback) are recorded verbatim. They address regression identity retention and CI, explicit Join and ownership, withdrawal and rejoin history, FIFO and P2-F05, and deadline and state-integrity coverage.

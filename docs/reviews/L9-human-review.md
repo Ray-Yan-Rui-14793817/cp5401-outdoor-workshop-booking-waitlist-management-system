@@ -83,6 +83,20 @@ For each pass, explain in your own words what your current status means for atte
 
 If both passes are correct, record that the default view supported understanding in this exercise and note what the reminder added. If understanding improves only after opening it, record which information depended on discoverability. Keep any remaining confusion visible. This evidence addresses comprehension. The later scenarios cover discovery and real preparation feasibility.
 
+#### Author-submitted VAL-03A responses
+
+Source: The project author submitted both passes in Chinese on 20 November 2026 (Asia/Shanghai). The answers below are English translations of the author's responses. They refer to the `21d523f` worksheet. The exact observed build, live or role-play method, registration ID, exercise timestamps and specific on-screen cues were not supplied.
+
+| Question | Pass 1: Reminder still collapsed | Pass 2: After reading the reminder |
+|---|---|---|
+| Q1. Does WAITLISTED mean I have a reserved place? | No. WAITLISTED means I am still on the waiting list. I do not currently have a confirmed place. | No. WAITLISTED only means I am in the queue. Only a change to CONFIRMED means I have a reserved place. |
+| Q2. Which operations close at registration cutoff (C)? | I understand that new bookings and cancellation of confirmed bookings close at C. I am unsure whether all waitlist operations close then as well. | At C, new bookings, joining the waitlist, confirmed booking cancellation and automatic FIFO promotion close. C is 24 hours before the workshop starts. |
+| Q3. If I am still WAITLISTED at C, what can I do before S? | I should still be able to see my waiting status. If I no longer want to wait, I may be able to leave the waitlist before the workshop starts. | I can withdraw my waitlist entry before S and see the retained record in Booking History. Waiting withdrawal closes at S. |
+| Q4. Will the system notify me automatically if I am promoted? | I am unsure whether the system will notify me automatically. I may need to open it and check the status myself. | No. The system sends no automatic notifications. I have to check My Bookings myself to discover whether WAITLISTED has become CONFIRMED. |
+| Q5. Where, how and when should I check for a change? | I would check my booking status in My Bookings and check again before the workshop starts. I am unsure how often I should refresh. | I would open My Bookings and click Refresh view. I would check regularly before C, again near C, and after C to confirm the final allocation status. I could also set my own phone reminder to avoid missing the promotion. |
+
+**Technical comparison of the author responses.** The first pass correctly identifies an unconfirmed waitlist place, the two confirmed booking operations that close at C, and My Bookings as the place to look. It leaves the Join and promotion cutoff, the withdrawal deadline, automatic notifications and how often to refresh unresolved. The second pass addresses all five questions consistently with the candidate. The only direct evidence is the author's reported comprehension and intended checking plan. Whether a real check happened on time and whether the resulting lead time was enough for preparations and travel remain separate VAL-03C/D questions.
+
 ### Timed exercise for C and D
 
 1. In the L9 preview, select Alex and create a capacity-one workshop with a unique name such as **VAL-03 Ridge Walk**. Choose C at least 10 to 15 minutes in the future and set S exactly 24 hours after it in Asia/Singapore. Allow for a date change around midnight. Make the end later than S. Add a fictional meeting point and preparation notes covering water, footwear and a check-in time. If the chosen C passes before setup is complete, start a fresh scenario with a later S.
@@ -117,7 +131,7 @@ Mark discovery and preparation outcomes separately. A guided replay establishes 
 
 | Scenario | Observed actions, IDs and timestamps | Comprehension | Preparation and travel feasibility | Feedback and disposition |
 |---|---|---|---|---|
-| VAL-03A | Pending. Record the registration ID and when each pass was completed. | Pending. Use both separately recorded answers above. | Pending. Assess discovery and preparation feasibility in VAL-03C and D. | Pending |
+| VAL-03A | [Two sets of author answers received](#author-submitted-val-03a-responses). Build, method, record ID and exercise timestamps remain unreported. | Partial with the reminder closed. All five answers align with the policy after reading it. | Assess discovery and preparation feasibility in VAL-03C and D. | Comprehension evidence recorded. The author's final disposition remains pending. |
 | VAL-03B | Pending | Pending | Pending | Pending |
 | VAL-03C | Pending | Pending | Pending | Pending |
 | VAL-03D | Pending | Pending | Pending | Pending |
