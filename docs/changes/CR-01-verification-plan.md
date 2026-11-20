@@ -8,6 +8,10 @@
 
 The results above verify the CR-01 business candidate before the P1 presentation round. See the [P1 UI verification](../reviews/L8-human-review.md#p1-ui-verification) and [current P1 test map](../test-plan.md#l8-p1-presentation-verification) for that round's evidence.
 
+## L9 integration follow-through
+
+The [L9 integration review and worksheet](../reviews/L9-human-review.md) provide the actual author tasks for VAL-03A-E. The integrated test exercises a pre-C promotion and a first post-C check in the same session. The author records actual or labelled simulated times and assesses notification-free discovery, preparation and travel. R-08 remains `PENDING_VAL_03`.
+
 ## Revision 4 verification amendment
 
 The six-user default state and two fixture-only FIFO actors supersede the earlier two-participant demo assumption in the historical plan below. AC-08 checks exact unique IDs, roles, private access, seeded record/counter preservation and exclusion of fixture-only users from normal UI. The specialised fixture contains eight users. Its ordering probe assigns sequence 3 to Zulu and 8 to Alpha, with Alpha stored first. Keep both time variants and the separate equal-name probe.

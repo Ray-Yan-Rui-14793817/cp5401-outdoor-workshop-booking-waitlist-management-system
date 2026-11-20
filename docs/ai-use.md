@@ -2,6 +2,10 @@
 
 **Project status.** V1.0 is published and L7 planning has the author's `ACCEPT_LOOP`. P1 has passed human acceptance at `52ce8d74e305c0e7b20935f0e5409fbc4e75dc8e`. The author accepted the revised P2 and L8 at [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). R-08 awaits VAL-03. See the [published V1.0 release](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/releases/tag/v1.0), the [L7 decision](reviews/L7-human-review.md#human-decision-record) and the [P1 human acceptance and author feedback](reviews/L8-human-review.md#p1-human-acceptance).
 
+## L9 integration and validation preparation
+
+The author directed L9 from accepted L8 `2531b0d`. Codex retained the application and single-job workflow, appended one test of the near-C promotion and first check after C using the controlled AppTest clock, and prepared five [VAL-03 author scenarios](reviews/L9-human-review.md#val-03-author-worksheet). The test covers displayed status, stable IDs, closed cancellation, valid withdrawal and state preservation. Its result is technical evidence. Awareness, feasibility and the L9 decision await the project author's observations. R-08 remains `PENDING_VAL_03`. L10 remains `NOT_STARTED` and V1.1 remains a candidate.
+
 ## L8-P2 author acceptance and records update
 
 On 20 November 2026 (Asia/Shanghai), the project author declared UI and H01-H07 complete and supplied `ACCEPT_LOOP` for [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314). The five [author observations](reviews/L8-human-review.md#l8-p2-author-feedback) are recorded verbatim. They address regression identity retention and CI, explicit Join and ownership, withdrawal and rejoin history, FIFO and P2-F05, and deadline and state-integrity coverage.

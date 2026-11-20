@@ -4454,3 +4454,89 @@ def test_p2_review_identity_switch_replaces_the_view_scope_without_changing_stat
         styles = css
         assert app.session_state.demo_state == original
         assert not app.exception
+
+
+def test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Keep the author walkthrough's calendar fixed and advance only this test's clock.
+    start = datetime(2026, 12, 10, 9, tzinfo=WORKSHOP_TIMEZONE)
+    cutoff = datetime(2026, 12, 9, 9, tzinfo=WORKSHOP_TIMEZONE)
+    now = datetime(2026, 12, 6, 9, tzinfo=WORKSHOP_TIMEZONE)
+    monkeypatch.setattr(booking, "server_now", lambda: now)
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    workshop = next(
+        w for w in app.session_state.demo_state.workshops if w.workshop_id == "workshop-2"
+    )
+    assert (workshop.starts_at, workshop.registration_cutoff, workshop.capacity) == (
+        start,
+        cutoff,
+        1,
+    )
+
+    for user_id, entry_id, position in (
+        ("participant-leo", "registration-5", 1),
+        ("participant-willy", "registration-6", 2),
+    ):
+        app.sidebar.selectbox(key="selected_user_id").set_value(user_id).run()
+        app.sidebar.radio(key="current_view").set_value("Workshops").run()
+        app.button(key="join_workshop-2").click().run()
+        app.sidebar.radio(key="current_view").set_value("My Bookings").run()
+        waiting = app.dataframe[0].value
+        assert list(waiting["Registration ID"]) == [entry_id]
+        assert list(waiting["Status"]) == ["WAITLISTED"]
+        assert list(waiting["Position"]) == [position]
+        assert any("There are no notifications." in notice.value for notice in app.caption)
+
+    queued = deepcopy(app.session_state.demo_state)
+    now = cutoff - timedelta(minutes=1)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-2").run()
+    app.button(key="cancel_registration-2").click().run()
+    changes = {
+        "registration-2": RegistrationStatus.CANCELLED,
+        "registration-5": RegistrationStatus.CONFIRMED,
+    }
+    expected = replace(
+        queued,
+        registrations=[
+            replace(entry, status=changes[entry.registration_id], updated_at=now)
+            if entry.registration_id in changes
+            else entry
+            for entry in queued.registrations
+        ],
+    )
+    assert app.session_state.demo_state == expected
+    assert confirmed_count(expected, "workshop-2") == 1
+
+    # The participant first checks again after C, with the released seat already assigned.
+    now = cutoff + timedelta(minutes=5)
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-leo").run()
+    app.sidebar.button(key="refresh_view").click().run()
+    confirmed = app.dataframe[0].value
+    assert list(confirmed["Registration ID"]) == ["registration-5"]
+    assert list(confirmed["Status"]) == ["CONFIRMED"]
+    assert list(confirmed["Registration cutoff"]) == ["2026-12-09 09:00:00 (Asia/Singapore)"]
+    assert list(confirmed["Updated"]) == ["2026-12-09 08:59:00 (Asia/Singapore)"]
+    assert app.button(key="cancel_registration-5").disabled
+    assert app.session_state.demo_state == expected
+
+    app.sidebar.selectbox(key="selected_user_id").set_value("participant-willy").run()
+    still_waiting = app.dataframe[0].value
+    assert list(still_waiting["Registration ID"]) == ["registration-6"]
+    assert list(still_waiting["Status"]) == ["WAITLISTED"]
+    assert list(still_waiting["Position"]) == [1]
+    assert not app.button(key="withdraw_registration-6").disabled
+    app.button(key="withdraw_registration-6").click().run()
+    history = app.dataframe[0].value
+    assert list(history["Registration ID"]) == ["registration-6"]
+    assert list(history["Status"]) == ["CANCELLED"]
+    assert app.session_state.demo_state == replace(
+        expected,
+        registrations=[
+            replace(entry, status=RegistrationStatus.CANCELLED, updated_at=now)
+            if entry.registration_id == "registration-6"
+            else entry
+            for entry in expected.registrations
+        ],
+    )
+    assert not app.exception

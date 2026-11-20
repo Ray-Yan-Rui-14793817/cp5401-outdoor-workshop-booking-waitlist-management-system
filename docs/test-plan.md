@@ -1,5 +1,9 @@
 # Test Plan and Traceability
 
+## L9 V1.1 integration verification
+
+Use accepted L8 `2531b0d` and its [377-case evidence](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44682855711) as the regression baseline. L9 adds `test_l9_near_cutoff_promotion_can_be_discovered_in_same_session_after_cutoff`. It verifies the integrated Streamlit flow at C minus one minute and C plus five minutes, including whole state, the unchanged promoted ID, delayed discovery, and effective withdrawal of the remaining waiting entry. Compare the complete case identity inventory. The [VAL-03 worksheet](reviews/L9-human-review.md#val-03-author-worksheet) covers the separate human assessment of understanding, discovery and preparation.
+
 ## L8 P2 verification
 
 The accepted reviewed SHA [`a1e0d3a`](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/a1e0d3a0efafec0f6d1ff5e77678c1d9b5fbf314) passed 377 tests in the [single-job Actions run 44680175754](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions/runs/44680175754). The 376 original P2 case identities include the 368 P1 and 317 V1.0 cases. The identity-view scope AppTest was added for P2-F05. [Author acceptance](reviews/L8-human-review.md#l8-p2-human-acceptance) records UI and H01-H07. R-08 stays pending VAL-03.
