@@ -56,7 +56,7 @@ The [accepted CR-01 verification plan](changes/CR-01-verification-plan.md) and t
 | AC-05 / W13-W14, I06, I08-I09, CRV-02 | Check live own positions, owned ordered list, menu permissions, separate session factories and the single-session AppTest journey. Check both participant and organiser closed history without modifying status. In a single widget submission, change selected participant and click a Join control rendered for the previous actor. Require refusal and unchanged state. Verify current promotion via Refresh view. |
 | AC-07 / B01-B17, I07 | All 317 original cases and no-waiter fixtures remain. Retained constructors default to no queue sequence. No live migration or shared concurrency is exercised. |
 | QR-02 / CRV-03 | Inject failure during promotion after preparing the cancelled row. Check both direct business state and actual Streamlit state, including absence of partial writes and false success. |
-| R-08 / VAL-03A-E | Pending author-led human validation on a candidate. Pay particular attention to pre-cutoff promotion discovered after the cutoff, booking decision timing, and the lack of alerts. |
+| R-08 / VAL-03A-E | Author-declared complete at L9 and acceptable within the classroom booking scope. Manual discovery after pre-cutoff promotion and the lack of alerts remain residual exposure. |
 
 The [candidate branch Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fcr-01-waitlist) record the tested SHA and all quality steps. The original implementation run is historical. The [L8 author checklist](reviews/L8-human-review.md#overall-l8-author-checklist) records completion for the revised P2 SHA.
 
@@ -120,7 +120,7 @@ On 19 November 2026 (Asia/Shanghai, UTC+08:00), the project author declared L6 U
 | VAL-02 / organiser | PASS 10/10 submitted scenarios; ACCEPTABLE_WITHIN_SCOPE | Stable rosters support equipment/activity preparation. Temporary Session State is acceptable for one-session demonstration, not reliable real-world operations. |
 | Personal UI/H01-H07; I06/I08/I09 judgement | COMPLETE by explicit author declaration | Role navigation/permissions/draft isolation and ordinary-rerun preservation work in the demo model. Independent sessions and restart do not share or durably recover records. |
 | R-08 baseline outdoor/timing needs | ACCEPTABLE_WITHIN_SCOPE | Human supplemental feedback respects unexpected circumstances: confirmed booking is a record, not guaranteed attendance or an obligation to participate unsafely. No emergency override or attendance feature is added. |
-| R-08 V1.1 / VAL-03A-03E | VALIDATION_PENDING / DEFERRED_TO_V1.1 | Baseline acceptance leaves V1.1 waiting-state comprehension and timely manual promotion discovery open. |
+| R-08 V1.1 / VAL-03A-03E | ACCEPTABLE_WITHIN_SCOPE by the author at L9 | [Author-declared completion and rationale](reviews/L9-human-review.md#l9-acceptance-and-residual-risk-decision). Automatic alerts are absent and manual checking is required. |
 
 The 19 human scenarios are not additional pytest cases: the suite remains 317, with all L1-L5 regression identities unchanged. The accepted candidate's run/artifact is identified above; the acceptance-record commit receives an independently checked exact-HEAD run. Full feedback and dispositions are in [current human acceptance](reviews/L6-human-review.md#current-human-acceptance). No remaining human loop check is inferred from AI evidence. ACCEPT_LOOP does not authorise main merge, tag, V1.0 release or L7.
 

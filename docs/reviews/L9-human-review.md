@@ -4,8 +4,8 @@
 |---|---|
 | Accepted L8 reference | [2531b0d](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/commit/2531b0db583564695d3665880df30fda04b102e9), which records the author's L8 ACCEPT_LOOP for a1e0d3a. |
 | L9 review candidate | `codex/l9-v11-integration`. See the [candidate Actions](https://github.com/Ray-Yan-Rui-14793817/cp5401-outdoor-workshop-booking-waitlist-management-system/actions?query=branch%3Acodex%2Fl9-v11-integration) and the local L9 technical evidence for the exact tested commit. |
-| L9 decision | `HUMAN_ACCEPTANCE_PENDING` |
-| Risk R-08 | `PENDING_VAL_03`. The project author assesses booking status comprehension, timely manual discovery and the applicable actions after personally performing the scenarios. |
+| L9 decision | `ACCEPT_LOOP` by the project author on 20 November 2026 (Asia/Shanghai). See the [author's L9 decision](#l9-acceptance-and-residual-risk-decision). |
+| Risk R-08 | `ACCEPTABLE_WITHIN_SCOPE` as a residual risk for the fictional classroom booking and waitlist prototype. |
 | L10 and V1.1 release | L10 `NOT_STARTED`. V1.1 `NOT_RELEASED`. |
 | Preview | [L9 policy-order revision](http://127.0.0.1:8530/) for VAL-03. The running preview uses application code from `fab46fa`. The VAL-03A and risk-record follow-up changes documentation only. The 88f7dbf and earlier L9 previews remain on ports 8529 and 8528. |
 
@@ -20,7 +20,7 @@ This is integrated technical evidence for the app's behaviour. The VAL-03 scenar
 | Finding | Disposition |
 |---|---|
 | L9-F01. Exact-C coverage used a domain test with an active queue and an older stale-control UI test with an empty queue. | The L9 integration test combines a stale Cancel submission with an active queue at exact C. It keeps the existing case identity and strengthens transition checks on retained state objects. |
-| L9-F02. A scheduled check at C plus five minutes demonstrated the expected page and controls, while giving the participant a prompt to discover promotion. | Retain that replay for boundary verification. The author records ordinary checking behaviour before reviewing timed instructions, then compares the first ordinary check and the latest useful time for a booking decision. Preparation constraints supply context for that time. Personal evidence remains pending. |
+| L9-F02. A scheduled check at C plus five minutes demonstrated the expected page and controls, while giving the participant a prompt to discover promotion. | Retain that replay for boundary verification. The author records ordinary checking behaviour before reviewing timed instructions, then compares the first ordinary check and the latest useful time for a booking decision. Preparation constraints supply context for that time. At this technical checkpoint, personal evidence was pending. See the final author decision below. |
 | L9-F03. The L9 test delegated the confirmed roster count to production code and lacked a post-discovery stale-withdrawal check against both the owner and another participant. | Require the exact confirmed registration ID from the state. Check a stale owner's Withdraw control against the latest promoted state for STATUS_CHANGED. A separate domain check requires FORBIDDEN for Willy targeting Leo's entry at the same instant. Both refusals must keep the complete state and object identity. |
 | L9-F04. The manual B setup assumed both waiters had joined. The E steps could use a withdrawn record as the at-S test subject. | Make both joins and the pre-withdrawal roster snapshot explicit. Check S in a separate still-active waiting case because a cancelled entry takes the idempotent repeat path. |
 
@@ -36,7 +36,7 @@ The author requested participant-focused support for booking awareness under R-0
 | At and after S | The history table holds recorded statuses. | Guidance points to Booking History and explains action closure. Stored WAITLISTED records remain historical. |
 | Counts | Confirmed participants and generic confirmation labels. | Confirmed bookings and remaining places refer to allocated registrations, with a booking-count explanation. |
 
-The UI uses the existing selected-identity scope, statuses and C/S comparison. [Test adaptations](../changes/CR-01-test-adaptations.md#l9-f05-reminder-and-booking-count-assertions) record the visible assertion changes and unchanged behavior checks. R-08 remains PENDING_VAL_03 because participants still rely on manual checking. The author assesses whether the status becomes known in time for their booking decision.
+The UI uses the existing selected-identity scope, statuses and C/S comparison. [Test adaptations](../changes/CR-01-test-adaptations.md#l9-f05-reminder-and-booking-count-assertions) record the visible assertion changes and unchanged behavior checks. Participants still rely on manual checking. The final author decision accepts this residual risk within classroom scope.
 
 ### Policy placement follow-up to 88f7dbf
 
@@ -53,23 +53,23 @@ The author noted that the public policy is always visible and the reminder start
 | Criterion and source | Evidence and remaining gate |
 |---|---|
 | Requirements, risk and traceability, Assessment 3 pp. 3-5 and 10 | [CR-01](../changes/CR-01.md) AC-02 to AC-05 and AC-07 link to FR-09 to FR-11, BR-06/09/10/11/13/15/16, QR-02/03 and R-08. Follow the [test map](../test-plan.md#l9-v11-integration-verification) and the L9 finding dispositions. |
-| Verification, validation and failure coverage, pp. 10-11 | The two independently prepared UI states check a valid cancellation before C and a stale submit exactly at C. D-01 checks prove owner/status precedence at C plus five minutes. Retained cases cover S, time-zone comparison, separate scope and failed promotion atomicity. The oracle uses the approved outcomes, exact IDs and expected snapshot changes. The author still needs to demonstrate suitability through VAL-03. |
+| Verification, validation and failure coverage, pp. 10-11 | The two independently prepared UI states check a valid cancellation before C and a stale submit exactly at C. D-01 checks prove owner/status precedence at C plus five minutes. Retained cases cover S, time-zone comparison, separate scope and failed promotion atomicity. The oracle uses the approved outcomes, exact IDs and expected snapshot changes. The final author decision records VAL-03 suitability within the classroom booking scope. |
 | Controlled change and CI, pp. 4-5 and 12 | The separate branch descends from accepted L8. All 377 L8 cases remain. The exact-candidate single-job evidence and L9 finding dispositions support traceability. The completed-assessment chain also requires a PR with the Actions result, a justified author merge decision, approved integration and a deployed V1.1 release. Those stages remain pending. |
 | Deployment and defence, pp. 8, 10 and 13 | Published V1.0 and the local candidate have separate evidence. The author should explain why time-of-promotion is different from time-of-discovery and why owner checks precede status. The AI record and review intake identify the scoped changes, assumptions, checks and author decision points. |
 | 16 November lectures, 10:45 transcript pp. 2 and 8-10, 10:46 transcript pp. 3-7 | Keep the three-file app structure, a bounded change, named checks and an audit trail. Week 7 slides 24-25 inform object-scope checks, Week 8 slides 14-16 inform focused review and gates, and Week 9 slides 10 and 12 inform escalation and author ownership. |
 
 ## L9 author feedback and scope decision
 
-On 20 November 2026 (Asia/Shanghai), the author supplied the following review feedback and clarified that this project manages booking and waiting records. This is a summary of the author's review. The author did not submit an L9 acceptance decision.
+On 20 November 2026 (Asia/Shanghai), the author supplied the following review feedback and clarified that this project manages booking and waiting records. This is a summary of the author's review. This feedback preceded the separate acceptance declaration below.
 
 | Review item | Author feedback and evidence type |
 |---|---|
 | H01 | Technical review supports the L8 ancestry, exact-SHA single job and 383 cases, including 378 retained cases. The public policy precedes the default-collapsed participant reminder. Business policies remain consistent. |
-| H02 | The two-pass VAL-03A answers were a simulation. They suggest where the reminder could help. VAL-03B describes expected same-ID FIFO promotion and the position change from two to one. A guided refresh illustrates the path. Actual human UI observations remain pending. |
+| H02 | The two-pass VAL-03A answers were a simulation. They suggest where the reminder could help. VAL-03B describes expected same-ID FIFO promotion and the position change from two to one. A guided refresh illustrates the path. At this feedback checkpoint, the simulated responses and guided steps were separate from actual human validation. |
 | H03 | The controlled test shows successful promotion one minute before C with the same ID. The 24 hours and one minute before S describes the technical schedule. |
 | H04 | The controlled replay shows Leo confirmed after C, with cancellation closed, and Willy still able to withdraw before S. A prewritten check plan and a guided check answer different questions. The role-play discovery time is an estimate. |
 | H05 | Retained tests cover withdrawal, history, unchanged roster and no promotion. An active request at S returns WORKSHOP_STARTED. The repeat of an already cancelled record returns ALREADY_CANCELLED. Use a labelled technical reference or walkthrough if the live S boundary is impractical. |
-| H06 | The author reviewed the integration and AI records and identified the remaining risk of delayed discovery without alerts. R-08 remains open for the author's judgment. |
+| H06 | The author reviewed the integration and AI records and identified the remaining risk of delayed discovery without alerts. The final author disposition is recorded below. |
 
 ## VAL-03 author worksheet
 
@@ -112,7 +112,7 @@ Source: The project author submitted both passes in Chinese on 20 November 2026 
 | Q4. Will the system notify me automatically if I am promoted? | I am unsure whether the system will notify me automatically. I may need to open it and check the status myself. | No. The system sends no automatic notifications. I have to check My Bookings myself to discover whether WAITLISTED has become CONFIRMED. |
 | Q5. Where, how and when should I check for a change? | I would check my booking status in My Bookings and check again before the workshop starts. I am unsure how often I should refresh. | I would open My Bookings and click Refresh view. I would check regularly before C, again near C, and after C to confirm the final allocation status. I could also set my own phone reminder to avoid missing the promotion. |
 
-**Technical comparison of the author responses.** The first pass correctly identifies an unconfirmed waitlist place, the two confirmed booking operations that close at C, and My Bookings as the place to look. It leaves the Join and promotion cutoff, the withdrawal deadline, automatic notifications and how often to refresh unresolved. The second pass addresses all five questions consistently with the candidate. This comparison describes the simulated answers. The live before-and-after check is pending. VAL-03C/D examine the timing of discovery and available booking actions separately.
+**Technical comparison of the author responses.** The first pass correctly identifies an unconfirmed waitlist place, the two confirmed booking operations that close at C, and My Bookings as the place to look. It leaves the Join and promotion cutoff, the withdrawal deadline, automatic notifications and how often to refresh unresolved. The second pass addresses all five questions consistently with the candidate. This comparison describes the simulated answers. These simulated answers remain separate from the subsequent author-declared validation outcome. VAL-03C/D examine the timing of discovery and available booking actions separately.
 
 ### Timed exercise for C and D
 
@@ -127,46 +127,46 @@ Assess timing against a booking decision. Before learning when Sam cancels, writ
 
 The C-plus-five-minute replay is a guided check of the displayed result and available actions. Separately record your first actual unprompted check, a missed check, or the check you estimate from your prewritten plan. A second person can operate Sam in the same demo session without disclosing the cancellation time. A solo exercise with a known cancellation time yields a role-play estimate of ordinary discovery. Record the evidence type and determine whether the check meets your stated booking decision time.
 
-| Evidence for C and D | Author entry |
+| Optional detailed record for C and D | Supporting detail supplied |
 |---|---|
-| Planned check time, access to the session and personal reminder if used | Pending |
-| Promotion time, first discovery time, and whether prompted, unprompted or estimated | Pending |
-| Status seen, applicable deadline, desired booking decision and latest useful time | Pending |
-| Whether discovery came in time for that decision and the intended next action | Pending |
-| Optional outdoor context explaining the desired lead time | Pending |
+| Planned check time, access to the session and personal reminder if used | Not supplied with the final declaration |
+| Promotion time, first discovery time, and whether prompted, unprompted or estimated | Not supplied with the final declaration |
+| Status seen, applicable deadline, desired booking decision and latest useful time | Not supplied with the final declaration |
+| Whether discovery came in time for that decision and the intended next action | Not supplied with the final declaration |
+| Optional outdoor context explaining the desired lead time | Not supplied with the final declaration |
 
 Record comprehension, discovery and available action separately. Where a participant needed to retain the option to cancel, a first check at or after C misses that decision window. The assessment does not require carrying out travel, preparation or attendance.
 
-### Author observation record
+### VAL-03 outcomes reported by the author
 
-- Reviewed commit: __________
-- Tester and role: __________
-- Date and timezone: __________
-- Environment and method (live UI or labelled role-play): __________
+The author confirmed completion of human validation and supplied the following outcome summary on 20 November 2026 (Asia/Shanghai). The summary covers the booking and waitlist tasks. The author did not supply individual run timestamps, registration IDs, a session log or a separate unprompted discovery time. The canonical times above remain controlled examples. The earlier simulated A responses remain a distinct record.
 
-| Scenario | Observed actions, IDs and timestamps | Comprehension | Discovery timing and booking decision | Feedback and disposition |
-|---|---|---|---|---|
-| VAL-03A | [Author role-play received](#author-submitted-val-03a-responses). Live observations and record ID pending. | Simulated first pass partial. All five simulated second-pass answers align with policy. | Consider intended manual checking. Assess actual discovery timing in C and D. | Live two-pass validation pending. |
-| VAL-03B | Pending | Pending | Pending | Pending |
-| VAL-03C | Pending | Pending | Pending | Pending |
-| VAL-03D | Pending | Pending | Pending | Pending |
-| VAL-03E | Pending | Pending | Pending | Pending |
-
-The author can record `ACCEPTABLE_WITHIN_SCOPE` when personal UI observations support understanding and action, and evidence from ordinary checking supports timely discovery for the stated classroom booking decision. Use `CHANGES_REQUIRED` for a material booking or waitlist usability gap. Use `UNRESOLVED` when support is missing, including when discovery timing is only estimated or prompted. Record the reason and the residual risk of relying on manual checks. R-08 stays `PENDING_VAL_03` until the author makes a supported disposition.
-
-## Author acceptance checklist
-
-- [ ] **L9-H01** Confirm the exact candidate, ancestry from accepted L8, single-job CI and the 378 retained case identities plus the five reminder boundary cases. Verify that the public policy appears before the reminder on both participant views and that guest and organiser views show the policy without the reminder.
-- [ ] **L9-H02** Personally perform VAL-03A and B. Record the same answers with the reminder closed and after reading it, the cues and any change in understanding, how you discover a promotion and the registration ID.
-- [ ] **L9-H03** Perform VAL-03C. Record C, S, the near-C promotion, the status you find and the latest useful time for your booking decision.
-- [ ] **L9-H04** Perform VAL-03D. Record the guided post-C result separately from your prewritten checking plan. Compare discovery against your booking decision time. Record the applicable actions and label any estimate or prompted check.
-- [ ] **L9-H05** Perform VAL-03E. Check withdrawal, history and confirmed-roster stability and explain the boundary at S.
-- [ ] **L9-H06** Review the AI and technical evidence, then assess R-08 from the author observations. Record the reasoning, evidence limitations and any required changes.
-- [ ] **L9-H07** Supply the exact reviewed commit and author decision. L9 acceptance, L10 authorisation, integration to main and publication have separate gates.
-
-| Decision field | Author entry |
+| Scenario | Author-reported validation outcome |
 |---|---|
-| UI and VAL-03 outcomes | Pending |
-| R-08 judgement and rationale | Pending |
-| L9 decision | Pending |
-| Later PR decision and authority | Pending separate author review. |
+| VAL-03A | The participant can read WAITLISTED and CONFIRMED, see the C/S policy and open the participant reminder. The earlier before-and-after answers are recorded as a simulation. |
+| VAL-03B | Normal FIFO promotion retains the original registration ID. The participant can find the updated state manually. |
+| VAL-03C | The system supports promotion before C and presents the confirmed booking and workshop details. |
+| VAL-03D | The confirmed state is available by manual check after C. Confirmed cancellation is closed and the absence of automatic notifications is disclosed. A guided check and any role-play estimate remain separate from an unprompted observation. |
+| VAL-03E | Waiting withdrawal, retained history, confirmed roster stability and the S boundary behave as expected. The author did not specify a separate live at-S observation. |
+
+## L9 acceptance and residual risk decision
+
+The project author declared `ACCEPT_LOOP` and accepted R-08 within the fictional classroom prototype on 20 November 2026 (Asia/Shanghai). The L9 technical references are the executable preview at `fab46fa` and the scope clarification at `fc7fa3e`. The documentation commits record findings and author decisions.
+
+> The VAL-03 assessment supports the suitability of the system within its defined Booking and Waitlist Management scope. The application provides clear registration statuses, stable booking IDs, manual refresh guidance, correct FIFO promotion and appropriate C/S controls.
+>
+> The system does not manage actual attendance, travel or equipment preparation. These activities are outside the approved functional scope.
+>
+> R-08 remains a residual risk because automatic notifications are not provided. However, the system clearly discloses this limitation and supports manual status checking.
+>
+> Based on the documented human validation results, the residual risk is considered acceptable within the scope of the fictional classroom prototype.
+
+The author's decision accepts reliance on manual checks within that scope. Participants can still discover a promotion after C and have missed the cancellation window. The UI and technical evidence verify the available checking path and deadline enforcement. The declaration establishes the human suitability decision. Individual discovery times and wider user performance remain unmeasured in the submitted record.
+
+| Gate | Outcome |
+|---|---|
+| L9-H01 | Author reviewed candidate ancestry, single-job CI, retained cases, policy placement and business-rule stability. |
+| L9-H02 through H05 | Author declared validation complete and supplied the VAL-03A-E outcome summary above. Earlier simulated answers, guided checks and automated evidence keep their original classifications. |
+| L9-H06 | Author reviewed the AI and technical evidence and recorded R-08 as `ACCEPTABLE_WITHIN_SCOPE` with delayed manual discovery as a residual risk. |
+| L9-H07 | `ACCEPT_LOOP` by the project author. |
+| L10, merge and release | L10 `NOT_STARTED`. V1.1 `NOT_RELEASED`. Integration and release require separate author authority. |
